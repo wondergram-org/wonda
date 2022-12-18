@@ -1,5 +1,7 @@
-from re import compile
+from re import compile, RegexFlag
 from typing import Iterable, List, Optional, Union
+
+from vbml import Pattern, Patcher
 
 from wonda.bot.rules.abc import ABCRule
 from wonda.bot.updates import MessageUpdate
@@ -92,31 +94,16 @@ class Length(ABCRule[MessageUpdate]):
         return self.minimum_length >= len(text)
 
 
-try:
-    from Levenshtein import distance as lev_distance
-except ImportError:
-    lev_distance = None
-
-
 class Levenshtein(ABCRule[MessageUpdate]):
     """
-    A rule that computes the Levenshtein distance between two strings
-    and then compares it to the given maximum distance.
+    A rule that compares message text with given strings
+    using Levenshtein distance algorithm.
     """
 
     def __init__(
-        self, levenshtein_texts: Union[str, List[str]], max_distance: Optional[int] = 1
+        self, texts: Union[str, List[str]], max_distance: Optional[int] = 1
     ) -> None:
-        if lev_distance is None:
-            raise SystemExit(
-                "You must install `levenshtein` package to be able "
-                "to use Levenshtein rule"
-            )
-
-        if isinstance(levenshtein_texts, str):
-            levenshtein_texts = [levenshtein_texts]
-
-        self.levenshtein_texts = levenshtein_texts
+        self.texts = [texts] if isinstance(texts, str) else texts
         self.max_distance = max_distance
 
     async def check(self, msg: MessageUpdate) -> bool:
@@ -125,10 +112,30 @@ class Levenshtein(ABCRule[MessageUpdate]):
         if not text:
             return False
 
-        return any(
-            lev_distance(text, levenshtein_text) <= self.max_distance
-            for levenshtein_text in self.levenshtein_texts
-        )
+        for t in self.texts:
+            if self.calculate(t, text) <= self.max_distance:
+                return True
+        return False
+
+    @staticmethod
+    def calculate(s1: str, s2: str) -> int:
+        if len(s1) < len(s2):
+            return Levenshtein.calculate(s2, s1)
+
+        if len(s2) == 0:
+            return len(s1)
+
+        previous_row = range(len(s2) + 1)
+        for i, c1 in enumerate(s1):
+            current_row = [i + 1]
+            for j, c2 in enumerate(s2):
+                insertions = previous_row[j + 1] + 1
+                deletions = current_row[j] + 1
+                substitutions = previous_row[j] + (c1 != c2)
+                current_row.append(min(insertions, deletions, substitutions))
+            previous_row = current_row
+
+        return previous_row[-1]
 
 
 class Mention(ABCRule[MessageUpdate]):
@@ -192,37 +199,36 @@ class Text(ABCRule[MessageUpdate]):
         return text in self.texts
 
 
-try:
-    import vbml
-except ImportError:
-    vbml = None
-
-
 class VBML(ABCRule[MessageUpdate]):
     """
     This rule matches message text against a list of given patterns
     using the VBML library. See more details at https://github.com/tesseradecade/vbml
     """
 
-    PatternLike = Union[str, "vbml.Pattern"]
+    PatternLike = Union[str, Pattern]
 
     def __init__(
         self,
         patterns: Union[PatternLike, Iterable[PatternLike]],
-        patcher: Optional["vbml.Patcher"] = None,
+        flags: Optional[RegexFlag] = RegexFlag.DOTALL ^ RegexFlag.IGNORECASE,
+        patcher: Optional[Patcher] = Patcher(),
     ) -> None:
         if not isinstance(patterns, list):
             patterns = [patterns]
 
         self.patterns = [
-            vbml.Pattern(pattern) if isinstance(pattern, str) else pattern
+            Pattern(pattern, flags=flags) if isinstance(pattern, str) else pattern
             for pattern in patterns
         ]
-        self.patcher = patcher or vbml.Patcher()
+        self.patcher = patcher
 
     async def check(self, msg: MessageUpdate) -> Union[bool, dict]:
+        text = msg.text or msg.caption
+
+        if not text:
+            return False
+
         for pattern in self.patterns:
-            result = self.patcher.check(pattern, msg.text)
-            if result not in (None, False):
-                return result
+            if match := self.patcher.check(pattern, text) not in (None, False):
+                return match
         return False
