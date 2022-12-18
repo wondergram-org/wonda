@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wonda"
-version = "0.1.1"
+version = "0.1.2"
 description = "Asynchronous, feature-rich, high performant Telegram Bot API framework for building stunning bots"
 authors = []
 license = "MIT"
@@ -20,7 +20,6 @@ uvloop = {version = "^0.16.0", optional = true}
 watchfiles = {version = "^0.16.0", optional = true}
 
 [tool.poetry.dev-dependencies]
-isort = "^5.10.1"
 black = "^22.6.0"
 
 [tool.poetry.extras]
