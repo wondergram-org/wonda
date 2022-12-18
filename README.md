@@ -1,12 +1,12 @@
 # Wonda ✨
 
 [//]: # (Links to examples)
-[text formatting]: https://github.com/wondergram-org/wonda/blob/main/examples/high_level/formatting_example.py
-[middleware]: https://github.com/wondergram-org/wonda/blob/main/examples/high_level/setup_middleware.py
-[file uploading]: https://github.com/wondergram-org/wonda/blob/main/examples/high_level/file_upload_example.py
-[blueprints]: https://github.com/wondergram-org/wonda/blob/main/examples/high_level/load_blueprints.py
-[FSM]: https://github.com/wondergram-org/wonda/blob/main/examples/high_level/use_state_dispenser.py
-[awesome examples]: https://github.com/wondergram-org/wonda/tree/main/examples/high_level
+[text formatting]: examples/high_level/formatting_example.py
+[middleware]: examples/high_level/setup_middleware.py
+[file uploading]: examples/high_level/file_upload_example.py
+[blueprints]: examples/high_level/load_blueprints.py
+[FSM]: examples/high_level/use_state_dispenser.py
+[awesome examples]: examples/high_level
 
 ![Version](https://img.shields.io/pypi/v/wonda?label=version&style=flat-square)
 ![Package downloads](https://img.shields.io/pypi/dw/wonda?label=downloads&style=flat-square)
@@ -32,7 +32,7 @@ You can make Wonda perform even better by installing power-ups. They're optional
 pip install --force wonda[power-ups]
 ```
 
-To see the full list of packages, refer to our [project file](https://github.com/wondergram-org/wonda/blob/main/pyproject.toml).
+To see the full list of packages, refer to our [project file](pyproject.toml).
 
 ## Usage
 
@@ -57,4 +57,4 @@ Isn't it beautiful how little code is needed to achieve something this big? To g
 
 This project is MIT licensed. Big thanks to maintainers and contributors of [vkbottle](https://github.com/vkbottle/vkbottle) upon which it is built!
 
-© **timoniq** (2019-2021), **feeeek** (2022), **exthrempty** (2022)
+© timoniq (2019-2021), feeeek (2022), exthrempty (2022)
