@@ -101,9 +101,12 @@ class Levenshtein(ABCRule[MessageUpdate]):
     """
 
     def __init__(
-        self, texts: Union[str, List[str]], max_distance: Optional[int] = 1
+        self, lev_texts: Union[str, List[str]], max_distance: Optional[int] = 1
     ) -> None:
-        self.texts = [texts] if isinstance(texts, str) else texts
+        if isinstance(lev_texts, str):
+            lev_texts = [lev_texts]
+
+        self.lev_texts = lev_texts
         self.max_distance = max_distance
 
     async def check(self, msg: MessageUpdate) -> bool:
@@ -112,15 +115,15 @@ class Levenshtein(ABCRule[MessageUpdate]):
         if not text:
             return False
 
-        for t in self.texts:
-            if self.calculate(t, text) <= self.max_distance:
-                return True
-        return False
+        return any(
+            self.max_distance >= self.calculate(text, lev_text)
+            for lev_text in self.lev_texts
+        )
 
-    @staticmethod
-    def calculate(s1: str, s2: str) -> int:
+    @classmethod
+    def calculate(cls, s1: str, s2: str) -> int:
         if len(s1) < len(s2):
-            return Levenshtein.calculate(s2, s1)
+            return cls.calculate(s2, s1)
 
         if len(s2) == 0:
             return len(s1)
@@ -210,8 +213,8 @@ class VBML(ABCRule[MessageUpdate]):
     def __init__(
         self,
         patterns: Union[PatternLike, Iterable[PatternLike]],
-        flags: Optional[RegexFlag] = RegexFlag.DOTALL ^ RegexFlag.IGNORECASE,
         patcher: Optional[Patcher] = Patcher(),
+        flags: Optional[RegexFlag] = RegexFlag.DOTALL ^ RegexFlag.IGNORECASE,
     ) -> None:
         if not isinstance(patterns, list):
             patterns = [patterns]
@@ -229,6 +232,8 @@ class VBML(ABCRule[MessageUpdate]):
             return False
 
         for pattern in self.patterns:
-            if match := self.patcher.check(pattern, text) not in (None, False):
+            match = self.patcher.check(pattern, text)
+
+            if match not in (None, False):
                 return match
         return False
