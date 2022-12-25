@@ -1,30 +1,35 @@
 # Wonda ✨
 
-[//]: # (Links to examples)
+[//]: # (Examples)
+[examples]: examples/high_level
 [text formatting]: examples/high_level/formatting_example.py
 [middleware]: examples/high_level/setup_middleware.py
 [file uploading]: examples/high_level/file_upload_example.py
 [blueprints]: examples/high_level/load_blueprints.py
 [FSM]: examples/high_level/use_state_dispenser.py
-[awesome examples]: examples/high_level
 
+[//]: # (Badges)
 ![Version](https://img.shields.io/pypi/v/wonda?label=version&style=flat-square)
 ![Package downloads](https://img.shields.io/pypi/dw/wonda?label=downloads&style=flat-square)
 ![Supported Python versions](https://img.shields.io/pypi/pyversions/wonda?label=supported%20python%20versions&style=flat-square)
 
 ## Why
 
-Wonda empowers you to build powerful bots using simple extensible tools while not sacrifing any performance. It has all batteries included: [text formatting], [file uploading], [blueprints], [middleware] and [FSM] are all built-in.
+Wonda can help you build bots using simple tools without losing performance. It has all batteries included: [text formatting], [file uploading], [blueprints], [middleware] and [FSM] are usable right away.
 
-## Install
+## Versions
 
-To install stable version, use
+### Stable or pre-release
+
+To install a stable version of Wonda, enter this command in your terminal:
 
 ```shell script
 pip install -U wonda
 ```
 
 If you decide to go beta, use the same command with `--pre` option or update from dev branch .zip [archive](https://github.com/wondergram-org/wonda/archive/refs/heads/dev.zip).
+
+### Performance
 
 You can make Wonda perform even better by installing power-ups. They're optional, but highly recommended.
 
@@ -34,9 +39,9 @@ pip install --force wonda[power-ups]
 
 To see the full list of packages, refer to our [project file](pyproject.toml).
 
-## Usage
+## Guide
 
-It's easy to build an echo bot with Wonda — it's ready in *six* lines of code. And expanding it further is a piece of cake too.
+It's easy to build a bot with Wonda — it's ready in *six* lines of code. Extending it is no problem too.
 
 ```python
 from wonda import Bot
@@ -51,10 +56,16 @@ async def handler(_) -> str:
 bot.run_forever()
 ```
 
-Isn't it beautiful how little code is needed to achieve something this big? To get started on Wonda, check out our [awesome examples].
+With Wonda, it's possible to achieve this much with so little code. To get started, check out our [examples].
+
+## Contributing
+
+Wonda is a work in progress and a lot of stuff is expected to change! It's the right time for your input.
+
+If you want to report a bug or suggest a feature, [create an issue](https://github.com/wondergram-org/wonda/issues/new/choose). To ask a question, please use [discussions](https://github.com/wondergram-org/wonda/discussions). Big thanks!
 
 ## License
 
-This project is MIT licensed. Big thanks to maintainers and contributors of [vkbottle](https://github.com/vkbottle/vkbottle) upon which it is built!
+This project is MIT licensed. Based upon hard work of maintainers and contributors of [VKBottle](https://github.com/vkbottle/vkbottle).
 
-© timoniq (2019-2021), feeeek (2022), exthrempty (2022)
+Copyright © timoniq (2019-2021), feeeek (2022), geo-madness (2022)
