@@ -38,16 +38,22 @@ class Bot(ABCFramework):
         self._loop = loop
 
     async def run_polling(
-        self, offset: int = 0, allowed_updates: List[str] = []
+        self,
+        *,
+        offset: int = 0,
+        drop_updates: bool = False,
+        allowed_updates: List[str] = [],
     ) -> NoReturn:
+        if drop_updates:
+            await self.api.delete_webhook(drop_updates)
+
         self.polling.offset, self.polling.allowed_updates = offset, allowed_updates
-        logger.info("Polling will be started")
+        logger.info("Starting polling")
 
         async for update in self.polling.listen():  # type: ignore
             self.loop.create_task(self.router.route(update, self.api))
 
     def run_forever(self) -> None:
-        logger.info("Loop will be ran until stopped")
         self.loop_wrapper.add_task(self.run_polling())
         self.loop_wrapper.run_forever(self.loop)  # type: ignore
 
