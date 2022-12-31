@@ -205,7 +205,7 @@ class Text(ABCRule[MessageUpdate]):
 class VBML(ABCRule[MessageUpdate]):
     """
     This rule matches message text against a list of given patterns
-    using the VBML library. See more details at https://github.com/tesseradecade/vbml
+    using VBML. See more details at https://github.com/tesseradecade/vbml
     """
 
     PatternLike = Union[str, Pattern]
@@ -214,7 +214,7 @@ class VBML(ABCRule[MessageUpdate]):
         self,
         patterns: Union[PatternLike, Iterable[PatternLike]],
         patcher: Optional[Patcher] = Patcher(),
-        flags: Optional[RegexFlag] = RegexFlag.DOTALL ^ RegexFlag.IGNORECASE,
+        flags: Optional[RegexFlag] = RegexFlag(0),
     ) -> None:
         if not isinstance(patterns, list):
             patterns = [patterns]
