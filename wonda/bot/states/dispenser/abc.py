@@ -27,5 +27,5 @@ class ABCStateDispenser(ABC):
         if chat_id is None:
             return None
 
-        logger.debug(f"Casting state for chat_id {chat_id}")
+        logger.debug(f"State cast for identifier {chat_id}")
         return await self.get(chat_id)

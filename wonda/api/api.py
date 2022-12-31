@@ -34,7 +34,7 @@ class API(ABCAPI, APIMethods):
         ] = DEFAULT_RESPONSE_VALIDATORS
 
     async def request(self, method: str, params: dict) -> APIResponse:
-        logger.debug(f"Making request {method} with params {params}")
+        logger.debug(f"Calling {method} with {params}")
 
         data = await self.validate_request(params)
         response = await self.http_client.request_json(

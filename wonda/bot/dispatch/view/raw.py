@@ -50,7 +50,7 @@ class RawUpdateView(ABCView):
 
         mw_instances = await self.pre_middleware(update, context_variables)
         if mw_instances is None:
-            logger.info("Pre middleware returned error; stopped handling")
+            logger.info("Stopped handling due to error in middleware")
             return
 
         for handler_basement in self.get_handler_basements(update):

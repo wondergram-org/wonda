@@ -41,7 +41,7 @@ class LoopWrapper:
         """
 
         if not len(self.tasks):
-            logger.warning("Loop ran with zero tasks")
+            logger.warning("Running loop without tasks")
 
         loop = loop or get_event_loop()
 
@@ -56,7 +56,7 @@ class LoopWrapper:
 
             loop.run_forever()
         except KeyboardInterrupt:
-            logger.info("Keyboard Interrupt")
+            logger.info("Keyboard interrupt")
         finally:
             [
                 loop.run_until_complete(shutdown_task)

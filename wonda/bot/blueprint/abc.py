@@ -20,7 +20,7 @@ class ABCBlueprint(ABCFramework):
     _api: "ABCAPI"
     _state_dispenser: "ABCStateDispenser"
 
-    name: str = "Unnamed"
+    name: str = "unnamed"
     constructed: bool = False
 
     @abstractmethod

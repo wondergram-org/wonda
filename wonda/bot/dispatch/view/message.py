@@ -38,7 +38,7 @@ class MessageView(ABCView):
         mw_instances = await self.pre_middleware(message, context_variables)
 
         if mw_instances is None:
-            logger.info("Stopping handling because pre middleware returned error")
+            logger.info("Stopped handling due to error in middleware")
             return
 
         handlers = []

@@ -10,7 +10,7 @@ from wonda.modules import logger
 
 class BotRouter(ABCRouter):
     async def route(self, update: dict, ctx_api: "ABCAPI") -> None:
-        logger.debug(f"Routing update: {update}")
+        logger.debug(f"Routing update {update}")
 
         for view in self.views.values():
             try:
