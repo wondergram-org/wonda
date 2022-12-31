@@ -11,7 +11,7 @@ class Update(BaseModel):
     can be present in any given update.
     """
 
-    update_id: Optional[int] = Field(default=None)
+    update_id: int = Field()
     message: Optional["Message"] = Field(default=None)
     edited_message: Optional["Message"] = Field(default=None)
     channel_post: Optional["Message"] = Field(default=None)
@@ -33,9 +33,9 @@ class WebhookInfo(BaseModel):
     Describes the current status of a webhook.
     """
 
-    url: Optional[str] = Field(default=None)
-    has_custom_certificate: Optional[bool] = Field(default=None)
-    pending_update_count: Optional[int] = Field(default=None)
+    url: str = Field()
+    has_custom_certificate: bool = Field()
+    pending_update_count: int = Field()
     ip_address: Optional[str] = Field(default=None)
     last_error_date: Optional[int] = Field(default=None)
     last_error_message: Optional[str] = Field(default=None)
@@ -49,9 +49,9 @@ class User(BaseModel):
     This object represents a Telegram user or bot.
     """
 
-    id: Optional[int] = Field(default=None)
-    is_bot: Optional[bool] = Field(default=None)
-    first_name: Optional[str] = Field(default=None)
+    id: int = Field()
+    is_bot: bool = Field()
+    first_name: str = Field()
     last_name: Optional[str] = Field(default=None)
     username: Optional[str] = Field(default=None)
     language_code: Optional[str] = Field(default=None)
@@ -67,10 +67,8 @@ class Chat(BaseModel):
     This object represents a chat.
     """
 
-    id: Optional[int] = Field(default=None)
-    type: Optional[Literal["private", "group", "supergroup", "channel"]] = Field(
-        default=None
-    )
+    id: int = Field()
+    type: Literal["private", "group", "supergroup", "channel"] = Field()
     title: Optional[str] = Field(default=None)
     username: Optional[str] = Field(default=None)
     first_name: Optional[str] = Field(default=None)
@@ -90,6 +88,8 @@ class Chat(BaseModel):
     permissions: Optional["ChatPermissions"] = Field(default=None)
     slow_mode_delay: Optional[int] = Field(default=None)
     message_auto_delete_time: Optional[int] = Field(default=None)
+    has_aggressive_anti_spam_enabled: Optional[bool] = Field(default=None)
+    has_hidden_members: Optional[bool] = Field(default=None)
     has_protected_content: Optional[bool] = Field(default=None)
     sticker_set_name: Optional[str] = Field(default=None)
     can_set_sticker_set: Optional[bool] = Field(default=None)
@@ -102,12 +102,12 @@ class Message(BaseModel):
     This object represents a message.
     """
 
-    message_id: Optional[int] = Field(default=None)
+    message_id: int = Field()
     message_thread_id: Optional[int] = Field(default=None)
     from_: Optional["User"] = Field(default=None, alias="from")
     sender_chat: Optional["Chat"] = Field(default=None)
-    date: Optional[int] = Field(default=None)
-    chat: Optional["Chat"] = Field(default=None)
+    date: int = Field()
+    chat: "Chat" = Field()
     forward_from: Optional["User"] = Field(default=None)
     forward_from_chat: Optional["Chat"] = Field(default=None)
     forward_from_message_id: Optional[int] = Field(default=None)
@@ -134,6 +134,7 @@ class Message(BaseModel):
     voice: Optional["Voice"] = Field(default=None)
     caption: Optional[str] = Field(default=None)
     caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
+    has_media_spoiler: Optional[bool] = Field(default=None)
     contact: Optional["Contact"] = Field(default=None)
     dice: Optional["Dice"] = Field(default=None)
     game: Optional["Game"] = Field(default=None)
@@ -157,11 +158,19 @@ class Message(BaseModel):
     invoice: Optional["Invoice"] = Field(default=None)
     successful_payment: Optional["SuccessfulPayment"] = Field(default=None)
     connected_website: Optional[str] = Field(default=None)
+    write_access_allowed: Optional["WriteAccessAllowed"] = Field(default=None)
     passport_data: Optional["PassportData"] = Field(default=None)
     proximity_alert_triggered: Optional["ProximityAlertTriggered"] = Field(default=None)
     forum_topic_created: Optional["ForumTopicCreated"] = Field(default=None)
+    forum_topic_edited: Optional["ForumTopicEdited"] = Field(default=None)
     forum_topic_closed: Optional["ForumTopicClosed"] = Field(default=None)
     forum_topic_reopened: Optional["ForumTopicReopened"] = Field(default=None)
+    general_forum_topic_hidden: Optional["GeneralForumTopicHidden"] = Field(
+        default=None
+    )
+    general_forum_topic_unhidden: Optional["GeneralForumTopicUnhidden"] = Field(
+        default=None
+    )
     video_chat_scheduled: Optional["VideoChatScheduled"] = Field(default=None)
     video_chat_started: Optional["VideoChatStarted"] = Field(default=None)
     video_chat_ended: Optional["VideoChatEnded"] = Field(default=None)
@@ -177,7 +186,7 @@ class MessageId(BaseModel):
     This object represents a unique message identifier.
     """
 
-    message_id: Optional[int] = Field(default=None)
+    message_id: int = Field()
 
 
 class MessageEntity(BaseModel):
@@ -186,29 +195,27 @@ class MessageEntity(BaseModel):
     usernames, URLs, etc.
     """
 
-    type: Optional[
-        Literal[
-            "mention",
-            "hashtag",
-            "cashtag",
-            "bot_command",
-            "url",
-            "email",
-            "phone_number",
-            "bold",
-            "italic",
-            "underline",
-            "strikethrough",
-            "spoiler",
-            "code",
-            "pre",
-            "text_link",
-            "text_mention",
-            "custom_emoji",
-        ]
-    ] = Field(default=None)
-    offset: Optional[int] = Field(default=None)
-    length: Optional[int] = Field(default=None)
+    type: Literal[
+        "mention",
+        "hashtag",
+        "cashtag",
+        "bot_command",
+        "url",
+        "email",
+        "phone_number",
+        "bold",
+        "italic",
+        "underline",
+        "strikethrough",
+        "spoiler",
+        "code",
+        "pre",
+        "text_link",
+        "text_mention",
+        "custom_emoji",
+    ] = Field()
+    offset: int = Field()
+    length: int = Field()
     url: Optional[str] = Field(default=None)
     user: Optional["User"] = Field(default=None)
     language: Optional[str] = Field(default=None)
@@ -220,10 +227,10 @@ class PhotoSize(BaseModel):
     This object represents one size of a photo or a file / sticker thumbnail.
     """
 
-    file_id: Optional[str] = Field(default=None)
-    file_unique_id: Optional[str] = Field(default=None)
-    width: Optional[int] = Field(default=None)
-    height: Optional[int] = Field(default=None)
+    file_id: str = Field()
+    file_unique_id: str = Field()
+    width: int = Field()
+    height: int = Field()
     file_size: Optional[int] = Field(default=None)
 
 
@@ -233,11 +240,11 @@ class Animation(BaseModel):
     sound).
     """
 
-    file_id: Optional[str] = Field(default=None)
-    file_unique_id: Optional[str] = Field(default=None)
-    width: Optional[int] = Field(default=None)
-    height: Optional[int] = Field(default=None)
-    duration: Optional[int] = Field(default=None)
+    file_id: str = Field()
+    file_unique_id: str = Field()
+    width: int = Field()
+    height: int = Field()
+    duration: int = Field()
     thumb: Optional["PhotoSize"] = Field(default=None)
     file_name: Optional[str] = Field(default=None)
     mime_type: Optional[str] = Field(default=None)
@@ -249,9 +256,9 @@ class Audio(BaseModel):
     This object represents an audio file to be treated as music by the Telegram clients.
     """
 
-    file_id: Optional[str] = Field(default=None)
-    file_unique_id: Optional[str] = Field(default=None)
-    duration: Optional[int] = Field(default=None)
+    file_id: str = Field()
+    file_unique_id: str = Field()
+    duration: int = Field()
     performer: Optional[str] = Field(default=None)
     title: Optional[str] = Field(default=None)
     file_name: Optional[str] = Field(default=None)
@@ -266,8 +273,8 @@ class Document(BaseModel):
     audio files).
     """
 
-    file_id: Optional[str] = Field(default=None)
-    file_unique_id: Optional[str] = Field(default=None)
+    file_id: str = Field()
+    file_unique_id: str = Field()
     thumb: Optional["PhotoSize"] = Field(default=None)
     file_name: Optional[str] = Field(default=None)
     mime_type: Optional[str] = Field(default=None)
@@ -279,11 +286,11 @@ class Video(BaseModel):
     This object represents a video file.
     """
 
-    file_id: Optional[str] = Field(default=None)
-    file_unique_id: Optional[str] = Field(default=None)
-    width: Optional[int] = Field(default=None)
-    height: Optional[int] = Field(default=None)
-    duration: Optional[int] = Field(default=None)
+    file_id: str = Field()
+    file_unique_id: str = Field()
+    width: int = Field()
+    height: int = Field()
+    duration: int = Field()
     thumb: Optional["PhotoSize"] = Field(default=None)
     file_name: Optional[str] = Field(default=None)
     mime_type: Optional[str] = Field(default=None)
@@ -295,10 +302,10 @@ class VideoNote(BaseModel):
     This object represents a video message (available in Telegram apps as of v.4.0).
     """
 
-    file_id: Optional[str] = Field(default=None)
-    file_unique_id: Optional[str] = Field(default=None)
-    length: Optional[int] = Field(default=None)
-    duration: Optional[int] = Field(default=None)
+    file_id: str = Field()
+    file_unique_id: str = Field()
+    length: int = Field()
+    duration: int = Field()
     thumb: Optional["PhotoSize"] = Field(default=None)
     file_size: Optional[int] = Field(default=None)
 
@@ -308,9 +315,9 @@ class Voice(BaseModel):
     This object represents a voice note.
     """
 
-    file_id: Optional[str] = Field(default=None)
-    file_unique_id: Optional[str] = Field(default=None)
-    duration: Optional[int] = Field(default=None)
+    file_id: str = Field()
+    file_unique_id: str = Field()
+    duration: int = Field()
     mime_type: Optional[str] = Field(default=None)
     file_size: Optional[int] = Field(default=None)
 
@@ -320,8 +327,8 @@ class Contact(BaseModel):
     This object represents a phone contact.
     """
 
-    phone_number: Optional[str] = Field(default=None)
-    first_name: Optional[str] = Field(default=None)
+    phone_number: str = Field()
+    first_name: str = Field()
     last_name: Optional[str] = Field(default=None)
     user_id: Optional[int] = Field(default=None)
     vcard: Optional[str] = Field(default=None)
@@ -332,8 +339,8 @@ class Dice(BaseModel):
     This object represents an animated emoji that displays a random value.
     """
 
-    emoji: Optional[str] = Field(default=None)
-    value: Optional[int] = Field(default=None)
+    emoji: str = Field()
+    value: int = Field()
 
 
 class PollOption(BaseModel):
@@ -341,8 +348,8 @@ class PollOption(BaseModel):
     This object contains information about one answer option in a poll.
     """
 
-    text: Optional[str] = Field(default=None)
-    voter_count: Optional[int] = Field(default=None)
+    text: str = Field()
+    voter_count: int = Field()
 
 
 class PollAnswer(BaseModel):
@@ -350,9 +357,9 @@ class PollAnswer(BaseModel):
     This object represents an answer of a user in a non-anonymous poll.
     """
 
-    poll_id: Optional[str] = Field(default=None)
-    user: Optional["User"] = Field(default=None)
-    option_ids: Optional[List[int]] = Field(default_factory=list)
+    poll_id: str = Field()
+    user: "User" = Field()
+    option_ids: List[int] = Field()
 
 
 class Poll(BaseModel):
@@ -360,14 +367,14 @@ class Poll(BaseModel):
     This object contains information about a poll.
     """
 
-    id: Optional[str] = Field(default=None)
-    question: Optional[str] = Field(default=None)
-    options: Optional[List["PollOption"]] = Field(default_factory=list)
-    total_voter_count: Optional[int] = Field(default=None)
-    is_closed: Optional[bool] = Field(default=None)
-    is_anonymous: Optional[bool] = Field(default=None)
-    type: Optional[Literal["regular", "quiz"]] = Field(default=None)
-    allows_multiple_answers: Optional[bool] = Field(default=None)
+    id: str = Field()
+    question: str = Field()
+    options: List["PollOption"] = Field()
+    total_voter_count: int = Field()
+    is_closed: bool = Field()
+    is_anonymous: bool = Field()
+    type: Literal["regular", "quiz"] = Field()
+    allows_multiple_answers: bool = Field()
     correct_option_id: Optional[int] = Field(default=None)
     explanation: Optional[str] = Field(default=None)
     explanation_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
@@ -380,8 +387,8 @@ class Location(BaseModel):
     This object represents a point on the map.
     """
 
-    longitude: Optional[float] = Field(default=None)
-    latitude: Optional[float] = Field(default=None)
+    longitude: float = Field()
+    latitude: float = Field()
     horizontal_accuracy: Optional[float] = Field(default=None)
     live_period: Optional[int] = Field(default=None)
     heading: Optional[int] = Field(default=None)
@@ -393,9 +400,9 @@ class Venue(BaseModel):
     This object represents a venue.
     """
 
-    location: Optional["Location"] = Field(default=None)
-    title: Optional[str] = Field(default=None)
-    address: Optional[str] = Field(default=None)
+    location: "Location" = Field()
+    title: str = Field()
+    address: str = Field()
     foursquare_id: Optional[str] = Field(default=None)
     foursquare_type: Optional[str] = Field(default=None)
     google_place_id: Optional[str] = Field(default=None)
@@ -407,8 +414,8 @@ class WebAppData(BaseModel):
     Describes data sent from a Web App to the bot.
     """
 
-    data: Optional[str] = Field(default=None)
-    button_text: Optional[str] = Field(default=None)
+    data: str = Field()
+    button_text: str = Field()
 
 
 class ProximityAlertTriggered(BaseModel):
@@ -417,9 +424,9 @@ class ProximityAlertTriggered(BaseModel):
     chat triggers a proximity alert set by another user.
     """
 
-    traveler: Optional["User"] = Field(default=None)
-    watcher: Optional["User"] = Field(default=None)
-    distance: Optional[int] = Field(default=None)
+    traveler: "User" = Field()
+    watcher: "User" = Field()
+    distance: int = Field()
 
 
 class MessageAutoDeleteTimerChanged(BaseModel):
@@ -428,7 +435,7 @@ class MessageAutoDeleteTimerChanged(BaseModel):
     settings.
     """
 
-    message_auto_delete_time: Optional[int] = Field(default=None)
+    message_auto_delete_time: int = Field()
 
 
 class ForumTopicCreated(BaseModel):
@@ -437,8 +444,8 @@ class ForumTopicCreated(BaseModel):
     chat.
     """
 
-    name: Optional[str] = Field(default=None)
-    icon_color: Optional[int] = Field(default=None)
+    name: str = Field()
+    icon_color: int = Field()
     icon_custom_emoji_id: Optional[str] = Field(default=None)
 
 
@@ -451,10 +458,46 @@ class ForumTopicClosed(BaseModel):
     pass
 
 
+class ForumTopicEdited(BaseModel):
+    """
+    This object represents a service message about an edited forum topic.
+    """
+
+    name: Optional[str] = Field(default=None)
+    icon_custom_emoji_id: Optional[str] = Field(default=None)
+
+
 class ForumTopicReopened(BaseModel):
     """
     This object represents a service message about a forum topic reopened in the chat.
     Currently holds no information.
+    """
+
+    pass
+
+
+class GeneralForumTopicHidden(BaseModel):
+    """
+    This object represents a service message about General forum topic hidden in the
+    chat. Currently holds no information.
+    """
+
+    pass
+
+
+class GeneralForumTopicUnhidden(BaseModel):
+    """
+    This object represents a service message about General forum topic unhidden in the
+    chat. Currently holds no information.
+    """
+
+    pass
+
+
+class WriteAccessAllowed(BaseModel):
+    """
+    This object represents a service message about a user allowing a bot added to the
+    attachment menu to write messages. Currently holds no information.
     """
 
     pass
@@ -465,7 +508,7 @@ class VideoChatScheduled(BaseModel):
     This object represents a service message about a video chat scheduled in the chat.
     """
 
-    start_date: Optional[int] = Field(default=None)
+    start_date: int = Field()
 
 
 class VideoChatStarted(BaseModel):
@@ -482,7 +525,7 @@ class VideoChatEnded(BaseModel):
     This object represents a service message about a video chat ended in the chat.
     """
 
-    duration: Optional[int] = Field(default=None)
+    duration: int = Field()
 
 
 class VideoChatParticipantsInvited(BaseModel):
@@ -490,7 +533,7 @@ class VideoChatParticipantsInvited(BaseModel):
     This object represents a service message about new members invited to a video chat.
     """
 
-    users: Optional[List["User"]] = Field(default_factory=list)
+    users: List["User"] = Field()
 
 
 class UserProfilePhotos(BaseModel):
@@ -498,8 +541,8 @@ class UserProfilePhotos(BaseModel):
     This object represent a user's profile pictures.
     """
 
-    total_count: Optional[int] = Field(default=None)
-    photos: Optional[List[List["PhotoSize"]]] = Field(default_factory=list)
+    total_count: int = Field()
+    photos: List[List["PhotoSize"]] = Field()
 
 
 class File(BaseModel):
@@ -511,8 +554,8 @@ class File(BaseModel):
     MB
     """
 
-    file_id: Optional[str] = Field(default=None)
-    file_unique_id: Optional[str] = Field(default=None)
+    file_id: str = Field()
+    file_unique_id: str = Field()
     file_size: Optional[int] = Field(default=None)
     file_path: Optional[str] = Field(default=None)
 
@@ -522,7 +565,7 @@ class WebAppInfo(BaseModel):
     Describes a Web App.
     """
 
-    url: Optional[str] = Field(default=None)
+    url: str = Field()
 
 
 class ReplyKeyboardMarkup(BaseModel):
@@ -531,7 +574,8 @@ class ReplyKeyboardMarkup(BaseModel):
     bots for details and examples).
     """
 
-    keyboard: Optional[List[List["KeyboardButton"]]] = Field(default_factory=list)
+    keyboard: List[List["KeyboardButton"]] = Field()
+    is_persistent: Optional[bool] = Field(default=None)
     resize_keyboard: Optional[bool] = Field(default=None)
     one_time_keyboard: Optional[bool] = Field(default=None)
     input_field_placeholder: Optional[str] = Field(default=None)
@@ -546,7 +590,7 @@ class KeyboardButton(BaseModel):
     exclusive.
     """
 
-    text: Optional[str] = Field(default=None)
+    text: str = Field()
     request_contact: Optional[bool] = Field(default=None)
     request_location: Optional[bool] = Field(default=None)
     request_poll: Optional["KeyboardButtonPollType"] = Field(default=None)
@@ -571,7 +615,7 @@ class ReplyKeyboardRemove(BaseModel):
     (see ReplyKeyboardMarkup).
     """
 
-    remove_keyboard: Optional[bool] = Field(default=None)
+    remove_keyboard: bool = Field()
     selective: Optional[bool] = Field(default=None)
 
 
@@ -581,9 +625,7 @@ class InlineKeyboardMarkup(BaseModel):
     belongs to.
     """
 
-    inline_keyboard: Optional[List[List["InlineKeyboardButton"]]] = Field(
-        default_factory=list
-    )
+    inline_keyboard: List[List["InlineKeyboardButton"]] = Field()
 
 
 class InlineKeyboardButton(BaseModel):
@@ -592,7 +634,7 @@ class InlineKeyboardButton(BaseModel):
     the optional fields.
     """
 
-    text: Optional[str] = Field(default=None)
+    text: str = Field()
     url: Optional[str] = Field(default=None)
     callback_data: Optional[str] = Field(default=None)
     web_app: Optional["WebAppInfo"] = Field(default=None)
@@ -612,7 +654,7 @@ class LoginUrl(BaseModel):
     as of version 5.7. Sample bot: @discussbot
     """
 
-    url: Optional[str] = Field(default=None)
+    url: str = Field()
     forward_text: Optional[str] = Field(default=None)
     bot_username: Optional[str] = Field(default=None)
     request_write_access: Optional[bool] = Field(default=None)
@@ -627,11 +669,11 @@ class CallbackQuery(BaseModel):
     present. Exactly one of the fields data or game_short_name will be present.
     """
 
-    id: Optional[str] = Field(default=None)
-    from_: Optional["User"] = Field(default=None, alias="from")
+    id: str = Field()
+    from_: "User" = Field(alias="from")
     message: Optional["Message"] = Field(default=None)
     inline_message_id: Optional[str] = Field(default=None)
-    chat_instance: Optional[str] = Field(default=None)
+    chat_instance: str = Field()
     data: Optional[str] = Field(default=None)
     game_short_name: Optional[str] = Field(default=None)
 
@@ -644,7 +686,7 @@ class ForceReply(BaseModel):
     step interfaces without having to sacrifice privacy mode.
     """
 
-    force_reply: Optional[bool] = Field(default=None)
+    force_reply: bool = Field()
     input_field_placeholder: Optional[str] = Field(default=None)
     selective: Optional[bool] = Field(default=None)
 
@@ -654,10 +696,10 @@ class ChatPhoto(BaseModel):
     This object represents a chat photo.
     """
 
-    small_file_id: Optional[str] = Field(default=None)
-    small_file_unique_id: Optional[str] = Field(default=None)
-    big_file_id: Optional[str] = Field(default=None)
-    big_file_unique_id: Optional[str] = Field(default=None)
+    small_file_id: str = Field()
+    small_file_unique_id: str = Field()
+    big_file_id: str = Field()
+    big_file_unique_id: str = Field()
 
 
 class ChatInviteLink(BaseModel):
@@ -665,11 +707,11 @@ class ChatInviteLink(BaseModel):
     Represents an invite link for a chat.
     """
 
-    invite_link: Optional[str] = Field(default=None)
-    creator: Optional["User"] = Field(default=None)
-    creates_join_request: Optional[bool] = Field(default=None)
-    is_primary: Optional[bool] = Field(default=None)
-    is_revoked: Optional[bool] = Field(default=None)
+    invite_link: str = Field()
+    creator: "User" = Field()
+    creates_join_request: bool = Field()
+    is_primary: bool = Field()
+    is_revoked: bool = Field()
     name: Optional[str] = Field(default=None)
     expire_date: Optional[int] = Field(default=None)
     member_limit: Optional[int] = Field(default=None)
@@ -681,14 +723,14 @@ class ChatAdministratorRights(BaseModel):
     Represents the rights of an administrator in a chat.
     """
 
-    is_anonymous: Optional[bool] = Field(default=None)
-    can_manage_chat: Optional[bool] = Field(default=None)
-    can_delete_messages: Optional[bool] = Field(default=None)
-    can_manage_video_chats: Optional[bool] = Field(default=None)
-    can_restrict_members: Optional[bool] = Field(default=None)
-    can_promote_members: Optional[bool] = Field(default=None)
-    can_change_info: Optional[bool] = Field(default=None)
-    can_invite_users: Optional[bool] = Field(default=None)
+    is_anonymous: bool = Field()
+    can_manage_chat: bool = Field()
+    can_delete_messages: bool = Field()
+    can_manage_video_chats: bool = Field()
+    can_restrict_members: bool = Field()
+    can_promote_members: bool = Field()
+    can_change_info: bool = Field()
+    can_invite_users: bool = Field()
     can_post_messages: Optional[bool] = Field(default=None)
     can_edit_messages: Optional[bool] = Field(default=None)
     can_pin_messages: Optional[bool] = Field(default=None)
@@ -700,9 +742,9 @@ class ChatMemberOwner(BaseModel):
     Represents a chat member that owns the chat and has all administrator privileges.
     """
 
-    status: Optional[Literal["creator"]] = Field(default=None)
-    user: Optional["User"] = Field(default=None)
-    is_anonymous: Optional[bool] = Field(default=None)
+    status: Literal["creator"] = Field(default="creator")
+    user: "User" = Field()
+    is_anonymous: bool = Field()
     custom_title: Optional[str] = Field(default=None)
 
 
@@ -711,17 +753,17 @@ class ChatMemberAdministrator(BaseModel):
     Represents a chat member that has some additional privileges.
     """
 
-    status: Optional[Literal["administrator"]] = Field(default=None)
-    user: Optional["User"] = Field(default=None)
-    can_be_edited: Optional[bool] = Field(default=None)
-    is_anonymous: Optional[bool] = Field(default=None)
-    can_manage_chat: Optional[bool] = Field(default=None)
-    can_delete_messages: Optional[bool] = Field(default=None)
-    can_manage_video_chats: Optional[bool] = Field(default=None)
-    can_restrict_members: Optional[bool] = Field(default=None)
-    can_promote_members: Optional[bool] = Field(default=None)
-    can_change_info: Optional[bool] = Field(default=None)
-    can_invite_users: Optional[bool] = Field(default=None)
+    status: Literal["administrator"] = Field(default="administrator")
+    user: "User" = Field()
+    can_be_edited: bool = Field()
+    is_anonymous: bool = Field()
+    can_manage_chat: bool = Field()
+    can_delete_messages: bool = Field()
+    can_manage_video_chats: bool = Field()
+    can_restrict_members: bool = Field()
+    can_promote_members: bool = Field()
+    can_change_info: bool = Field()
+    can_invite_users: bool = Field()
     can_post_messages: Optional[bool] = Field(default=None)
     can_edit_messages: Optional[bool] = Field(default=None)
     can_pin_messages: Optional[bool] = Field(default=None)
@@ -734,8 +776,8 @@ class ChatMemberMember(BaseModel):
     Represents a chat member that has no additional privileges or restrictions.
     """
 
-    status: Optional[Literal["member"]] = Field(default=None)
-    user: Optional["User"] = Field(default=None)
+    status: Literal["member"] = Field(default="member")
+    user: "User" = Field()
 
 
 class ChatMemberRestricted(BaseModel):
@@ -744,19 +786,19 @@ class ChatMemberRestricted(BaseModel):
     only.
     """
 
-    status: Optional[Literal["restricted"]] = Field(default=None)
-    user: Optional["User"] = Field(default=None)
-    is_member: Optional[bool] = Field(default=None)
-    can_change_info: Optional[bool] = Field(default=None)
-    can_invite_users: Optional[bool] = Field(default=None)
-    can_pin_messages: Optional[bool] = Field(default=None)
-    can_manage_topics: Optional[bool] = Field(default=None)
-    can_send_messages: Optional[bool] = Field(default=None)
-    can_send_media_messages: Optional[bool] = Field(default=None)
-    can_send_polls: Optional[bool] = Field(default=None)
-    can_send_other_messages: Optional[bool] = Field(default=None)
-    can_add_web_page_previews: Optional[bool] = Field(default=None)
-    until_date: Optional[int] = Field(default=None)
+    status: Literal["restricted"] = Field(default="restricted")
+    user: "User" = Field()
+    is_member: bool = Field()
+    can_change_info: bool = Field()
+    can_invite_users: bool = Field()
+    can_pin_messages: bool = Field()
+    can_manage_topics: bool = Field()
+    can_send_messages: bool = Field()
+    can_send_media_messages: bool = Field()
+    can_send_polls: bool = Field()
+    can_send_other_messages: bool = Field()
+    can_add_web_page_previews: bool = Field()
+    until_date: int = Field()
 
 
 class ChatMemberLeft(BaseModel):
@@ -765,8 +807,8 @@ class ChatMemberLeft(BaseModel):
     themselves.
     """
 
-    status: Optional[Literal["left"]] = Field(default=None)
-    user: Optional["User"] = Field(default=None)
+    status: Literal["left"] = Field(default="left")
+    user: "User" = Field()
 
 
 class ChatMemberBanned(BaseModel):
@@ -775,9 +817,9 @@ class ChatMemberBanned(BaseModel):
     view chat messages.
     """
 
-    status: Optional[Literal["kicked"]] = Field(default=None)
-    user: Optional["User"] = Field(default=None)
-    until_date: Optional[int] = Field(default=None)
+    status: Literal["kicked"] = Field(default="kicked")
+    user: "User" = Field()
+    until_date: int = Field()
 
 
 class ChatMemberUpdated(BaseModel):
@@ -785,11 +827,11 @@ class ChatMemberUpdated(BaseModel):
     This object represents changes in the status of a chat member.
     """
 
-    chat: Optional["Chat"] = Field(default=None)
-    from_: Optional["User"] = Field(default=None, alias="from")
-    date: Optional[int] = Field(default=None)
-    old_chat_member: Optional["ChatMember"] = Field(default=None)
-    new_chat_member: Optional["ChatMember"] = Field(default=None)
+    chat: "Chat" = Field()
+    from_: "User" = Field(alias="from")
+    date: int = Field()
+    old_chat_member: "ChatMember" = Field()
+    new_chat_member: "ChatMember" = Field()
     invite_link: Optional["ChatInviteLink"] = Field(default=None)
 
 
@@ -798,9 +840,9 @@ class ChatJoinRequest(BaseModel):
     Represents a join request sent to a chat.
     """
 
-    chat: Optional["Chat"] = Field(default=None)
-    from_: Optional["User"] = Field(default=None, alias="from")
-    date: Optional[int] = Field(default=None)
+    chat: "Chat" = Field()
+    from_: "User" = Field(alias="from")
+    date: int = Field()
     bio: Optional[str] = Field(default=None)
     invite_link: Optional["ChatInviteLink"] = Field(default=None)
 
@@ -826,8 +868,8 @@ class ChatLocation(BaseModel):
     Represents a location to which a chat is connected.
     """
 
-    location: Optional["Location"] = Field(default=None)
-    address: Optional[str] = Field(default=None)
+    location: "Location" = Field()
+    address: str = Field()
 
 
 class ForumTopic(BaseModel):
@@ -835,9 +877,9 @@ class ForumTopic(BaseModel):
     This object represents a forum topic.
     """
 
-    message_thread_id: Optional[int] = Field(default=None)
-    name: Optional[str] = Field(default=None)
-    icon_color: Optional[int] = Field(default=None)
+    message_thread_id: int = Field()
+    name: str = Field()
+    icon_color: int = Field()
     icon_custom_emoji_id: Optional[str] = Field(default=None)
 
 
@@ -846,8 +888,8 @@ class BotCommand(BaseModel):
     This object represents a bot command.
     """
 
-    command: Optional[str] = Field(default=None)
-    description: Optional[str] = Field(default=None)
+    command: str = Field()
+    description: str = Field()
 
 
 class BotCommandScopeDefault(BaseModel):
@@ -856,7 +898,7 @@ class BotCommandScopeDefault(BaseModel):
     commands with a narrower scope are specified for the user.
     """
 
-    type: Optional[Literal["default"]] = Field(default=None)
+    type: Literal["default"] = Field(default="default")
 
 
 class BotCommandScopeAllPrivateChats(BaseModel):
@@ -864,7 +906,7 @@ class BotCommandScopeAllPrivateChats(BaseModel):
     Represents the scope of bot commands, covering all private chats.
     """
 
-    type: Optional[Literal["all_private_chats"]] = Field(default=None)
+    type: Literal["all_private_chats"] = Field(default="all_private_chats")
 
 
 class BotCommandScopeAllGroupChats(BaseModel):
@@ -872,7 +914,7 @@ class BotCommandScopeAllGroupChats(BaseModel):
     Represents the scope of bot commands, covering all group and supergroup chats.
     """
 
-    type: Optional[Literal["all_group_chats"]] = Field(default=None)
+    type: Literal["all_group_chats"] = Field(default="all_group_chats")
 
 
 class BotCommandScopeAllChatAdministrators(BaseModel):
@@ -881,7 +923,7 @@ class BotCommandScopeAllChatAdministrators(BaseModel):
     administrators.
     """
 
-    type: Optional[Literal["all_chat_administrators"]] = Field(default=None)
+    type: Literal["all_chat_administrators"] = Field(default="all_chat_administrators")
 
 
 class BotCommandScopeChat(BaseModel):
@@ -889,8 +931,8 @@ class BotCommandScopeChat(BaseModel):
     Represents the scope of bot commands, covering a specific chat.
     """
 
-    type: Optional[Literal["chat"]] = Field(default=None)
-    chat_id: Optional[Union[int, str]] = Field(default=None)
+    type: Literal["chat"] = Field(default="chat")
+    chat_id: Union[int, str] = Field()
 
 
 class BotCommandScopeChatAdministrators(BaseModel):
@@ -899,8 +941,8 @@ class BotCommandScopeChatAdministrators(BaseModel):
     group or supergroup chat.
     """
 
-    type: Optional[Literal["chat_administrators"]] = Field(default=None)
-    chat_id: Optional[Union[int, str]] = Field(default=None)
+    type: Literal["chat_administrators"] = Field(default="chat_administrators")
+    chat_id: Union[int, str] = Field()
 
 
 class BotCommandScopeChatMember(BaseModel):
@@ -909,9 +951,9 @@ class BotCommandScopeChatMember(BaseModel):
     supergroup chat.
     """
 
-    type: Optional[Literal["chat_member"]] = Field(default=None)
-    chat_id: Optional[Union[int, str]] = Field(default=None)
-    user_id: Optional[int] = Field(default=None)
+    type: Literal["chat_member"] = Field(default="chat_member")
+    chat_id: Union[int, str] = Field()
+    user_id: int = Field()
 
 
 class MenuButtonCommands(BaseModel):
@@ -919,7 +961,7 @@ class MenuButtonCommands(BaseModel):
     Represents a menu button, which opens the bot's list of commands.
     """
 
-    type: Optional[Literal["commands"]] = Field(default=None)
+    type: Literal["commands"] = Field(default="commands")
 
 
 class MenuButtonWebApp(BaseModel):
@@ -927,9 +969,9 @@ class MenuButtonWebApp(BaseModel):
     Represents a menu button, which launches a Web App.
     """
 
-    type: Optional[Literal["web_app"]] = Field(default=None)
-    text: Optional[str] = Field(default=None)
-    web_app: Optional["WebAppInfo"] = Field(default=None)
+    type: Literal["web_app"] = Field(default="web_app")
+    text: str = Field()
+    web_app: "WebAppInfo" = Field()
 
 
 class MenuButtonDefault(BaseModel):
@@ -937,7 +979,7 @@ class MenuButtonDefault(BaseModel):
     Describes that no specific value for the menu button was set.
     """
 
-    type: Optional[Literal["default"]] = Field(default=None)
+    type: Literal["default"] = Field(default="default")
 
 
 class ResponseParameters(BaseModel):
@@ -954,11 +996,12 @@ class InputMediaPhoto(BaseModel):
     Represents a photo to be sent.
     """
 
-    type: Optional[Literal["photo"]] = Field(default=None)
-    media: Optional[str] = Field(default=None)
+    type: Literal["photo"] = Field(default="photo")
+    media: str = Field()
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
     caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
+    has_spoiler: Optional[bool] = Field(default=None)
 
 
 class InputMediaVideo(BaseModel):
@@ -966,8 +1009,8 @@ class InputMediaVideo(BaseModel):
     Represents a video to be sent.
     """
 
-    type: Optional[Literal["video"]] = Field(default=None)
-    media: Optional[str] = Field(default=None)
+    type: Literal["video"] = Field(default="video")
+    media: str = Field()
     thumb: Optional[Union["InputFile", str]] = Field(default=None)
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
@@ -976,6 +1019,7 @@ class InputMediaVideo(BaseModel):
     height: Optional[int] = Field(default=None)
     duration: Optional[int] = Field(default=None)
     supports_streaming: Optional[bool] = Field(default=None)
+    has_spoiler: Optional[bool] = Field(default=None)
 
 
 class InputMediaAnimation(BaseModel):
@@ -984,8 +1028,8 @@ class InputMediaAnimation(BaseModel):
     sent.
     """
 
-    type: Optional[Literal["animation"]] = Field(default=None)
-    media: Optional[str] = Field(default=None)
+    type: Literal["animation"] = Field(default="animation")
+    media: str = Field()
     thumb: Optional[Union["InputFile", str]] = Field(default=None)
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
@@ -993,6 +1037,7 @@ class InputMediaAnimation(BaseModel):
     width: Optional[int] = Field(default=None)
     height: Optional[int] = Field(default=None)
     duration: Optional[int] = Field(default=None)
+    has_spoiler: Optional[bool] = Field(default=None)
 
 
 class InputMediaAudio(BaseModel):
@@ -1000,8 +1045,8 @@ class InputMediaAudio(BaseModel):
     Represents an audio file to be treated as music to be sent.
     """
 
-    type: Optional[Literal["audio"]] = Field(default=None)
-    media: Optional[str] = Field(default=None)
+    type: Literal["audio"] = Field(default="audio")
+    media: str = Field()
     thumb: Optional[Union["InputFile", str]] = Field(default=None)
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
@@ -1016,8 +1061,8 @@ class InputMediaDocument(BaseModel):
     Represents a general file to be sent.
     """
 
-    type: Optional[Literal["document"]] = Field(default=None)
-    media: Optional[str] = Field(default=None)
+    type: Literal["document"] = Field(default="document")
+    media: str = Field()
     thumb: Optional[Union["InputFile", str]] = Field(default=None)
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
@@ -1039,13 +1084,13 @@ class Sticker(BaseModel):
     This object represents a sticker.
     """
 
-    file_id: Optional[str] = Field(default=None)
-    file_unique_id: Optional[str] = Field(default=None)
-    type: Optional[Literal["regular", "mask", "custom_emoji"]] = Field(default=None)
-    width: Optional[int] = Field(default=None)
-    height: Optional[int] = Field(default=None)
-    is_animated: Optional[bool] = Field(default=None)
-    is_video: Optional[bool] = Field(default=None)
+    file_id: str = Field()
+    file_unique_id: str = Field()
+    type: Literal["regular", "mask", "custom_emoji"] = Field()
+    width: int = Field()
+    height: int = Field()
+    is_animated: bool = Field()
+    is_video: bool = Field()
     thumb: Optional["PhotoSize"] = Field(default=None)
     emoji: Optional[str] = Field(default=None)
     set_name: Optional[str] = Field(default=None)
@@ -1060,14 +1105,12 @@ class StickerSet(BaseModel):
     This object represents a sticker set.
     """
 
-    name: Optional[str] = Field(default=None)
-    title: Optional[str] = Field(default=None)
-    sticker_type: Optional[Literal["regular", "mask", "custom_emoji"]] = Field(
-        default=None
-    )
-    is_animated: Optional[bool] = Field(default=None)
-    is_video: Optional[bool] = Field(default=None)
-    stickers: Optional[List["Sticker"]] = Field(default_factory=list)
+    name: str = Field()
+    title: str = Field()
+    sticker_type: Literal["regular", "mask", "custom_emoji"] = Field()
+    is_animated: bool = Field()
+    is_video: bool = Field()
+    stickers: List["Sticker"] = Field()
     thumb: Optional["PhotoSize"] = Field(default=None)
 
 
@@ -1077,10 +1120,10 @@ class MaskPosition(BaseModel):
     default.
     """
 
-    point: Optional[Literal["forehead", "eyes", "mouth", "chin"]] = Field(default=None)
-    x_shift: Optional[float] = Field(default=None)
-    y_shift: Optional[float] = Field(default=None)
-    scale: Optional[float] = Field(default=None)
+    point: Literal["forehead", "eyes", "mouth", "chin"] = Field()
+    x_shift: float = Field()
+    y_shift: float = Field()
+    scale: float = Field()
 
 
 class InlineQuery(BaseModel):
@@ -1089,13 +1132,13 @@ class InlineQuery(BaseModel):
     your bot could return some default or trending results.
     """
 
-    id: Optional[str] = Field(default=None)
-    from_: Optional["User"] = Field(default=None, alias="from")
-    query: Optional[str] = Field(default=None)
-    offset: Optional[str] = Field(default=None)
-    chat_type: Optional[
-        Literal["sender", "private", "group", "supergroup", "channel"]
-    ] = Field(default=None)
+    id: str = Field()
+    from_: "User" = Field(alias="from")
+    query: str = Field()
+    offset: str = Field()
+    chat_type: Literal["sender", "private", "group", "supergroup", "channel"] = Field(
+        default=None
+    )
     location: Optional["Location"] = Field(default=None)
 
 
@@ -1104,10 +1147,10 @@ class InlineQueryResultArticle(BaseModel):
     Represents a link to an article or web page.
     """
 
-    type: Optional[Literal["article"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    title: Optional[str] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
+    type: Literal["article"] = Field(default="article")
+    id: str = Field()
+    title: str = Field()
+    input_message_content: "InputMessageContent" = Field()
     reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
     url: Optional[str] = Field(default=None)
     hide_url: Optional[bool] = Field(default=None)
@@ -1124,10 +1167,10 @@ class InlineQueryResultPhoto(BaseModel):
     with the specified content instead of the photo.
     """
 
-    type: Optional[Literal["photo"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    photo_url: Optional[str] = Field(default=None)
-    thumb_url: Optional[str] = Field(default=None)
+    type: Literal["photo"] = Field(default="photo")
+    id: str = Field()
+    photo_url: str = Field()
+    thumb_url: str = Field()
     photo_width: Optional[int] = Field(default=None)
     photo_height: Optional[int] = Field(default=None)
     title: Optional[str] = Field(default=None)
@@ -1147,15 +1190,15 @@ class InlineQueryResultGif(BaseModel):
     animation.
     """
 
-    type: Optional[Literal["gif"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    gif_url: Optional[str] = Field(default=None)
+    type: Literal["gif"] = Field(default="gif")
+    id: str = Field()
+    gif_url: str = Field()
     gif_width: Optional[int] = Field(default=None)
     gif_height: Optional[int] = Field(default=None)
     gif_duration: Optional[int] = Field(default=None)
-    thumb_url: Optional[str] = Field(default=None)
-    thumb_mime_type: Optional[Literal["image/jpeg", "image/gif", "video/mp4"]] = Field(
-        default=None
+    thumb_url: str = Field()
+    thumb_mime_type: Literal["image/jpeg", "image/gif", "video/mp4"] = Field(
+        default="image/jpeg"
     )
     title: Optional[str] = Field(default=None)
     caption: Optional[str] = Field(default=None)
@@ -1173,15 +1216,15 @@ class InlineQueryResultMpeg4Gif(BaseModel):
     specified content instead of the animation.
     """
 
-    type: Optional[Literal["mpeg4_gif"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    mpeg4_url: Optional[str] = Field(default=None)
+    type: Literal["mpeg4_gif"] = Field(default="mpeg4_gif")
+    id: str = Field()
+    mpeg4_url: str = Field()
     mpeg4_width: Optional[int] = Field(default=None)
     mpeg4_height: Optional[int] = Field(default=None)
     mpeg4_duration: Optional[int] = Field(default=None)
-    thumb_url: Optional[str] = Field(default=None)
-    thumb_mime_type: Optional[Literal["image/jpeg", "image/gif", "video/mp4"]] = Field(
-        default=None
+    thumb_url: str = Field()
+    thumb_mime_type: Literal["image/jpeg", "image/gif", "video/mp4"] = Field(
+        default="image/jpeg"
     )
     title: Optional[str] = Field(default=None)
     caption: Optional[str] = Field(default=None)
@@ -1201,12 +1244,12 @@ class InlineQueryResultVideo(BaseModel):
     input_message_content.
     """
 
-    type: Optional[Literal["video"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    video_url: Optional[str] = Field(default=None)
-    mime_type: Optional[Literal["text/html", "video/mp4"]] = Field(default=None)
-    thumb_url: Optional[str] = Field(default=None)
-    title: Optional[str] = Field(default=None)
+    type: Literal["video"] = Field(default="video")
+    id: str = Field()
+    video_url: str = Field()
+    mime_type: Literal["text/html", "video/mp4"] = Field()
+    thumb_url: str = Field()
+    title: str = Field()
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
     caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
@@ -1225,10 +1268,10 @@ class InlineQueryResultAudio(BaseModel):
     the specified content instead of the audio.
     """
 
-    type: Optional[Literal["audio"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    audio_url: Optional[str] = Field(default=None)
-    title: Optional[str] = Field(default=None)
+    type: Literal["audio"] = Field(default="audio")
+    id: str = Field()
+    audio_url: str = Field()
+    title: str = Field()
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
     caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
@@ -1246,10 +1289,10 @@ class InlineQueryResultVoice(BaseModel):
     the voice message.
     """
 
-    type: Optional[Literal["voice"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    voice_url: Optional[str] = Field(default=None)
-    title: Optional[str] = Field(default=None)
+    type: Literal["voice"] = Field(default="voice")
+    id: str = Field()
+    voice_url: str = Field()
+    title: str = Field()
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
     caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
@@ -1266,16 +1309,14 @@ class InlineQueryResultDocument(BaseModel):
     can be sent using this method.
     """
 
-    type: Optional[Literal["document"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    title: Optional[str] = Field(default=None)
+    type: Literal["document"] = Field(default="document")
+    id: str = Field()
+    title: str = Field()
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
     caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    document_url: Optional[str] = Field(default=None)
-    mime_type: Optional[Literal["application/pdf", "application/zip"]] = Field(
-        default=None
-    )
+    document_url: str = Field()
+    mime_type: Literal["application/pdf", "application/zip"] = Field()
     description: Optional[str] = Field(default=None)
     reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
     input_message_content: Optional["InputMessageContent"] = Field(default=None)
@@ -1291,11 +1332,11 @@ class InlineQueryResultLocation(BaseModel):
     specified content instead of the location.
     """
 
-    type: Optional[Literal["location"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    latitude: Optional[float] = Field(default=None)
-    longitude: Optional[float] = Field(default=None)
-    title: Optional[str] = Field(default=None)
+    type: Literal["location"] = Field(default="location")
+    id: str = Field()
+    latitude: float = Field()
+    longitude: float = Field()
+    title: str = Field()
     horizontal_accuracy: Optional[float] = Field(default=None)
     live_period: Optional[int] = Field(default=None)
     heading: Optional[int] = Field(default=None)
@@ -1314,12 +1355,12 @@ class InlineQueryResultVenue(BaseModel):
     instead of the venue.
     """
 
-    type: Optional[Literal["venue"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    latitude: Optional[float] = Field(default=None)
-    longitude: Optional[float] = Field(default=None)
-    title: Optional[str] = Field(default=None)
-    address: Optional[str] = Field(default=None)
+    type: Literal["venue"] = Field(default="venue")
+    id: str = Field()
+    latitude: float = Field()
+    longitude: float = Field()
+    title: str = Field()
+    address: str = Field()
     foursquare_id: Optional[str] = Field(default=None)
     foursquare_type: Optional[str] = Field(default=None)
     google_place_id: Optional[str] = Field(default=None)
@@ -1338,10 +1379,10 @@ class InlineQueryResultContact(BaseModel):
     the specified content instead of the contact.
     """
 
-    type: Optional[Literal["contact"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    phone_number: Optional[str] = Field(default=None)
-    first_name: Optional[str] = Field(default=None)
+    type: Literal["contact"] = Field(default="contact")
+    id: str = Field()
+    phone_number: str = Field()
+    first_name: str = Field()
     last_name: Optional[str] = Field(default=None)
     vcard: Optional[str] = Field(default=None)
     reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
@@ -1356,9 +1397,9 @@ class InlineQueryResultGame(BaseModel):
     Represents a Game.
     """
 
-    type: Optional[Literal["game"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    game_short_name: Optional[str] = Field(default=None)
+    type: Literal["game"] = Field(default="game")
+    id: str = Field()
+    game_short_name: str = Field()
     reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
 
 
@@ -1370,9 +1411,9 @@ class InlineQueryResultCachedPhoto(BaseModel):
     photo.
     """
 
-    type: Optional[Literal["photo"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    photo_file_id: Optional[str] = Field(default=None)
+    type: Literal["photo"] = Field(default="photo")
+    id: str = Field()
+    photo_file_id: str = Field()
     title: Optional[str] = Field(default=None)
     description: Optional[str] = Field(default=None)
     caption: Optional[str] = Field(default=None)
@@ -1390,9 +1431,9 @@ class InlineQueryResultCachedGif(BaseModel):
     content instead of the animation.
     """
 
-    type: Optional[Literal["gif"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    gif_file_id: Optional[str] = Field(default=None)
+    type: Literal["gif"] = Field(default="gif")
+    id: str = Field()
+    gif_file_id: str = Field()
     title: Optional[str] = Field(default=None)
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
@@ -1409,9 +1450,9 @@ class InlineQueryResultCachedMpeg4Gif(BaseModel):
     send a message with the specified content instead of the animation.
     """
 
-    type: Optional[Literal["mpeg4_gif"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    mpeg4_file_id: Optional[str] = Field(default=None)
+    type: Literal["mpeg4_gif"] = Field(default="mpeg4_gif")
+    id: str = Field()
+    mpeg4_file_id: str = Field()
     title: Optional[str] = Field(default=None)
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
@@ -1427,9 +1468,9 @@ class InlineQueryResultCachedSticker(BaseModel):
     to send a message with the specified content instead of the sticker.
     """
 
-    type: Optional[Literal["sticker"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    sticker_file_id: Optional[str] = Field(default=None)
+    type: Literal["sticker"] = Field(default="sticker")
+    id: str = Field()
+    sticker_file_id: str = Field()
     reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
     input_message_content: Optional["InputMessageContent"] = Field(default=None)
 
@@ -1442,10 +1483,10 @@ class InlineQueryResultCachedDocument(BaseModel):
     file.
     """
 
-    type: Optional[Literal["document"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    title: Optional[str] = Field(default=None)
-    document_file_id: Optional[str] = Field(default=None)
+    type: Literal["document"] = Field(default="document")
+    id: str = Field()
+    title: str = Field()
+    document_file_id: str = Field()
     description: Optional[str] = Field(default=None)
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
@@ -1462,10 +1503,10 @@ class InlineQueryResultCachedVideo(BaseModel):
     the video.
     """
 
-    type: Optional[Literal["video"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    video_file_id: Optional[str] = Field(default=None)
-    title: Optional[str] = Field(default=None)
+    type: Literal["video"] = Field(default="video")
+    id: str = Field()
+    video_file_id: str = Field()
+    title: str = Field()
     description: Optional[str] = Field(default=None)
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
@@ -1482,10 +1523,10 @@ class InlineQueryResultCachedVoice(BaseModel):
     voice message.
     """
 
-    type: Optional[Literal["voice"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    voice_file_id: Optional[str] = Field(default=None)
-    title: Optional[str] = Field(default=None)
+    type: Literal["voice"] = Field(default="voice")
+    id: str = Field()
+    voice_file_id: str = Field()
+    title: str = Field()
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
     caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
@@ -1501,9 +1542,9 @@ class InlineQueryResultCachedAudio(BaseModel):
     audio.
     """
 
-    type: Optional[Literal["audio"]] = Field(default=None)
-    id: Optional[str] = Field(default=None)
-    audio_file_id: Optional[str] = Field(default=None)
+    type: Literal["audio"] = Field(default="audio")
+    id: str = Field()
+    audio_file_id: str = Field()
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
     caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
@@ -1517,7 +1558,7 @@ class InputTextMessageContent(BaseModel):
     query.
     """
 
-    message_text: Optional[str] = Field(default=None)
+    message_text: str = Field()
     parse_mode: Optional[str] = Field(default=None)
     entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
     disable_web_page_preview: Optional[bool] = Field(default=None)
@@ -1529,8 +1570,8 @@ class InputLocationMessageContent(BaseModel):
     query.
     """
 
-    latitude: Optional[float] = Field(default=None)
-    longitude: Optional[float] = Field(default=None)
+    latitude: float = Field()
+    longitude: float = Field()
     horizontal_accuracy: Optional[float] = Field(default=None)
     live_period: Optional[int] = Field(default=None)
     heading: Optional[int] = Field(default=None)
@@ -1543,10 +1584,10 @@ class InputVenueMessageContent(BaseModel):
     query.
     """
 
-    latitude: Optional[float] = Field(default=None)
-    longitude: Optional[float] = Field(default=None)
-    title: Optional[str] = Field(default=None)
-    address: Optional[str] = Field(default=None)
+    latitude: float = Field()
+    longitude: float = Field()
+    title: str = Field()
+    address: str = Field()
     foursquare_id: Optional[str] = Field(default=None)
     foursquare_type: Optional[str] = Field(default=None)
     google_place_id: Optional[str] = Field(default=None)
@@ -1559,8 +1600,8 @@ class InputContactMessageContent(BaseModel):
     query.
     """
 
-    phone_number: Optional[str] = Field(default=None)
-    first_name: Optional[str] = Field(default=None)
+    phone_number: str = Field()
+    first_name: str = Field()
     last_name: Optional[str] = Field(default=None)
     vcard: Optional[str] = Field(default=None)
 
@@ -1571,12 +1612,12 @@ class InputInvoiceMessageContent(BaseModel):
     query.
     """
 
-    title: Optional[str] = Field(default=None)
-    description: Optional[str] = Field(default=None)
-    payload: Optional[str] = Field(default=None)
-    provider_token: Optional[str] = Field(default=None)
-    currency: Optional[str] = Field(default=None)
-    prices: Optional[List["LabeledPrice"]] = Field(default_factory=list)
+    title: str = Field()
+    description: str = Field()
+    payload: str = Field()
+    provider_token: str = Field()
+    currency: str = Field()
+    prices: List["LabeledPrice"] = Field()
     max_tip_amount: Optional[int] = Field(default=None)
     suggested_tip_amounts: Optional[List[int]] = Field(default_factory=list)
     provider_data: Optional[str] = Field(default=None)
@@ -1599,11 +1640,11 @@ class ChosenInlineResult(BaseModel):
     chat partner.
     """
 
-    result_id: Optional[str] = Field(default=None)
-    from_: Optional["User"] = Field(default=None, alias="from")
+    result_id: str = Field()
+    from_: "User" = Field(alias="from")
     location: Optional["Location"] = Field(default=None)
     inline_message_id: Optional[str] = Field(default=None)
-    query: Optional[str] = Field(default=None)
+    query: str = Field()
 
 
 class SentWebAppMessage(BaseModel):
@@ -1619,8 +1660,8 @@ class LabeledPrice(BaseModel):
     This object represents a portion of the price for goods or services.
     """
 
-    label: Optional[str] = Field(default=None)
-    amount: Optional[int] = Field(default=None)
+    label: str = Field()
+    amount: int = Field()
 
 
 class Invoice(BaseModel):
@@ -1628,11 +1669,11 @@ class Invoice(BaseModel):
     This object contains basic information about an invoice.
     """
 
-    title: Optional[str] = Field(default=None)
-    description: Optional[str] = Field(default=None)
-    start_parameter: Optional[str] = Field(default=None)
-    currency: Optional[str] = Field(default=None)
-    total_amount: Optional[int] = Field(default=None)
+    title: str = Field()
+    description: str = Field()
+    start_parameter: str = Field()
+    currency: str = Field()
+    total_amount: int = Field()
 
 
 class ShippingAddress(BaseModel):
@@ -1640,12 +1681,12 @@ class ShippingAddress(BaseModel):
     This object represents a shipping address.
     """
 
-    country_code: Optional[str] = Field(default=None)
-    state: Optional[str] = Field(default=None)
-    city: Optional[str] = Field(default=None)
-    street_line1: Optional[str] = Field(default=None)
-    street_line2: Optional[str] = Field(default=None)
-    post_code: Optional[str] = Field(default=None)
+    country_code: str = Field()
+    state: str = Field()
+    city: str = Field()
+    street_line1: str = Field()
+    street_line2: str = Field()
+    post_code: str = Field()
 
 
 class OrderInfo(BaseModel):
@@ -1664,9 +1705,9 @@ class ShippingOption(BaseModel):
     This object represents one shipping option.
     """
 
-    id: Optional[str] = Field(default=None)
-    title: Optional[str] = Field(default=None)
-    prices: Optional[List["LabeledPrice"]] = Field(default_factory=list)
+    id: str = Field()
+    title: str = Field()
+    prices: List["LabeledPrice"] = Field()
 
 
 class SuccessfulPayment(BaseModel):
@@ -1674,13 +1715,13 @@ class SuccessfulPayment(BaseModel):
     This object contains basic information about a successful payment.
     """
 
-    currency: Optional[str] = Field(default=None)
-    total_amount: Optional[int] = Field(default=None)
-    invoice_payload: Optional[str] = Field(default=None)
+    currency: str = Field()
+    total_amount: int = Field()
+    invoice_payload: str = Field()
     shipping_option_id: Optional[str] = Field(default=None)
     order_info: Optional["OrderInfo"] = Field(default=None)
-    telegram_payment_charge_id: Optional[str] = Field(default=None)
-    provider_payment_charge_id: Optional[str] = Field(default=None)
+    telegram_payment_charge_id: str = Field()
+    provider_payment_charge_id: str = Field()
 
 
 class ShippingQuery(BaseModel):
@@ -1688,10 +1729,10 @@ class ShippingQuery(BaseModel):
     This object contains information about an incoming shipping query.
     """
 
-    id: Optional[str] = Field(default=None)
-    from_: Optional["User"] = Field(default=None, alias="from")
-    invoice_payload: Optional[str] = Field(default=None)
-    shipping_address: Optional["ShippingAddress"] = Field(default=None)
+    id: str = Field()
+    from_: "User" = Field(alias="from")
+    invoice_payload: str = Field()
+    shipping_address: "ShippingAddress" = Field()
 
 
 class PreCheckoutQuery(BaseModel):
@@ -1699,11 +1740,11 @@ class PreCheckoutQuery(BaseModel):
     This object contains information about an incoming pre-checkout query.
     """
 
-    id: Optional[str] = Field(default=None)
-    from_: Optional["User"] = Field(default=None, alias="from")
-    currency: Optional[str] = Field(default=None)
-    total_amount: Optional[int] = Field(default=None)
-    invoice_payload: Optional[str] = Field(default=None)
+    id: str = Field()
+    from_: "User" = Field(alias="from")
+    currency: str = Field()
+    total_amount: int = Field()
+    invoice_payload: str = Field()
     shipping_option_id: Optional[str] = Field(default=None)
     order_info: Optional["OrderInfo"] = Field(default=None)
 
@@ -1713,8 +1754,8 @@ class PassportData(BaseModel):
     Describes Telegram Passport data shared with the bot by the user.
     """
 
-    data: Optional[List["EncryptedPassportElement"]] = Field(default_factory=list)
-    credentials: Optional["EncryptedCredentials"] = Field(default=None)
+    data: List["EncryptedPassportElement"] = Field()
+    credentials: "EncryptedCredentials" = Field()
 
 
 class PassportFile(BaseModel):
@@ -1723,10 +1764,10 @@ class PassportFile(BaseModel):
     Passport files are in JPEG format when decrypted and don't exceed 10MB.
     """
 
-    file_id: Optional[str] = Field(default=None)
-    file_unique_id: Optional[str] = Field(default=None)
-    file_size: Optional[int] = Field(default=None)
-    file_date: Optional[int] = Field(default=None)
+    file_id: str = Field()
+    file_unique_id: str = Field()
+    file_size: int = Field()
+    file_date: int = Field()
 
 
 class EncryptedPassportElement(BaseModel):
@@ -1735,23 +1776,21 @@ class EncryptedPassportElement(BaseModel):
     user.
     """
 
-    type: Optional[
-        Literal[
-            "personal_details",
-            "passport",
-            "driver_license",
-            "identity_card",
-            "internal_passport",
-            "address",
-            "utility_bill",
-            "bank_statement",
-            "rental_agreement",
-            "passport_registration",
-            "temporary_registration",
-            "phone_number",
-            "email",
-        ]
-    ] = Field(default=None)
+    type: Literal[
+        "personal_details",
+        "passport",
+        "driver_license",
+        "identity_card",
+        "internal_passport",
+        "address",
+        "utility_bill",
+        "bank_statement",
+        "rental_agreement",
+        "passport_registration",
+        "temporary_registration",
+        "phone_number",
+        "email",
+    ] = Field()
     data: Optional[str] = Field(default=None)
     phone_number: Optional[str] = Field(default=None)
     email: Optional[str] = Field(default=None)
@@ -1760,7 +1799,7 @@ class EncryptedPassportElement(BaseModel):
     reverse_side: Optional["PassportFile"] = Field(default=None)
     selfie: Optional["PassportFile"] = Field(default=None)
     translation: Optional[List["PassportFile"]] = Field(default_factory=list)
-    hash: Optional[str] = Field(default=None)
+    hash: str = Field()
 
 
 class EncryptedCredentials(BaseModel):
@@ -1770,9 +1809,9 @@ class EncryptedCredentials(BaseModel):
     decryption and authentication processes.
     """
 
-    data: Optional[str] = Field(default=None)
-    hash: Optional[str] = Field(default=None)
-    secret: Optional[str] = Field(default=None)
+    data: str = Field()
+    hash: str = Field()
+    secret: str = Field()
 
 
 class PassportElementErrorDataField(BaseModel):
@@ -1781,20 +1820,18 @@ class PassportElementErrorDataField(BaseModel):
     error is considered resolved when the field's value changes.
     """
 
-    source: Optional[Literal["data"]] = Field(default=None)
-    type: Optional[
-        Literal[
-            "personal_details",
-            "passport",
-            "driver_license",
-            "identity_card",
-            "internal_passport",
-            "address",
-        ]
-    ] = Field(default=None)
-    field_name: Optional[str] = Field(default=None)
-    data_hash: Optional[str] = Field(default=None)
-    message: Optional[str] = Field(default=None)
+    source: Literal["data"] = Field(default="data")
+    type: Literal[
+        "personal_details",
+        "passport",
+        "driver_license",
+        "identity_card",
+        "internal_passport",
+        "address",
+    ] = Field()
+    field_name: str = Field()
+    data_hash: str = Field()
+    message: str = Field()
 
 
 class PassportElementErrorFrontSide(BaseModel):
@@ -1803,12 +1840,12 @@ class PassportElementErrorFrontSide(BaseModel):
     resolved when the file with the front side of the document changes.
     """
 
-    source: Optional[Literal["front_side"]] = Field(default=None)
-    type: Optional[
-        Literal["passport", "driver_license", "identity_card", "internal_passport"]
-    ] = Field(default=None)
-    file_hash: Optional[str] = Field(default=None)
-    message: Optional[str] = Field(default=None)
+    source: Literal["front_side"] = Field(default="front_side")
+    type: Literal[
+        "passport", "driver_license", "identity_card", "internal_passport"
+    ] = Field()
+    file_hash: str = Field()
+    message: str = Field()
 
 
 class PassportElementErrorReverseSide(BaseModel):
@@ -1817,10 +1854,10 @@ class PassportElementErrorReverseSide(BaseModel):
     resolved when the file with reverse side of the document changes.
     """
 
-    source: Optional[Literal["reverse_side"]] = Field(default=None)
-    type: Optional[Literal["driver_license", "identity_card"]] = Field(default=None)
-    file_hash: Optional[str] = Field(default=None)
-    message: Optional[str] = Field(default=None)
+    source: Literal["reverse_side"] = Field(default="reverse_side")
+    type: Literal["driver_license", "identity_card"] = Field()
+    file_hash: str = Field()
+    message: str = Field()
 
 
 class PassportElementErrorSelfie(BaseModel):
@@ -1829,12 +1866,12 @@ class PassportElementErrorSelfie(BaseModel):
     resolved when the file with the selfie changes.
     """
 
-    source: Optional[Literal["selfie"]] = Field(default=None)
-    type: Optional[
-        Literal["passport", "driver_license", "identity_card", "internal_passport"]
-    ] = Field(default=None)
-    file_hash: Optional[str] = Field(default=None)
-    message: Optional[str] = Field(default=None)
+    source: Literal["selfie"] = Field(default="selfie")
+    type: Literal[
+        "passport", "driver_license", "identity_card", "internal_passport"
+    ] = Field()
+    file_hash: str = Field()
+    message: str = Field()
 
 
 class PassportElementErrorFile(BaseModel):
@@ -1843,18 +1880,16 @@ class PassportElementErrorFile(BaseModel):
     file with the document scan changes.
     """
 
-    source: Optional[Literal["file"]] = Field(default=None)
-    type: Optional[
-        Literal[
-            "utility_bill",
-            "bank_statement",
-            "rental_agreement",
-            "passport_registration",
-            "temporary_registration",
-        ]
-    ] = Field(default=None)
-    file_hash: Optional[str] = Field(default=None)
-    message: Optional[str] = Field(default=None)
+    source: Literal["file"] = Field(default="file")
+    type: Literal[
+        "utility_bill",
+        "bank_statement",
+        "rental_agreement",
+        "passport_registration",
+        "temporary_registration",
+    ] = Field()
+    file_hash: str = Field()
+    message: str = Field()
 
 
 class PassportElementErrorFiles(BaseModel):
@@ -1863,18 +1898,16 @@ class PassportElementErrorFiles(BaseModel):
     list of files containing the scans changes.
     """
 
-    source: Optional[Literal["files"]] = Field(default=None)
-    type: Optional[
-        Literal[
-            "utility_bill",
-            "bank_statement",
-            "rental_agreement",
-            "passport_registration",
-            "temporary_registration",
-        ]
-    ] = Field(default=None)
-    file_hashes: Optional[List[str]] = Field(default_factory=list)
-    message: Optional[str] = Field(default=None)
+    source: Literal["files"] = Field(default="files")
+    type: Literal[
+        "utility_bill",
+        "bank_statement",
+        "rental_agreement",
+        "passport_registration",
+        "temporary_registration",
+    ] = Field()
+    file_hashes: List[str] = Field()
+    message: str = Field()
 
 
 class PassportElementErrorTranslationFile(BaseModel):
@@ -1883,22 +1916,20 @@ class PassportElementErrorTranslationFile(BaseModel):
     document. The error is considered resolved when the file changes.
     """
 
-    source: Optional[Literal["translation_file"]] = Field(default=None)
-    type: Optional[
-        Literal[
-            "passport",
-            "driver_license",
-            "identity_card",
-            "internal_passport",
-            "utility_bill",
-            "bank_statement",
-            "rental_agreement",
-            "passport_registration",
-            "temporary_registration",
-        ]
-    ] = Field(default=None)
-    file_hash: Optional[str] = Field(default=None)
-    message: Optional[str] = Field(default=None)
+    source: Literal["translation_file"] = Field(default="translation_file")
+    type: Literal[
+        "passport",
+        "driver_license",
+        "identity_card",
+        "internal_passport",
+        "utility_bill",
+        "bank_statement",
+        "rental_agreement",
+        "passport_registration",
+        "temporary_registration",
+    ] = Field()
+    file_hash: str = Field()
+    message: str = Field()
 
 
 class PassportElementErrorTranslationFiles(BaseModel):
@@ -1907,22 +1938,20 @@ class PassportElementErrorTranslationFiles(BaseModel):
     considered resolved when a file with the document translation change.
     """
 
-    source: Optional[Literal["translation_files"]] = Field(default=None)
-    type: Optional[
-        Literal[
-            "passport",
-            "driver_license",
-            "identity_card",
-            "internal_passport",
-            "utility_bill",
-            "bank_statement",
-            "rental_agreement",
-            "passport_registration",
-            "temporary_registration",
-        ]
-    ] = Field(default=None)
-    file_hashes: Optional[List[str]] = Field(default_factory=list)
-    message: Optional[str] = Field(default=None)
+    source: Literal["translation_files"] = Field(default="translation_files")
+    type: Literal[
+        "passport",
+        "driver_license",
+        "identity_card",
+        "internal_passport",
+        "utility_bill",
+        "bank_statement",
+        "rental_agreement",
+        "passport_registration",
+        "temporary_registration",
+    ] = Field()
+    file_hashes: List[str] = Field()
+    message: str = Field()
 
 
 class PassportElementErrorUnspecified(BaseModel):
@@ -1931,10 +1960,10 @@ class PassportElementErrorUnspecified(BaseModel):
     new data is added.
     """
 
-    source: Optional[Literal["unspecified"]] = Field(default=None)
-    type: Optional[str] = Field(default=None)
-    element_hash: Optional[str] = Field(default=None)
-    message: Optional[str] = Field(default=None)
+    source: Literal["unspecified"] = Field(default="unspecified")
+    type: str = Field()
+    element_hash: str = Field()
+    message: str = Field()
 
 
 class Game(BaseModel):
@@ -1943,9 +1972,9 @@ class Game(BaseModel):
     names will act as unique identifiers.
     """
 
-    title: Optional[str] = Field(default=None)
-    description: Optional[str] = Field(default=None)
-    photo: Optional[List["PhotoSize"]] = Field(default_factory=list)
+    title: str = Field()
+    description: str = Field()
+    photo: List["PhotoSize"] = Field()
     text: Optional[str] = Field(default=None)
     text_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
     animation: Optional["Animation"] = Field(default=None)
@@ -1964,9 +1993,9 @@ class GameHighScore(BaseModel):
     This object represents one row of the high scores table for a game.
     """
 
-    position: Optional[int] = Field(default=None)
-    user: Optional["User"] = Field(default=None)
-    score: Optional[int] = Field(default=None)
+    position: int = Field()
+    user: "User" = Field()
+    score: int = Field()
 
 
 ChatMember = Annotated[
@@ -2104,7 +2133,11 @@ __all__ = (
     "MessageAutoDeleteTimerChanged",
     "ForumTopicCreated",
     "ForumTopicClosed",
+    "ForumTopicEdited",
     "ForumTopicReopened",
+    "GeneralForumTopicHidden",
+    "GeneralForumTopicUnhidden",
+    "WriteAccessAllowed",
     "VideoChatScheduled",
     "VideoChatStarted",
     "VideoChatEnded",

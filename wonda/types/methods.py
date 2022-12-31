@@ -2,7 +2,7 @@ from typing import *
 
 from pydantic import parse_obj_as
 
-from wonda.types.objects import *
+from .objects import *
 
 if TYPE_CHECKING:
     from wonda.api import ABCAPI, API, File as InputFile
@@ -24,9 +24,9 @@ class APIMethods:
 
     async def get_updates(
         self,
+        timeout: Optional[int] = 0,
         offset: Optional[int] = None,
-        limit: Optional[int] = None,
-        timeout: Optional[int] = None,
+        limit: Optional[int] = 100,
         allowed_updates: Optional[List[str]] = None,
         **kwargs
     ) -> List[Update]:
@@ -39,13 +39,13 @@ class APIMethods:
 
     async def set_webhook(
         self,
-        url: Optional[str] = None,
-        certificate: Optional["InputFile"] = None,
-        ip_address: Optional[str] = None,
-        max_connections: Optional[int] = None,
-        allowed_updates: Optional[List[str]] = None,
-        drop_pending_updates: Optional[bool] = None,
+        url: str,
         secret_token: Optional[str] = None,
+        max_connections: Optional[int] = 40,
+        ip_address: Optional[str] = None,
+        drop_pending_updates: Optional[bool] = None,
+        certificate: Optional["InputFile"] = None,
+        allowed_updates: Optional[List[str]] = None,
         **kwargs
     ) -> bool:
         """
@@ -112,16 +112,9 @@ class APIMethods:
 
     async def send_message(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        text: Optional[str] = None,
-        parse_mode: Optional[str] = None,
-        entities: Optional[List["MessageEntity"]] = None,
-        disable_web_page_preview: Optional[bool] = None,
-        disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
+        text: str,
+        chat_id: Union[int, str],
         reply_to_message_id: Optional[int] = None,
-        allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[
             Union[
                 "InlineKeyboardMarkup",
@@ -130,6 +123,13 @@ class APIMethods:
                 "ForceReply",
             ]
         ] = None,
+        protect_content: Optional[bool] = None,
+        parse_mode: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        entities: Optional[List["MessageEntity"]] = None,
+        disable_web_page_preview: Optional[bool] = None,
+        disable_notification: Optional[bool] = None,
+        allow_sending_without_reply: Optional[bool] = None,
         **kwargs
     ) -> Message:
         """
@@ -140,12 +140,12 @@ class APIMethods:
 
     async def forward_message(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        from_chat_id: Optional[Union[int, str]] = None,
-        disable_notification: Optional[bool] = None,
+        message_id: int,
+        from_chat_id: Union[int, str],
+        chat_id: Union[int, str],
         protect_content: Optional[bool] = None,
-        message_id: Optional[int] = None,
+        message_thread_id: Optional[int] = None,
+        disable_notification: Optional[bool] = None,
         **kwargs
     ) -> Message:
         """
@@ -157,17 +157,10 @@ class APIMethods:
 
     async def copy_message(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        from_chat_id: Optional[Union[int, str]] = None,
-        message_id: Optional[int] = None,
-        caption: Optional[str] = None,
-        parse_mode: Optional[str] = None,
-        caption_entities: Optional[List["MessageEntity"]] = None,
-        disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
+        message_id: int,
+        from_chat_id: Union[int, str],
+        chat_id: Union[int, str],
         reply_to_message_id: Optional[int] = None,
-        allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[
             Union[
                 "InlineKeyboardMarkup",
@@ -176,6 +169,13 @@ class APIMethods:
                 "ForceReply",
             ]
         ] = None,
+        protect_content: Optional[bool] = None,
+        parse_mode: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        disable_notification: Optional[bool] = None,
+        caption_entities: Optional[List["MessageEntity"]] = None,
+        caption: Optional[str] = None,
+        allow_sending_without_reply: Optional[bool] = None,
         **kwargs
     ) -> MessageId:
         """
@@ -190,16 +190,9 @@ class APIMethods:
 
     async def send_photo(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        photo: Optional[Union["InputFile", str]] = None,
-        caption: Optional[str] = None,
-        parse_mode: Optional[str] = None,
-        caption_entities: Optional[List["MessageEntity"]] = None,
-        disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
+        photo: Union["InputFile", str],
+        chat_id: Union[int, str],
         reply_to_message_id: Optional[int] = None,
-        allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[
             Union[
                 "InlineKeyboardMarkup",
@@ -208,6 +201,14 @@ class APIMethods:
                 "ForceReply",
             ]
         ] = None,
+        protect_content: Optional[bool] = None,
+        parse_mode: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        has_spoiler: Optional[bool] = None,
+        disable_notification: Optional[bool] = None,
+        caption_entities: Optional[List["MessageEntity"]] = None,
+        caption: Optional[str] = None,
+        allow_sending_without_reply: Optional[bool] = None,
         **kwargs
     ) -> Message:
         """
@@ -218,20 +219,11 @@ class APIMethods:
 
     async def send_audio(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        audio: Optional[Union["InputFile", str]] = None,
-        caption: Optional[str] = None,
-        parse_mode: Optional[str] = None,
-        caption_entities: Optional[List["MessageEntity"]] = None,
-        duration: Optional[int] = None,
-        performer: Optional[str] = None,
+        chat_id: Union[int, str],
+        audio: Union["InputFile", str],
         title: Optional[str] = None,
         thumb: Optional[Union["InputFile", str]] = None,
-        disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
-        allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[
             Union[
                 "InlineKeyboardMarkup",
@@ -240,6 +232,15 @@ class APIMethods:
                 "ForceReply",
             ]
         ] = None,
+        protect_content: Optional[bool] = None,
+        performer: Optional[str] = None,
+        parse_mode: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        duration: Optional[int] = None,
+        disable_notification: Optional[bool] = None,
+        caption_entities: Optional[List["MessageEntity"]] = None,
+        caption: Optional[str] = None,
+        allow_sending_without_reply: Optional[bool] = None,
         **kwargs
     ) -> Message:
         """
@@ -254,18 +255,10 @@ class APIMethods:
 
     async def send_document(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        document: Optional[Union["InputFile", str]] = None,
+        document: Union["InputFile", str],
+        chat_id: Union[int, str],
         thumb: Optional[Union["InputFile", str]] = None,
-        caption: Optional[str] = None,
-        parse_mode: Optional[str] = None,
-        caption_entities: Optional[List["MessageEntity"]] = None,
-        disable_content_type_detection: Optional[bool] = None,
-        disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
-        allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[
             Union[
                 "InlineKeyboardMarkup",
@@ -274,6 +267,14 @@ class APIMethods:
                 "ForceReply",
             ]
         ] = None,
+        protect_content: Optional[bool] = None,
+        parse_mode: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        disable_notification: Optional[bool] = None,
+        disable_content_type_detection: Optional[bool] = None,
+        caption_entities: Optional[List["MessageEntity"]] = None,
+        caption: Optional[str] = None,
+        allow_sending_without_reply: Optional[bool] = None,
         **kwargs
     ) -> Message:
         """
@@ -286,21 +287,12 @@ class APIMethods:
 
     async def send_video(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        video: Optional[Union["InputFile", str]] = None,
-        duration: Optional[int] = None,
+        video: Union["InputFile", str],
+        chat_id: Union[int, str],
         width: Optional[int] = None,
-        height: Optional[int] = None,
         thumb: Optional[Union["InputFile", str]] = None,
-        caption: Optional[str] = None,
-        parse_mode: Optional[str] = None,
-        caption_entities: Optional[List["MessageEntity"]] = None,
         supports_streaming: Optional[bool] = None,
-        disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
-        allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[
             Union[
                 "InlineKeyboardMarkup",
@@ -309,6 +301,16 @@ class APIMethods:
                 "ForceReply",
             ]
         ] = None,
+        protect_content: Optional[bool] = None,
+        parse_mode: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        height: Optional[int] = None,
+        has_spoiler: Optional[bool] = None,
+        duration: Optional[int] = None,
+        disable_notification: Optional[bool] = None,
+        caption_entities: Optional[List["MessageEntity"]] = None,
+        caption: Optional[str] = None,
+        allow_sending_without_reply: Optional[bool] = None,
         **kwargs
     ) -> Message:
         """
@@ -322,20 +324,11 @@ class APIMethods:
 
     async def send_animation(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        animation: Optional[Union["InputFile", str]] = None,
-        duration: Optional[int] = None,
+        chat_id: Union[int, str],
+        animation: Union["InputFile", str],
         width: Optional[int] = None,
-        height: Optional[int] = None,
         thumb: Optional[Union["InputFile", str]] = None,
-        caption: Optional[str] = None,
-        parse_mode: Optional[str] = None,
-        caption_entities: Optional[List["MessageEntity"]] = None,
-        disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
-        allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[
             Union[
                 "InlineKeyboardMarkup",
@@ -344,6 +337,16 @@ class APIMethods:
                 "ForceReply",
             ]
         ] = None,
+        protect_content: Optional[bool] = None,
+        parse_mode: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        height: Optional[int] = None,
+        has_spoiler: Optional[bool] = None,
+        duration: Optional[int] = None,
+        disable_notification: Optional[bool] = None,
+        caption_entities: Optional[List["MessageEntity"]] = None,
+        caption: Optional[str] = None,
+        allow_sending_without_reply: Optional[bool] = None,
         **kwargs
     ) -> Message:
         """
@@ -356,17 +359,9 @@ class APIMethods:
 
     async def send_voice(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        voice: Optional[Union["InputFile", str]] = None,
-        caption: Optional[str] = None,
-        parse_mode: Optional[str] = None,
-        caption_entities: Optional[List["MessageEntity"]] = None,
-        duration: Optional[int] = None,
-        disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
+        voice: Union["InputFile", str],
+        chat_id: Union[int, str],
         reply_to_message_id: Optional[int] = None,
-        allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[
             Union[
                 "InlineKeyboardMarkup",
@@ -375,6 +370,14 @@ class APIMethods:
                 "ForceReply",
             ]
         ] = None,
+        protect_content: Optional[bool] = None,
+        parse_mode: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        duration: Optional[int] = None,
+        disable_notification: Optional[bool] = None,
+        caption_entities: Optional[List["MessageEntity"]] = None,
+        caption: Optional[str] = None,
+        allow_sending_without_reply: Optional[bool] = None,
         **kwargs
     ) -> Message:
         """
@@ -389,16 +392,10 @@ class APIMethods:
 
     async def send_video_note(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        video_note: Optional[Union["InputFile", str]] = None,
-        duration: Optional[int] = None,
-        length: Optional[int] = None,
+        video_note: Union["InputFile", str],
+        chat_id: Union[int, str],
         thumb: Optional[Union["InputFile", str]] = None,
-        disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
-        allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[
             Union[
                 "InlineKeyboardMarkup",
@@ -407,6 +404,12 @@ class APIMethods:
                 "ForceReply",
             ]
         ] = None,
+        protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
+        length: Optional[int] = None,
+        duration: Optional[int] = None,
+        disable_notification: Optional[bool] = None,
+        allow_sending_without_reply: Optional[bool] = None,
         **kwargs
     ) -> Message:
         """
@@ -419,21 +422,19 @@ class APIMethods:
 
     async def send_media_group(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        media: Optional[
-            List[
-                Union[
-                    "InputMediaAudio",
-                    "InputMediaDocument",
-                    "InputMediaPhoto",
-                    "InputMediaVideo",
-                ]
+        media: List[
+            Union[
+                "InputMediaAudio",
+                "InputMediaDocument",
+                "InputMediaPhoto",
+                "InputMediaVideo",
             ]
-        ] = None,
-        disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
+        ],
+        chat_id: Union[int, str],
         reply_to_message_id: Optional[int] = None,
+        protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
+        disable_notification: Optional[bool] = None,
         allow_sending_without_reply: Optional[bool] = None,
         **kwargs
     ) -> List[Message]:
@@ -447,18 +448,10 @@ class APIMethods:
 
     async def send_location(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        latitude: Optional[float] = None,
-        longitude: Optional[float] = None,
-        horizontal_accuracy: Optional[float] = None,
-        live_period: Optional[int] = None,
-        heading: Optional[int] = None,
-        proximity_alert_radius: Optional[int] = None,
-        disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
+        longitude: float,
+        latitude: float,
+        chat_id: Union[int, str],
         reply_to_message_id: Optional[int] = None,
-        allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[
             Union[
                 "InlineKeyboardMarkup",
@@ -467,6 +460,14 @@ class APIMethods:
                 "ForceReply",
             ]
         ] = None,
+        proximity_alert_radius: Optional[int] = None,
+        protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
+        live_period: Optional[int] = None,
+        horizontal_accuracy: Optional[float] = None,
+        heading: Optional[int] = None,
+        disable_notification: Optional[bool] = None,
+        allow_sending_without_reply: Optional[bool] = None,
         **kwargs
     ) -> Message:
         """
@@ -477,15 +478,15 @@ class APIMethods:
 
     async def edit_message_live_location(
         self,
-        chat_id: Optional[Union[int, str]] = None,
+        longitude: float,
+        latitude: float,
+        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        proximity_alert_radius: Optional[int] = None,
         message_id: Optional[int] = None,
         inline_message_id: Optional[str] = None,
-        latitude: Optional[float] = None,
-        longitude: Optional[float] = None,
         horizontal_accuracy: Optional[float] = None,
         heading: Optional[int] = None,
-        proximity_alert_radius: Optional[int] = None,
-        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        chat_id: Optional[Union[int, str]] = None,
         **kwargs
     ) -> Union[Message, bool]:
         """
@@ -501,10 +502,10 @@ class APIMethods:
 
     async def stop_message_live_location(
         self,
-        chat_id: Optional[Union[int, str]] = None,
+        reply_markup: Optional["InlineKeyboardMarkup"] = None,
         message_id: Optional[int] = None,
         inline_message_id: Optional[str] = None,
-        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        chat_id: Optional[Union[int, str]] = None,
         **kwargs
     ) -> Union[Message, bool]:
         """
@@ -519,20 +520,12 @@ class APIMethods:
 
     async def send_venue(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        latitude: Optional[float] = None,
-        longitude: Optional[float] = None,
-        title: Optional[str] = None,
-        address: Optional[str] = None,
-        foursquare_id: Optional[str] = None,
-        foursquare_type: Optional[str] = None,
-        google_place_id: Optional[str] = None,
-        google_place_type: Optional[str] = None,
-        disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
+        title: str,
+        longitude: float,
+        latitude: float,
+        chat_id: Union[int, str],
+        address: str,
         reply_to_message_id: Optional[int] = None,
-        allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[
             Union[
                 "InlineKeyboardMarkup",
@@ -541,6 +534,14 @@ class APIMethods:
                 "ForceReply",
             ]
         ] = None,
+        protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
+        google_place_type: Optional[str] = None,
+        google_place_id: Optional[str] = None,
+        foursquare_type: Optional[str] = None,
+        foursquare_id: Optional[str] = None,
+        disable_notification: Optional[bool] = None,
+        allow_sending_without_reply: Optional[bool] = None,
         **kwargs
     ) -> Message:
         """
@@ -552,16 +553,11 @@ class APIMethods:
 
     async def send_contact(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        phone_number: Optional[str] = None,
-        first_name: Optional[str] = None,
-        last_name: Optional[str] = None,
+        phone_number: str,
+        first_name: str,
+        chat_id: Union[int, str],
         vcard: Optional[str] = None,
-        disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
-        allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[
             Union[
                 "InlineKeyboardMarkup",
@@ -570,6 +566,11 @@ class APIMethods:
                 "ForceReply",
             ]
         ] = None,
+        protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
+        last_name: Optional[str] = None,
+        disable_notification: Optional[bool] = None,
+        allow_sending_without_reply: Optional[bool] = None,
         **kwargs
     ) -> Message:
         """
@@ -580,24 +581,11 @@ class APIMethods:
 
     async def send_poll(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        question: Optional[str] = None,
-        options: Optional[List[str]] = None,
-        is_anonymous: Optional[bool] = None,
+        question: str,
+        options: List[str],
+        chat_id: Union[int, str],
         type: Optional[str] = None,
-        allows_multiple_answers: Optional[bool] = None,
-        correct_option_id: Optional[int] = None,
-        explanation: Optional[str] = None,
-        explanation_parse_mode: Optional[str] = None,
-        explanation_entities: Optional[List["MessageEntity"]] = None,
-        open_period: Optional[int] = None,
-        close_date: Optional[int] = None,
-        is_closed: Optional[bool] = None,
-        disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
-        allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[
             Union[
                 "InlineKeyboardMarkup",
@@ -606,6 +594,19 @@ class APIMethods:
                 "ForceReply",
             ]
         ] = None,
+        protect_content: Optional[bool] = None,
+        open_period: Optional[int] = None,
+        message_thread_id: Optional[int] = None,
+        is_closed: Optional[bool] = None,
+        is_anonymous: Optional[bool] = None,
+        explanation_parse_mode: Optional[str] = None,
+        explanation_entities: Optional[List["MessageEntity"]] = None,
+        explanation: Optional[str] = None,
+        disable_notification: Optional[bool] = None,
+        correct_option_id: Optional[int] = None,
+        close_date: Optional[int] = None,
+        allows_multiple_answers: Optional[bool] = None,
+        allow_sending_without_reply: Optional[bool] = None,
         **kwargs
     ) -> Message:
         """
@@ -616,13 +617,8 @@ class APIMethods:
 
     async def send_dice(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        emoji: Optional[str] = None,
-        disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
+        chat_id: Union[int, str],
         reply_to_message_id: Optional[int] = None,
-        allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[
             Union[
                 "InlineKeyboardMarkup",
@@ -631,6 +627,11 @@ class APIMethods:
                 "ForceReply",
             ]
         ] = None,
+        protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
+        emoji: Optional[str] = "🎲",
+        disable_notification: Optional[bool] = None,
+        allow_sending_without_reply: Optional[bool] = None,
         **kwargs
     ) -> Message:
         """
@@ -642,8 +643,9 @@ class APIMethods:
 
     async def send_chat_action(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        action: Optional[str] = None,
+        chat_id: Union[int, str],
+        action: str,
+        message_thread_id: Optional[int] = None,
         **kwargs
     ) -> bool:
         """
@@ -661,9 +663,9 @@ class APIMethods:
 
     async def get_user_profile_photos(
         self,
-        user_id: Optional[int] = None,
+        user_id: int,
         offset: Optional[int] = None,
-        limit: Optional[int] = None,
+        limit: Optional[int] = 100,
         **kwargs
     ) -> UserProfilePhotos:
         """
@@ -675,7 +677,7 @@ class APIMethods:
         )
         return UserProfilePhotos(**response)
 
-    async def get_file(self, file_id: Optional[str] = None, **kwargs) -> File:
+    async def get_file(self, file_id: str, **kwargs) -> File:
         """
         Use this method to get basic information about a file and prepare it for
         downloading. For the moment, bots can download files of up to 20MB in size. On
@@ -690,8 +692,8 @@ class APIMethods:
 
     async def ban_chat_member(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        user_id: Optional[int] = None,
+        user_id: int,
+        chat_id: Union[int, str],
         until_date: Optional[int] = None,
         revoke_messages: Optional[bool] = None,
         **kwargs
@@ -708,8 +710,8 @@ class APIMethods:
 
     async def unban_chat_member(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        user_id: Optional[int] = None,
+        user_id: int,
+        chat_id: Union[int, str],
         only_if_banned: Optional[bool] = None,
         **kwargs
     ) -> bool:
@@ -727,9 +729,9 @@ class APIMethods:
 
     async def restrict_chat_member(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        user_id: Optional[int] = None,
-        permissions: Optional["ChatPermissions"] = None,
+        user_id: int,
+        permissions: "ChatPermissions",
+        chat_id: Union[int, str],
         until_date: Optional[int] = None,
         **kwargs
     ) -> bool:
@@ -746,20 +748,20 @@ class APIMethods:
 
     async def promote_chat_member(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        user_id: Optional[int] = None,
+        user_id: int,
+        chat_id: Union[int, str],
         is_anonymous: Optional[bool] = None,
-        can_manage_chat: Optional[bool] = None,
-        can_post_messages: Optional[bool] = None,
-        can_edit_messages: Optional[bool] = None,
-        can_delete_messages: Optional[bool] = None,
-        can_manage_video_chats: Optional[bool] = None,
         can_restrict_members: Optional[bool] = None,
         can_promote_members: Optional[bool] = None,
-        can_change_info: Optional[bool] = None,
-        can_invite_users: Optional[bool] = None,
+        can_post_messages: Optional[bool] = None,
         can_pin_messages: Optional[bool] = None,
+        can_manage_video_chats: Optional[bool] = None,
         can_manage_topics: Optional[bool] = None,
+        can_manage_chat: Optional[bool] = None,
+        can_invite_users: Optional[bool] = None,
+        can_edit_messages: Optional[bool] = None,
+        can_delete_messages: Optional[bool] = None,
+        can_change_info: Optional[bool] = None,
         **kwargs
     ) -> bool:
         """
@@ -774,11 +776,7 @@ class APIMethods:
         return response
 
     async def set_chat_administrator_custom_title(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        user_id: Optional[int] = None,
-        custom_title: Optional[str] = None,
-        **kwargs
+        self, user_id: int, custom_title: str, chat_id: Union[int, str], **kwargs
     ) -> bool:
         """
         Use this method to set a custom title for an administrator in a supergroup promoted
@@ -790,10 +788,7 @@ class APIMethods:
         return response
 
     async def ban_chat_sender_chat(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        sender_chat_id: Optional[int] = None,
-        **kwargs
+        self, sender_chat_id: int, chat_id: Union[int, str], **kwargs
     ) -> bool:
         """
         Use this method to ban a channel chat in a supergroup or a channel. Until the chat
@@ -808,10 +803,7 @@ class APIMethods:
         return response
 
     async def unban_chat_sender_chat(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        sender_chat_id: Optional[int] = None,
-        **kwargs
+        self, sender_chat_id: int, chat_id: Union[int, str], **kwargs
     ) -> bool:
         """
         Use this method to unban a previously banned channel chat in a supergroup or
@@ -824,10 +816,7 @@ class APIMethods:
         return response
 
     async def set_chat_permissions(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        permissions: Optional["ChatPermissions"] = None,
-        **kwargs
+        self, permissions: "ChatPermissions", chat_id: Union[int, str], **kwargs
     ) -> bool:
         """
         Use this method to set default chat permissions for all members. The bot must be an
@@ -839,9 +828,7 @@ class APIMethods:
         )
         return response
 
-    async def export_chat_invite_link(
-        self, chat_id: Optional[Union[int, str]] = None, **kwargs
-    ) -> str:
+    async def export_chat_invite_link(self, chat_id: Union[int, str], **kwargs) -> str:
         """
         Use this method to generate a new primary invite link for a chat; any previously
         generated primary link is revoked. The bot must be an administrator in the chat for
@@ -855,10 +842,10 @@ class APIMethods:
 
     async def create_chat_invite_link(
         self,
-        chat_id: Optional[Union[int, str]] = None,
+        chat_id: Union[int, str],
         name: Optional[str] = None,
-        expire_date: Optional[int] = None,
         member_limit: Optional[int] = None,
+        expire_date: Optional[int] = None,
         creates_join_request: Optional[bool] = None,
         **kwargs
     ) -> ChatInviteLink:
@@ -875,11 +862,11 @@ class APIMethods:
 
     async def edit_chat_invite_link(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        invite_link: Optional[str] = None,
+        invite_link: str,
+        chat_id: Union[int, str],
         name: Optional[str] = None,
-        expire_date: Optional[int] = None,
         member_limit: Optional[int] = None,
+        expire_date: Optional[int] = None,
         creates_join_request: Optional[bool] = None,
         **kwargs
     ) -> ChatInviteLink:
@@ -894,10 +881,7 @@ class APIMethods:
         return ChatInviteLink(**response)
 
     async def revoke_chat_invite_link(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        invite_link: Optional[str] = None,
-        **kwargs
+        self, invite_link: str, chat_id: Union[int, str], **kwargs
     ) -> ChatInviteLink:
         """
         Use this method to revoke an invite link created by the bot. If the primary link is
@@ -911,10 +895,7 @@ class APIMethods:
         return ChatInviteLink(**response)
 
     async def approve_chat_join_request(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        user_id: Optional[int] = None,
-        **kwargs
+        self, user_id: int, chat_id: Union[int, str], **kwargs
     ) -> bool:
         """
         Use this method to approve a chat join request. The bot must be an administrator in
@@ -927,10 +908,7 @@ class APIMethods:
         return response
 
     async def decline_chat_join_request(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        user_id: Optional[int] = None,
-        **kwargs
+        self, user_id: int, chat_id: Union[int, str], **kwargs
     ) -> bool:
         """
         Use this method to decline a chat join request. The bot must be an administrator in
@@ -943,10 +921,7 @@ class APIMethods:
         return response
 
     async def set_chat_photo(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        photo: Optional["InputFile"] = None,
-        **kwargs
+        self, photo: "InputFile", chat_id: Union[int, str], **kwargs
     ) -> bool:
         """
         Use this method to set a new profile photo for the chat. Photos can't be changed for
@@ -956,9 +931,7 @@ class APIMethods:
         response = await self.api.request("setChatPhoto", self.get_params(locals()))
         return response
 
-    async def delete_chat_photo(
-        self, chat_id: Optional[Union[int, str]] = None, **kwargs
-    ) -> bool:
+    async def delete_chat_photo(self, chat_id: Union[int, str], **kwargs) -> bool:
         """
         Use this method to delete a chat photo. Photos can't be changed for private chats.
         The bot must be an administrator in the chat for this to work and must have the
@@ -968,10 +941,7 @@ class APIMethods:
         return response
 
     async def set_chat_title(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        title: Optional[str] = None,
-        **kwargs
+        self, title: str, chat_id: Union[int, str], **kwargs
     ) -> bool:
         """
         Use this method to change the title of a chat. Titles can't be changed for private
@@ -982,10 +952,7 @@ class APIMethods:
         return response
 
     async def set_chat_description(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        description: Optional[str] = None,
-        **kwargs
+        self, chat_id: Union[int, str], description: Optional[str] = None, **kwargs
     ) -> bool:
         """
         Use this method to change the description of a group, a supergroup or a channel. The
@@ -999,8 +966,8 @@ class APIMethods:
 
     async def pin_chat_message(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_id: Optional[int] = None,
+        message_id: int,
+        chat_id: Union[int, str],
         disable_notification: Optional[bool] = None,
         **kwargs
     ) -> bool:
@@ -1014,10 +981,7 @@ class APIMethods:
         return response
 
     async def unpin_chat_message(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_id: Optional[int] = None,
-        **kwargs
+        self, chat_id: Union[int, str], message_id: Optional[int] = None, **kwargs
     ) -> bool:
         """
         Use this method to remove a message from the list of pinned messages in a chat. If
@@ -1029,9 +993,7 @@ class APIMethods:
         response = await self.api.request("unpinChatMessage", self.get_params(locals()))
         return response
 
-    async def unpin_all_chat_messages(
-        self, chat_id: Optional[Union[int, str]] = None, **kwargs
-    ) -> bool:
+    async def unpin_all_chat_messages(self, chat_id: Union[int, str], **kwargs) -> bool:
         """
         Use this method to clear the list of pinned messages in a chat. If the chat is not a
         private chat, the bot must be an administrator in the chat for this to work and must
@@ -1043,9 +1005,7 @@ class APIMethods:
         )
         return response
 
-    async def leave_chat(
-        self, chat_id: Optional[Union[int, str]] = None, **kwargs
-    ) -> bool:
+    async def leave_chat(self, chat_id: Union[int, str], **kwargs) -> bool:
         """
         Use this method for your bot to leave a group, supergroup or channel. Returns True
         on success.
@@ -1053,9 +1013,7 @@ class APIMethods:
         response = await self.api.request("leaveChat", self.get_params(locals()))
         return response
 
-    async def get_chat(
-        self, chat_id: Optional[Union[int, str]] = None, **kwargs
-    ) -> Chat:
+    async def get_chat(self, chat_id: Union[int, str], **kwargs) -> Chat:
         """
         Use this method to get up to date information about the chat (current name of the
         user for one-on-one conversations, current username of a user, group or channel,
@@ -1065,7 +1023,7 @@ class APIMethods:
         return Chat(**response)
 
     async def get_chat_administrators(
-        self, chat_id: Optional[Union[int, str]] = None, **kwargs
+        self, chat_id: Union[int, str], **kwargs
     ) -> List[ChatMember]:
         """
         Use this method to get a list of administrators in a chat, which aren't bots.
@@ -1076,9 +1034,7 @@ class APIMethods:
         )
         return parse_obj_as(List[ChatMember], response)
 
-    async def get_chat_member_count(
-        self, chat_id: Optional[Union[int, str]] = None, **kwargs
-    ) -> int:
+    async def get_chat_member_count(self, chat_id: Union[int, str], **kwargs) -> int:
         """
         Use this method to get the number of members in a chat. Returns Int on success.
         """
@@ -1088,23 +1044,18 @@ class APIMethods:
         return response
 
     async def get_chat_member(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        user_id: Optional[int] = None,
-        **kwargs
+        self, user_id: int, chat_id: Union[int, str], **kwargs
     ) -> ChatMember:
         """
-        Use this method to get information about a member of a chat. Returns a ChatMember
-        object on success.
+        Use this method to get information about a member of a chat. The method is
+        guaranteed to work only if the bot is an administrator in the chat. Returns a
+        ChatMember object on success.
         """
         response = await self.api.request("getChatMember", self.get_params(locals()))
         return parse_obj_as(ChatMember, response)
 
     async def set_chat_sticker_set(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        sticker_set_name: Optional[str] = None,
-        **kwargs
+        self, sticker_set_name: str, chat_id: Union[int, str], **kwargs
     ) -> bool:
         """
         Use this method to set a new group sticker set for a supergroup. The bot must be an
@@ -1117,9 +1068,7 @@ class APIMethods:
         )
         return response
 
-    async def delete_chat_sticker_set(
-        self, chat_id: Optional[Union[int, str]] = None, **kwargs
-    ) -> bool:
+    async def delete_chat_sticker_set(self, chat_id: Union[int, str], **kwargs) -> bool:
         """
         Use this method to delete a group sticker set from a supergroup. The bot must be an
         administrator in the chat for this to work and must have the appropriate
@@ -1143,10 +1092,10 @@ class APIMethods:
 
     async def create_forum_topic(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        name: Optional[str] = None,
-        icon_color: Optional[int] = None,
+        name: str,
+        chat_id: Union[int, str],
         icon_custom_emoji_id: Optional[str] = None,
+        icon_color: Optional[int] = None,
         **kwargs
     ) -> ForumTopic:
         """
@@ -1160,8 +1109,8 @@ class APIMethods:
 
     async def edit_forum_topic(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
+        message_thread_id: int,
+        chat_id: Union[int, str],
         name: Optional[str] = None,
         icon_custom_emoji_id: Optional[str] = None,
         **kwargs
@@ -1176,10 +1125,7 @@ class APIMethods:
         return response
 
     async def close_forum_topic(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        **kwargs
+        self, message_thread_id: int, chat_id: Union[int, str], **kwargs
     ) -> bool:
         """
         Use this method to close an open topic in a forum supergroup chat. The bot must be
@@ -1191,10 +1137,7 @@ class APIMethods:
         return response
 
     async def reopen_forum_topic(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        **kwargs
+        self, message_thread_id: int, chat_id: Union[int, str], **kwargs
     ) -> bool:
         """
         Use this method to reopen a closed topic in a forum supergroup chat. The bot must be
@@ -1206,10 +1149,7 @@ class APIMethods:
         return response
 
     async def delete_forum_topic(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        **kwargs
+        self, message_thread_id: int, chat_id: Union[int, str], **kwargs
     ) -> bool:
         """
         Use this method to delete a forum topic along with all its messages in a forum
@@ -1220,10 +1160,7 @@ class APIMethods:
         return response
 
     async def unpin_all_forum_topic_messages(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        **kwargs
+        self, message_thread_id: int, chat_id: Union[int, str], **kwargs
     ) -> bool:
         """
         Use this method to clear the list of pinned messages in a forum topic. The bot must
@@ -1235,13 +1172,80 @@ class APIMethods:
         )
         return response
 
+    async def edit_general_forum_topic(
+        self, name: str, chat_id: Union[int, str], **kwargs
+    ) -> bool:
+        """
+        Use this method to edit the name of the 'General' topic in a forum supergroup chat.
+        The bot must be an administrator in the chat for this to work and must have
+        can_manage_topics administrator rights. Returns True on success.
+        """
+        response = await self.api.request(
+            "editGeneralForumTopic", self.get_params(locals())
+        )
+        return response
+
+    async def close_general_forum_topic(
+        self, chat_id: Union[int, str], **kwargs
+    ) -> bool:
+        """
+        Use this method to close an open 'General' topic in a forum supergroup chat. The bot
+        must be an administrator in the chat for this to work and must have the
+        can_manage_topics administrator rights. Returns True on success.
+        """
+        response = await self.api.request(
+            "closeGeneralForumTopic", self.get_params(locals())
+        )
+        return response
+
+    async def reopen_general_forum_topic(
+        self, chat_id: Union[int, str], **kwargs
+    ) -> bool:
+        """
+        Use this method to reopen a closed 'General' topic in a forum supergroup chat. The
+        bot must be an administrator in the chat for this to work and must have the
+        can_manage_topics administrator rights. The topic will be automatically unhidden if
+        it was hidden. Returns True on success.
+        """
+        response = await self.api.request(
+            "reopenGeneralForumTopic", self.get_params(locals())
+        )
+        return response
+
+    async def hide_general_forum_topic(
+        self, chat_id: Union[int, str], **kwargs
+    ) -> bool:
+        """
+        Use this method to hide the 'General' topic in a forum supergroup chat. The bot must
+        be an administrator in the chat for this to work and must have the can_manage_topics
+        administrator rights. The topic will be automatically closed if it was open. Returns
+        True on success.
+        """
+        response = await self.api.request(
+            "hideGeneralForumTopic", self.get_params(locals())
+        )
+        return response
+
+    async def unhide_general_forum_topic(
+        self, chat_id: Union[int, str], **kwargs
+    ) -> bool:
+        """
+        Use this method to unhide the 'General' topic in a forum supergroup chat. The bot
+        must be an administrator in the chat for this to work and must have the
+        can_manage_topics administrator rights. Returns True on success.
+        """
+        response = await self.api.request(
+            "unhideGeneralForumTopic", self.get_params(locals())
+        )
+        return response
+
     async def answer_callback_query(
         self,
-        callback_query_id: Optional[str] = None,
-        text: Optional[str] = None,
-        show_alert: Optional[bool] = None,
+        callback_query_id: str,
         url: Optional[str] = None,
-        cache_time: Optional[int] = None,
+        text: Optional[str] = None,
+        show_alert: Optional[bool] = False,
+        cache_time: Optional[int] = 0,
         **kwargs
     ) -> bool:
         """
@@ -1259,7 +1263,7 @@ class APIMethods:
 
     async def set_my_commands(
         self,
-        commands: Optional[List["BotCommand"]] = None,
+        commands: List["BotCommand"],
         scope: Optional["BotCommandScope"] = None,
         language_code: Optional[str] = None,
         **kwargs
@@ -1301,8 +1305,8 @@ class APIMethods:
 
     async def set_chat_menu_button(
         self,
-        chat_id: Optional[int] = None,
         menu_button: Optional["MenuButton"] = None,
+        chat_id: Optional[int] = None,
         **kwargs
     ) -> bool:
         """
@@ -1357,14 +1361,14 @@ class APIMethods:
 
     async def edit_message_text(
         self,
-        chat_id: Optional[Union[int, str]] = None,
+        text: str,
+        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        parse_mode: Optional[str] = None,
         message_id: Optional[int] = None,
         inline_message_id: Optional[str] = None,
-        text: Optional[str] = None,
-        parse_mode: Optional[str] = None,
         entities: Optional[List["MessageEntity"]] = None,
         disable_web_page_preview: Optional[bool] = None,
-        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        chat_id: Optional[Union[int, str]] = None,
         **kwargs
     ) -> Union[Message, bool]:
         """
@@ -1376,13 +1380,13 @@ class APIMethods:
 
     async def edit_message_caption(
         self,
-        chat_id: Optional[Union[int, str]] = None,
+        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        parse_mode: Optional[str] = None,
         message_id: Optional[int] = None,
         inline_message_id: Optional[str] = None,
-        caption: Optional[str] = None,
-        parse_mode: Optional[str] = None,
+        chat_id: Optional[Union[int, str]] = None,
         caption_entities: Optional[List["MessageEntity"]] = None,
-        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        caption: Optional[str] = None,
         **kwargs
     ) -> Union[Message, bool]:
         """
@@ -1396,11 +1400,11 @@ class APIMethods:
 
     async def edit_message_media(
         self,
-        chat_id: Optional[Union[int, str]] = None,
+        media: "InputMedia",
+        reply_markup: Optional["InlineKeyboardMarkup"] = None,
         message_id: Optional[int] = None,
         inline_message_id: Optional[str] = None,
-        media: Optional["InputMedia"] = None,
-        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        chat_id: Optional[Union[int, str]] = None,
         **kwargs
     ) -> Union[Message, bool]:
         """
@@ -1416,10 +1420,10 @@ class APIMethods:
 
     async def edit_message_reply_markup(
         self,
-        chat_id: Optional[Union[int, str]] = None,
+        reply_markup: Optional["InlineKeyboardMarkup"] = None,
         message_id: Optional[int] = None,
         inline_message_id: Optional[str] = None,
-        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        chat_id: Optional[Union[int, str]] = None,
         **kwargs
     ) -> Union[Message, bool]:
         """
@@ -1434,8 +1438,8 @@ class APIMethods:
 
     async def stop_poll(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_id: Optional[int] = None,
+        message_id: int,
+        chat_id: Union[int, str],
         reply_markup: Optional["InlineKeyboardMarkup"] = None,
         **kwargs
     ) -> Poll:
@@ -1447,10 +1451,7 @@ class APIMethods:
         return Poll(**response)
 
     async def delete_message(
-        self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_id: Optional[int] = None,
-        **kwargs
+        self, message_id: int, chat_id: Union[int, str], **kwargs
     ) -> bool:
         """
         Use this method to delete a message, including service messages, with the following
@@ -1469,13 +1470,9 @@ class APIMethods:
 
     async def send_sticker(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        sticker: Optional[Union["InputFile", str]] = None,
-        disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
+        sticker: Union["InputFile", str],
+        chat_id: Union[int, str],
         reply_to_message_id: Optional[int] = None,
-        allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[
             Union[
                 "InlineKeyboardMarkup",
@@ -1484,6 +1481,10 @@ class APIMethods:
                 "ForceReply",
             ]
         ] = None,
+        protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
+        disable_notification: Optional[bool] = None,
+        allow_sending_without_reply: Optional[bool] = None,
         **kwargs
     ) -> Message:
         """
@@ -1493,7 +1494,7 @@ class APIMethods:
         response = await self.api.request("sendSticker", self.get_params(locals()))
         return Message(**response)
 
-    async def get_sticker_set(self, name: Optional[str] = None, **kwargs) -> StickerSet:
+    async def get_sticker_set(self, name: str, **kwargs) -> StickerSet:
         """
         Use this method to get a sticker set. On success, a StickerSet object is returned.
         """
@@ -1501,7 +1502,7 @@ class APIMethods:
         return StickerSet(**response)
 
     async def get_custom_emoji_stickers(
-        self, custom_emoji_ids: Optional[List[str]] = None, **kwargs
+        self, custom_emoji_ids: List[str], **kwargs
     ) -> List[Sticker]:
         """
         Use this method to get information about custom emoji stickers by their identifiers.
@@ -1513,10 +1514,7 @@ class APIMethods:
         return parse_obj_as(List[Sticker], response)
 
     async def upload_sticker_file(
-        self,
-        user_id: Optional[int] = None,
-        png_sticker: Optional["InputFile"] = None,
-        **kwargs
+        self, user_id: int, png_sticker: "InputFile", **kwargs
     ) -> File:
         """
         Use this method to upload a .PNG file with a sticker for later use in
@@ -1530,14 +1528,14 @@ class APIMethods:
 
     async def create_new_sticker_set(
         self,
-        user_id: Optional[int] = None,
-        name: Optional[str] = None,
-        title: Optional[str] = None,
-        png_sticker: Optional[Union["InputFile", str]] = None,
-        tgs_sticker: Optional["InputFile"] = None,
+        user_id: int,
+        title: str,
+        name: str,
+        emojis: str,
         webm_sticker: Optional["InputFile"] = None,
+        tgs_sticker: Optional["InputFile"] = None,
         sticker_type: Optional[str] = None,
-        emojis: Optional[str] = None,
+        png_sticker: Optional[Union["InputFile", str]] = None,
         mask_position: Optional["MaskPosition"] = None,
         **kwargs
     ) -> bool:
@@ -1553,12 +1551,12 @@ class APIMethods:
 
     async def add_sticker_to_set(
         self,
-        user_id: Optional[int] = None,
-        name: Optional[str] = None,
-        png_sticker: Optional[Union["InputFile", str]] = None,
-        tgs_sticker: Optional["InputFile"] = None,
+        user_id: int,
+        name: str,
+        emojis: str,
         webm_sticker: Optional["InputFile"] = None,
-        emojis: Optional[str] = None,
+        tgs_sticker: Optional["InputFile"] = None,
+        png_sticker: Optional[Union["InputFile", str]] = None,
         mask_position: Optional["MaskPosition"] = None,
         **kwargs
     ) -> bool:
@@ -1573,7 +1571,7 @@ class APIMethods:
         return response
 
     async def set_sticker_position_in_set(
-        self, sticker: Optional[str] = None, position: Optional[int] = None, **kwargs
+        self, sticker: str, position: int, **kwargs
     ) -> bool:
         """
         Use this method to move a sticker in a set created by the bot to a specific
@@ -1584,9 +1582,7 @@ class APIMethods:
         )
         return response
 
-    async def delete_sticker_from_set(
-        self, sticker: Optional[str] = None, **kwargs
-    ) -> bool:
+    async def delete_sticker_from_set(self, sticker: str, **kwargs) -> bool:
         """
         Use this method to delete a sticker from a set created by the bot. Returns True on
         success.
@@ -1598,8 +1594,8 @@ class APIMethods:
 
     async def set_sticker_set_thumb(
         self,
-        name: Optional[str] = None,
-        user_id: Optional[int] = None,
+        user_id: int,
+        name: str,
         thumb: Optional[Union["InputFile", str]] = None,
         **kwargs
     ) -> bool:
@@ -1615,13 +1611,13 @@ class APIMethods:
 
     async def answer_inline_query(
         self,
-        inline_query_id: Optional[str] = None,
-        results: Optional[List["InlineQueryResult"]] = None,
-        cache_time: Optional[int] = None,
-        is_personal: Optional[bool] = None,
-        next_offset: Optional[str] = None,
+        results: List["InlineQueryResult"],
+        inline_query_id: str,
         switch_pm_text: Optional[str] = None,
         switch_pm_parameter: Optional[str] = None,
+        next_offset: Optional[str] = None,
+        is_personal: Optional[bool] = None,
+        cache_time: Optional[int] = 300,
         **kwargs
     ) -> bool:
         """
@@ -1634,10 +1630,7 @@ class APIMethods:
         return response
 
     async def answer_web_app_query(
-        self,
-        web_app_query_id: Optional[str] = None,
-        result: Optional["InlineQueryResult"] = None,
-        **kwargs
+        self, web_app_query_id: str, result: "InlineQueryResult", **kwargs
     ) -> SentWebAppMessage:
         """
         Use this method to set the result of an interaction with a Web App and send a
@@ -1651,34 +1644,34 @@ class APIMethods:
 
     async def send_invoice(
         self,
-        chat_id: Optional[Union[int, str]] = None,
-        message_thread_id: Optional[int] = None,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        payload: Optional[str] = None,
-        provider_token: Optional[str] = None,
-        currency: Optional[str] = None,
-        prices: Optional[List["LabeledPrice"]] = None,
-        max_tip_amount: Optional[int] = None,
+        title: str,
+        provider_token: str,
+        prices: List["LabeledPrice"],
+        payload: str,
+        description: str,
+        currency: str,
+        chat_id: Union[int, str],
         suggested_tip_amounts: Optional[List[int]] = None,
         start_parameter: Optional[str] = None,
-        provider_data: Optional[str] = None,
-        photo_url: Optional[str] = None,
-        photo_size: Optional[int] = None,
-        photo_width: Optional[int] = None,
-        photo_height: Optional[int] = None,
-        need_name: Optional[bool] = None,
-        need_phone_number: Optional[bool] = None,
-        need_email: Optional[bool] = None,
-        need_shipping_address: Optional[bool] = None,
         send_phone_number_to_provider: Optional[bool] = None,
         send_email_to_provider: Optional[bool] = None,
+        reply_to_message_id: Optional[int] = None,
+        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        provider_data: Optional[str] = None,
+        protect_content: Optional[bool] = None,
+        photo_width: Optional[int] = None,
+        photo_url: Optional[str] = None,
+        photo_size: Optional[int] = None,
+        photo_height: Optional[int] = None,
+        need_shipping_address: Optional[bool] = None,
+        need_phone_number: Optional[bool] = None,
+        need_name: Optional[bool] = None,
+        need_email: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
+        max_tip_amount: Optional[int] = 0,
         is_flexible: Optional[bool] = None,
         disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
-        reply_to_message_id: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
-        reply_markup: Optional["InlineKeyboardMarkup"] = None,
         **kwargs
     ) -> Message:
         """
@@ -1689,25 +1682,25 @@ class APIMethods:
 
     async def create_invoice_link(
         self,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        payload: Optional[str] = None,
-        provider_token: Optional[str] = None,
-        currency: Optional[str] = None,
-        prices: Optional[List["LabeledPrice"]] = None,
-        max_tip_amount: Optional[int] = None,
+        title: str,
+        provider_token: str,
+        prices: List["LabeledPrice"],
+        payload: str,
+        description: str,
+        currency: str,
         suggested_tip_amounts: Optional[List[int]] = None,
-        provider_data: Optional[str] = None,
-        photo_url: Optional[str] = None,
-        photo_size: Optional[int] = None,
-        photo_width: Optional[int] = None,
-        photo_height: Optional[int] = None,
-        need_name: Optional[bool] = None,
-        need_phone_number: Optional[bool] = None,
-        need_email: Optional[bool] = None,
-        need_shipping_address: Optional[bool] = None,
         send_phone_number_to_provider: Optional[bool] = None,
         send_email_to_provider: Optional[bool] = None,
+        provider_data: Optional[str] = None,
+        photo_width: Optional[int] = None,
+        photo_url: Optional[str] = None,
+        photo_size: Optional[int] = None,
+        photo_height: Optional[int] = None,
+        need_shipping_address: Optional[bool] = None,
+        need_phone_number: Optional[bool] = None,
+        need_name: Optional[bool] = None,
+        need_email: Optional[bool] = None,
+        max_tip_amount: Optional[int] = 0,
         is_flexible: Optional[bool] = None,
         **kwargs
     ) -> str:
@@ -1722,8 +1715,8 @@ class APIMethods:
 
     async def answer_shipping_query(
         self,
-        shipping_query_id: Optional[str] = None,
-        ok: Optional[bool] = None,
+        shipping_query_id: str,
+        ok: bool,
         shipping_options: Optional[List["ShippingOption"]] = None,
         error_message: Optional[str] = None,
         **kwargs
@@ -1740,8 +1733,8 @@ class APIMethods:
 
     async def answer_pre_checkout_query(
         self,
-        pre_checkout_query_id: Optional[str] = None,
-        ok: Optional[bool] = None,
+        pre_checkout_query_id: str,
+        ok: bool,
         error_message: Optional[str] = None,
         **kwargs
     ) -> bool:
@@ -1758,10 +1751,7 @@ class APIMethods:
         return response
 
     async def set_passport_data_errors(
-        self,
-        user_id: Optional[int] = None,
-        errors: Optional[List["PassportElementError"]] = None,
-        **kwargs
+        self, user_id: int, errors: List["PassportElementError"], **kwargs
     ) -> bool:
         """
         Informs a user that some of the Telegram Passport elements they provided contains
@@ -1780,14 +1770,14 @@ class APIMethods:
 
     async def send_game(
         self,
-        chat_id: Optional[int] = None,
-        message_thread_id: Optional[int] = None,
-        game_short_name: Optional[str] = None,
-        disable_notification: Optional[bool] = None,
-        protect_content: Optional[bool] = None,
+        game_short_name: str,
+        chat_id: int,
         reply_to_message_id: Optional[int] = None,
-        allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
+        disable_notification: Optional[bool] = None,
+        allow_sending_without_reply: Optional[bool] = None,
         **kwargs
     ) -> Message:
         """
@@ -1798,13 +1788,13 @@ class APIMethods:
 
     async def set_game_score(
         self,
-        user_id: Optional[int] = None,
-        score: Optional[int] = None,
+        user_id: int,
+        score: int,
+        message_id: Optional[int] = None,
+        inline_message_id: Optional[str] = None,
         force: Optional[bool] = None,
         disable_edit_message: Optional[bool] = None,
         chat_id: Optional[int] = None,
-        message_id: Optional[int] = None,
-        inline_message_id: Optional[str] = None,
         **kwargs
     ) -> Union[Message, bool]:
         """
@@ -1818,10 +1808,10 @@ class APIMethods:
 
     async def get_game_high_scores(
         self,
-        user_id: Optional[int] = None,
-        chat_id: Optional[int] = None,
+        user_id: int,
         message_id: Optional[int] = None,
         inline_message_id: Optional[str] = None,
+        chat_id: Optional[int] = None,
         **kwargs
     ) -> List[GameHighScore]:
         """
