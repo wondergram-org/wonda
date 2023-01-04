@@ -39,10 +39,9 @@ class Contact(BaseButton):
     Available in private chats only.
     """
 
-    request_contact: bool = True
-
     def __init__(self, text: str) -> None:
         super().__init__(text)
+        self.request_contact = True
 
 
 class Location(BaseButton):
@@ -51,10 +50,9 @@ class Location(BaseButton):
     Available in private chats only.
     """
 
-    request_location: bool = True
-
     def __init__(self, text: str) -> None:
         super().__init__(text)
+        self.request_location = True
 
 
 class Poll(BaseButton):

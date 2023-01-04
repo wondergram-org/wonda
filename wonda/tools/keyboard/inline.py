@@ -22,10 +22,9 @@ class Pay(BaseButton):
     in the first row and can only be used in invoice messages.
     """
 
-    pay: bool = True
-
     def __init__(self, text: str) -> None:
         super().__init__(text)
+        self.pay = True
 
 
 class URL(BaseButton):
