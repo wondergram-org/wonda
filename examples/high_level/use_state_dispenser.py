@@ -1,6 +1,6 @@
 from wonda import Bot, BaseStateGroup, Message, Token
 from wonda.bot.rules import Command, State, Text
-from wonda.tools.keyboard import Button, Keyboard
+from wonda.tools.keyboard import Button, ReplyKeyboard
 
 # Make a bot with a token from an environment variable.
 bot = Bot(Token.from_env())
@@ -12,14 +12,10 @@ class MenuState(BaseStateGroup):
 
 
 MENU_KEYBOARD = (
-    Keyboard(resize_keyboard=True)
-    .add(Button(text="About us"))
-    .add(Button(text="Buy a drink"))
+    ReplyKeyboard().add(Button("About us")).add(Button("Buy a drink")).build()
 )
 BEVERAGE_KEYBOARD = (
-    Keyboard(one_time_keyboard=True, resize_keyboard=True)
-    .add(Button(text="Espresso"))
-    .add(Button(text="Cappuccino"))
+    ReplyKeyboard().add(Button("Espresso")).add(Button("Cappuccino")).build()
 )
 
 

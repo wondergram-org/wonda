@@ -2,7 +2,7 @@ from wonda import Bot, Token
 from wonda.bot.rules import CallbackData, Command
 from wonda.bot.updates import BotUpdateType, CallbackQuery, Message
 
-from wonda.tools.keyboard import InlineButton, InlineKeyboard
+from wonda.tools.keyboard import Callback, InlineKeyboard
 
 # Make a bot with a token from an environment variable.
 bot = Bot(Token.from_env())
@@ -10,10 +10,11 @@ bot = Bot(Token.from_env())
 # Create an inline keyboard with a button that will be used to trigger a callback.
 INLINE_KEYBOARD = (
     InlineKeyboard()
-    .add(InlineButton(text="🍎 Apple", callback_data="apple"))
-    .add(InlineButton(text="🍊 Orange", callback_data="orange"))
+    .add(Callback("🍎 Apple", "apple"))
+    .add(Callback("🍊 Orange", "orange"))
     .row()
-    .add(InlineButton(text="👟 Shoe", callback_data="shoe"))
+    .add(Callback("👟 Shoe", "shoe"))
+    .build()
 )
 
 
