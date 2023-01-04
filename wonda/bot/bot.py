@@ -44,7 +44,7 @@ class Bot(ABCFramework):
         drop_updates: bool = False,
         allowed_updates: List[str] = [],
     ) -> NoReturn:
-        if drop_updates:
+        if drop_updates is True:
             await self.api.delete_webhook(drop_updates)
 
         self.polling.offset, self.polling.allowed_updates = offset, allowed_updates
