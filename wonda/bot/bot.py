@@ -53,8 +53,8 @@ class Bot(ABCFramework):
         async for update in self.polling.listen():  # type: ignore
             self.loop.create_task(self.router.route(update, self.api))
 
-    def run_forever(self) -> None:
-        self.loop_wrapper.add_task(self.run_polling())
+    def run_forever(self, **kwargs) -> None:
+        self.loop_wrapper.add_task(self.run_polling(**kwargs))
         self.loop_wrapper.run_forever(self.loop)  # type: ignore
 
     @property
