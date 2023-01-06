@@ -5,6 +5,7 @@ from vbml import Pattern, Patcher
 
 from wonda.bot.rules.abc import ABCRule
 from wonda.bot.updates import MessageUpdate
+from wonda.types.enums import ChatType, MessageEntityType
 
 
 class Command(ABCRule[MessageUpdate]):
@@ -66,7 +67,7 @@ class IsGroup(ABCRule[MessageUpdate]):
     """
 
     async def check(self, msg: MessageUpdate) -> bool:
-        return msg.chat.type in ["group", "supergroup"]
+        return msg.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]
 
 
 class IsPrivate(ABCRule[MessageUpdate]):
@@ -75,7 +76,7 @@ class IsPrivate(ABCRule[MessageUpdate]):
     """
 
     async def check(self, msg: MessageUpdate) -> bool:
-        return msg.chat.type == "private"
+        return msg.chat.type == ChatType.PRIVATE
 
 
 class Length(ABCRule[MessageUpdate]):
@@ -154,7 +155,7 @@ class Mention(ABCRule[MessageUpdate]):
         m = [
             msg.text[e.offset : e.offset + e.length].strip("@")
             for e in msg.entities
-            if e.type == "mention"
+            if e.type == MessageEntityType.MENTION
         ]
 
         return {"mentions": m} if m else False
