@@ -4,6 +4,8 @@ from typing import Optional, List, Literal, Union
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated
 
+from .enums import *
+
 
 class Update(BaseModel):
     """
@@ -68,7 +70,7 @@ class Chat(BaseModel):
     """
 
     id: int = Field()
-    type: Literal["private", "group", "supergroup", "channel"] = Field()
+    type: ChatType = Field()
     title: Optional[str] = Field(default=None)
     username: Optional[str] = Field(default=None)
     first_name: Optional[str] = Field(default=None)
@@ -195,25 +197,7 @@ class MessageEntity(BaseModel):
     usernames, URLs, etc.
     """
 
-    type: Literal[
-        "mention",
-        "hashtag",
-        "cashtag",
-        "bot_command",
-        "url",
-        "email",
-        "phone_number",
-        "bold",
-        "italic",
-        "underline",
-        "strikethrough",
-        "spoiler",
-        "code",
-        "pre",
-        "text_link",
-        "text_mention",
-        "custom_emoji",
-    ] = Field()
+    type: MessageEntityType = Field()
     offset: int = Field()
     length: int = Field()
     url: Optional[str] = Field(default=None)
@@ -373,7 +357,7 @@ class Poll(BaseModel):
     total_voter_count: int = Field()
     is_closed: bool = Field()
     is_anonymous: bool = Field()
-    type: Literal["regular", "quiz"] = Field()
+    type: PollType = Field()
     allows_multiple_answers: bool = Field()
     correct_option_id: Optional[int] = Field(default=None)
     explanation: Optional[str] = Field(default=None)
@@ -1086,7 +1070,7 @@ class Sticker(BaseModel):
 
     file_id: str = Field()
     file_unique_id: str = Field()
-    type: Literal["regular", "mask", "custom_emoji"] = Field()
+    type: StickerType = Field()
     width: int = Field()
     height: int = Field()
     is_animated: bool = Field()
@@ -1107,7 +1091,7 @@ class StickerSet(BaseModel):
 
     name: str = Field()
     title: str = Field()
-    sticker_type: Literal["regular", "mask", "custom_emoji"] = Field()
+    sticker_type: StickerSetStickerType = Field()
     is_animated: bool = Field()
     is_video: bool = Field()
     stickers: List["Sticker"] = Field()
@@ -1120,7 +1104,7 @@ class MaskPosition(BaseModel):
     default.
     """
 
-    point: Literal["forehead", "eyes", "mouth", "chin"] = Field()
+    point: MaskPositionPoint = Field()
     x_shift: float = Field()
     y_shift: float = Field()
     scale: float = Field()
@@ -1136,9 +1120,7 @@ class InlineQuery(BaseModel):
     from_: "User" = Field(alias="from")
     query: str = Field()
     offset: str = Field()
-    chat_type: Literal["sender", "private", "group", "supergroup", "channel"] = Field(
-        default=None
-    )
+    chat_type: InlineQueryChatType = Field(default=None)
     location: Optional["Location"] = Field(default=None)
 
 
@@ -1197,9 +1179,7 @@ class InlineQueryResultGif(BaseModel):
     gif_height: Optional[int] = Field(default=None)
     gif_duration: Optional[int] = Field(default=None)
     thumb_url: str = Field()
-    thumb_mime_type: Literal["image/jpeg", "image/gif", "video/mp4"] = Field(
-        default="image/jpeg"
-    )
+    thumb_mime_type: InlineQueryResultGifThumbMimeType = Field(default="image/jpeg")
     title: Optional[str] = Field(default=None)
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
@@ -1223,7 +1203,7 @@ class InlineQueryResultMpeg4Gif(BaseModel):
     mpeg4_height: Optional[int] = Field(default=None)
     mpeg4_duration: Optional[int] = Field(default=None)
     thumb_url: str = Field()
-    thumb_mime_type: Literal["image/jpeg", "image/gif", "video/mp4"] = Field(
+    thumb_mime_type: InlineQueryResultMpeg4GifThumbMimeType = Field(
         default="image/jpeg"
     )
     title: Optional[str] = Field(default=None)
@@ -1247,7 +1227,7 @@ class InlineQueryResultVideo(BaseModel):
     type: Literal["video"] = Field(default="video")
     id: str = Field()
     video_url: str = Field()
-    mime_type: Literal["text/html", "video/mp4"] = Field()
+    mime_type: InlineQueryResultVideoMimeType = Field()
     thumb_url: str = Field()
     title: str = Field()
     caption: Optional[str] = Field(default=None)
@@ -1316,7 +1296,7 @@ class InlineQueryResultDocument(BaseModel):
     parse_mode: Optional[str] = Field(default=None)
     caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
     document_url: str = Field()
-    mime_type: Literal["application/pdf", "application/zip"] = Field()
+    mime_type: InlineQueryResultDocumentMimeType = Field()
     description: Optional[str] = Field(default=None)
     reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
     input_message_content: Optional["InputMessageContent"] = Field(default=None)
@@ -1776,21 +1756,7 @@ class EncryptedPassportElement(BaseModel):
     user.
     """
 
-    type: Literal[
-        "personal_details",
-        "passport",
-        "driver_license",
-        "identity_card",
-        "internal_passport",
-        "address",
-        "utility_bill",
-        "bank_statement",
-        "rental_agreement",
-        "passport_registration",
-        "temporary_registration",
-        "phone_number",
-        "email",
-    ] = Field()
+    type: EncryptedPassportElementType = Field()
     data: Optional[str] = Field(default=None)
     phone_number: Optional[str] = Field(default=None)
     email: Optional[str] = Field(default=None)
@@ -1821,14 +1787,7 @@ class PassportElementErrorDataField(BaseModel):
     """
 
     source: Literal["data"] = Field(default="data")
-    type: Literal[
-        "personal_details",
-        "passport",
-        "driver_license",
-        "identity_card",
-        "internal_passport",
-        "address",
-    ] = Field()
+    type: PassportElementErrorDataFieldType = Field()
     field_name: str = Field()
     data_hash: str = Field()
     message: str = Field()
@@ -1841,9 +1800,7 @@ class PassportElementErrorFrontSide(BaseModel):
     """
 
     source: Literal["front_side"] = Field(default="front_side")
-    type: Literal[
-        "passport", "driver_license", "identity_card", "internal_passport"
-    ] = Field()
+    type: PassportElementErrorFrontSideType = Field()
     file_hash: str = Field()
     message: str = Field()
 
@@ -1855,7 +1812,7 @@ class PassportElementErrorReverseSide(BaseModel):
     """
 
     source: Literal["reverse_side"] = Field(default="reverse_side")
-    type: Literal["driver_license", "identity_card"] = Field()
+    type: PassportElementErrorReverseSideType = Field()
     file_hash: str = Field()
     message: str = Field()
 
@@ -1867,9 +1824,7 @@ class PassportElementErrorSelfie(BaseModel):
     """
 
     source: Literal["selfie"] = Field(default="selfie")
-    type: Literal[
-        "passport", "driver_license", "identity_card", "internal_passport"
-    ] = Field()
+    type: PassportElementErrorSelfieType = Field()
     file_hash: str = Field()
     message: str = Field()
 
@@ -1881,13 +1836,7 @@ class PassportElementErrorFile(BaseModel):
     """
 
     source: Literal["file"] = Field(default="file")
-    type: Literal[
-        "utility_bill",
-        "bank_statement",
-        "rental_agreement",
-        "passport_registration",
-        "temporary_registration",
-    ] = Field()
+    type: PassportElementErrorFileType = Field()
     file_hash: str = Field()
     message: str = Field()
 
@@ -1899,13 +1848,7 @@ class PassportElementErrorFiles(BaseModel):
     """
 
     source: Literal["files"] = Field(default="files")
-    type: Literal[
-        "utility_bill",
-        "bank_statement",
-        "rental_agreement",
-        "passport_registration",
-        "temporary_registration",
-    ] = Field()
+    type: PassportElementErrorFilesType = Field()
     file_hashes: List[str] = Field()
     message: str = Field()
 
@@ -1917,17 +1860,7 @@ class PassportElementErrorTranslationFile(BaseModel):
     """
 
     source: Literal["translation_file"] = Field(default="translation_file")
-    type: Literal[
-        "passport",
-        "driver_license",
-        "identity_card",
-        "internal_passport",
-        "utility_bill",
-        "bank_statement",
-        "rental_agreement",
-        "passport_registration",
-        "temporary_registration",
-    ] = Field()
+    type: PassportElementErrorTranslationFileType = Field()
     file_hash: str = Field()
     message: str = Field()
 
@@ -1939,17 +1872,7 @@ class PassportElementErrorTranslationFiles(BaseModel):
     """
 
     source: Literal["translation_files"] = Field(default="translation_files")
-    type: Literal[
-        "passport",
-        "driver_license",
-        "identity_card",
-        "internal_passport",
-        "utility_bill",
-        "bank_statement",
-        "rental_agreement",
-        "passport_registration",
-        "temporary_registration",
-    ] = Field()
+    type: PassportElementErrorTranslationFilesType = Field()
     file_hashes: List[str] = Field()
     message: str = Field()
 
