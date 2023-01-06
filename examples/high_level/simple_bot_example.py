@@ -17,7 +17,7 @@ async def message_handler(_) -> str:
     # will be executed.
 
     # This line returns specific value to answer message from user
-    # (see https://github.com/wondergram-org/wonda/blob/main/wondergram/bot/dispatch/return_manager/message.py).
+    # (see https://github.com/wondergram-org/wonda/blob/main/wonda/bot/dispatch/return_manager/message.py).
     return "Howdy, friend!"
 
 
@@ -45,7 +45,7 @@ async def chat_message_handler(msg: Message) -> None:
 @bot.on.raw_update(BotUpdateType.EDITED_MESSAGE, Message)
 async def edited_message_handler(msg: Message) -> None:
     # This line, when executed, will call shortcut method to answer message from user
-    # (see https://github.com/wondergram-org/wonda/blob/main/wondergram/bot/updates/types.py#L44).
+    # (see https://github.com/wondergram-org/wonda/blob/main/wonda/bot/updates/types.py#L44).
     await msg.answer("Hm? I heard you edit a message.")
 
 
