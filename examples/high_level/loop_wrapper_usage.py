@@ -12,7 +12,6 @@ loop_wrapper = LoopWrapper()
 
 bot = Bot(Token.from_env())
 
-
 # To set up a timer, use the `@lw.timer()` decorator.
 # It accepts a human-readable time intervals as arguments.
 # Timer handlers are coroutines, which means you must do
@@ -40,8 +39,6 @@ async def handler(_) -> str:
 # To add a startup or a shutdown task, add it to a list of coroutines
 # using simple append method. You can add as many tasks as you want,
 # and they will be run in order of addition.
-
-
 async def setup_db() -> None:
     # Here we are! Let's spin up the engines!
     # I can already hear 'em roar!
