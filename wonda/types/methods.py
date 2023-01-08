@@ -44,7 +44,7 @@ class APIMethods:
         max_connections: Optional[int] = 40,
         ip_address: Optional[str] = None,
         drop_pending_updates: Optional[bool] = None,
-        certificate: Optional["InputFile"] = None,
+        certificate: Optional[InputFile] = None,
         allowed_updates: Optional[List[str]] = None,
         **kwargs
     ) -> bool:
@@ -117,16 +117,16 @@ class APIMethods:
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
-                "InlineKeyboardMarkup",
-                "ReplyKeyboardMarkup",
-                "ReplyKeyboardRemove",
-                "ForceReply",
+                InlineKeyboardMarkup,
+                ReplyKeyboardMarkup,
+                ReplyKeyboardRemove,
+                ForceReply,
             ]
         ] = None,
         protect_content: Optional[bool] = None,
         parse_mode: Optional[str] = None,
         message_thread_id: Optional[int] = None,
-        entities: Optional[List["MessageEntity"]] = None,
+        entities: Optional[List[MessageEntity]] = None,
         disable_web_page_preview: Optional[bool] = None,
         disable_notification: Optional[bool] = None,
         allow_sending_without_reply: Optional[bool] = None,
@@ -163,17 +163,17 @@ class APIMethods:
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
-                "InlineKeyboardMarkup",
-                "ReplyKeyboardMarkup",
-                "ReplyKeyboardRemove",
-                "ForceReply",
+                InlineKeyboardMarkup,
+                ReplyKeyboardMarkup,
+                ReplyKeyboardRemove,
+                ForceReply,
             ]
         ] = None,
         protect_content: Optional[bool] = None,
         parse_mode: Optional[str] = None,
         message_thread_id: Optional[int] = None,
         disable_notification: Optional[bool] = None,
-        caption_entities: Optional[List["MessageEntity"]] = None,
+        caption_entities: Optional[List[MessageEntity]] = None,
         caption: Optional[str] = None,
         allow_sending_without_reply: Optional[bool] = None,
         **kwargs
@@ -190,15 +190,15 @@ class APIMethods:
 
     async def send_photo(
         self,
-        photo: Union["InputFile", str],
+        photo: Union[InputFile, str],
         chat_id: Union[int, str],
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
-                "InlineKeyboardMarkup",
-                "ReplyKeyboardMarkup",
-                "ReplyKeyboardRemove",
-                "ForceReply",
+                InlineKeyboardMarkup,
+                ReplyKeyboardMarkup,
+                ReplyKeyboardRemove,
+                ForceReply,
             ]
         ] = None,
         protect_content: Optional[bool] = None,
@@ -206,7 +206,7 @@ class APIMethods:
         message_thread_id: Optional[int] = None,
         has_spoiler: Optional[bool] = None,
         disable_notification: Optional[bool] = None,
-        caption_entities: Optional[List["MessageEntity"]] = None,
+        caption_entities: Optional[List[MessageEntity]] = None,
         caption: Optional[str] = None,
         allow_sending_without_reply: Optional[bool] = None,
         **kwargs
@@ -220,16 +220,16 @@ class APIMethods:
     async def send_audio(
         self,
         chat_id: Union[int, str],
-        audio: Union["InputFile", str],
+        audio: Union[InputFile, str],
         title: Optional[str] = None,
-        thumb: Optional[Union["InputFile", str]] = None,
+        thumb: Optional[Union[InputFile, str]] = None,
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
-                "InlineKeyboardMarkup",
-                "ReplyKeyboardMarkup",
-                "ReplyKeyboardRemove",
-                "ForceReply",
+                InlineKeyboardMarkup,
+                ReplyKeyboardMarkup,
+                ReplyKeyboardRemove,
+                ForceReply,
             ]
         ] = None,
         protect_content: Optional[bool] = None,
@@ -238,7 +238,7 @@ class APIMethods:
         message_thread_id: Optional[int] = None,
         duration: Optional[int] = None,
         disable_notification: Optional[bool] = None,
-        caption_entities: Optional[List["MessageEntity"]] = None,
+        caption_entities: Optional[List[MessageEntity]] = None,
         caption: Optional[str] = None,
         allow_sending_without_reply: Optional[bool] = None,
         **kwargs
@@ -255,16 +255,16 @@ class APIMethods:
 
     async def send_document(
         self,
-        document: Union["InputFile", str],
+        document: Union[InputFile, str],
         chat_id: Union[int, str],
-        thumb: Optional[Union["InputFile", str]] = None,
+        thumb: Optional[Union[InputFile, str]] = None,
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
-                "InlineKeyboardMarkup",
-                "ReplyKeyboardMarkup",
-                "ReplyKeyboardRemove",
-                "ForceReply",
+                InlineKeyboardMarkup,
+                ReplyKeyboardMarkup,
+                ReplyKeyboardRemove,
+                ForceReply,
             ]
         ] = None,
         protect_content: Optional[bool] = None,
@@ -272,7 +272,7 @@ class APIMethods:
         message_thread_id: Optional[int] = None,
         disable_notification: Optional[bool] = None,
         disable_content_type_detection: Optional[bool] = None,
-        caption_entities: Optional[List["MessageEntity"]] = None,
+        caption_entities: Optional[List[MessageEntity]] = None,
         caption: Optional[str] = None,
         allow_sending_without_reply: Optional[bool] = None,
         **kwargs
@@ -287,18 +287,18 @@ class APIMethods:
 
     async def send_video(
         self,
-        video: Union["InputFile", str],
+        video: Union[InputFile, str],
         chat_id: Union[int, str],
         width: Optional[int] = None,
-        thumb: Optional[Union["InputFile", str]] = None,
+        thumb: Optional[Union[InputFile, str]] = None,
         supports_streaming: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
-                "InlineKeyboardMarkup",
-                "ReplyKeyboardMarkup",
-                "ReplyKeyboardRemove",
-                "ForceReply",
+                InlineKeyboardMarkup,
+                ReplyKeyboardMarkup,
+                ReplyKeyboardRemove,
+                ForceReply,
             ]
         ] = None,
         protect_content: Optional[bool] = None,
@@ -308,7 +308,7 @@ class APIMethods:
         has_spoiler: Optional[bool] = None,
         duration: Optional[int] = None,
         disable_notification: Optional[bool] = None,
-        caption_entities: Optional[List["MessageEntity"]] = None,
+        caption_entities: Optional[List[MessageEntity]] = None,
         caption: Optional[str] = None,
         allow_sending_without_reply: Optional[bool] = None,
         **kwargs
@@ -325,16 +325,16 @@ class APIMethods:
     async def send_animation(
         self,
         chat_id: Union[int, str],
-        animation: Union["InputFile", str],
+        animation: Union[InputFile, str],
         width: Optional[int] = None,
-        thumb: Optional[Union["InputFile", str]] = None,
+        thumb: Optional[Union[InputFile, str]] = None,
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
-                "InlineKeyboardMarkup",
-                "ReplyKeyboardMarkup",
-                "ReplyKeyboardRemove",
-                "ForceReply",
+                InlineKeyboardMarkup,
+                ReplyKeyboardMarkup,
+                ReplyKeyboardRemove,
+                ForceReply,
             ]
         ] = None,
         protect_content: Optional[bool] = None,
@@ -344,7 +344,7 @@ class APIMethods:
         has_spoiler: Optional[bool] = None,
         duration: Optional[int] = None,
         disable_notification: Optional[bool] = None,
-        caption_entities: Optional[List["MessageEntity"]] = None,
+        caption_entities: Optional[List[MessageEntity]] = None,
         caption: Optional[str] = None,
         allow_sending_without_reply: Optional[bool] = None,
         **kwargs
@@ -359,15 +359,15 @@ class APIMethods:
 
     async def send_voice(
         self,
-        voice: Union["InputFile", str],
+        voice: Union[InputFile, str],
         chat_id: Union[int, str],
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
-                "InlineKeyboardMarkup",
-                "ReplyKeyboardMarkup",
-                "ReplyKeyboardRemove",
-                "ForceReply",
+                InlineKeyboardMarkup,
+                ReplyKeyboardMarkup,
+                ReplyKeyboardRemove,
+                ForceReply,
             ]
         ] = None,
         protect_content: Optional[bool] = None,
@@ -375,7 +375,7 @@ class APIMethods:
         message_thread_id: Optional[int] = None,
         duration: Optional[int] = None,
         disable_notification: Optional[bool] = None,
-        caption_entities: Optional[List["MessageEntity"]] = None,
+        caption_entities: Optional[List[MessageEntity]] = None,
         caption: Optional[str] = None,
         allow_sending_without_reply: Optional[bool] = None,
         **kwargs
@@ -392,16 +392,16 @@ class APIMethods:
 
     async def send_video_note(
         self,
-        video_note: Union["InputFile", str],
+        video_note: Union[InputFile, str],
         chat_id: Union[int, str],
-        thumb: Optional[Union["InputFile", str]] = None,
+        thumb: Optional[Union[InputFile, str]] = None,
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
-                "InlineKeyboardMarkup",
-                "ReplyKeyboardMarkup",
-                "ReplyKeyboardRemove",
-                "ForceReply",
+                InlineKeyboardMarkup,
+                ReplyKeyboardMarkup,
+                ReplyKeyboardRemove,
+                ForceReply,
             ]
         ] = None,
         protect_content: Optional[bool] = None,
@@ -423,12 +423,7 @@ class APIMethods:
     async def send_media_group(
         self,
         media: List[
-            Union[
-                "InputMediaAudio",
-                "InputMediaDocument",
-                "InputMediaPhoto",
-                "InputMediaVideo",
-            ]
+            Union[InputMediaAudio, InputMediaDocument, InputMediaPhoto, InputMediaVideo]
         ],
         chat_id: Union[int, str],
         reply_to_message_id: Optional[int] = None,
@@ -454,10 +449,10 @@ class APIMethods:
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
-                "InlineKeyboardMarkup",
-                "ReplyKeyboardMarkup",
-                "ReplyKeyboardRemove",
-                "ForceReply",
+                InlineKeyboardMarkup,
+                ReplyKeyboardMarkup,
+                ReplyKeyboardRemove,
+                ForceReply,
             ]
         ] = None,
         proximity_alert_radius: Optional[int] = None,
@@ -480,7 +475,7 @@ class APIMethods:
         self,
         longitude: float,
         latitude: float,
-        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        reply_markup: Optional[InlineKeyboardMarkup] = None,
         proximity_alert_radius: Optional[int] = None,
         message_id: Optional[int] = None,
         inline_message_id: Optional[str] = None,
@@ -502,7 +497,7 @@ class APIMethods:
 
     async def stop_message_live_location(
         self,
-        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        reply_markup: Optional[InlineKeyboardMarkup] = None,
         message_id: Optional[int] = None,
         inline_message_id: Optional[str] = None,
         chat_id: Optional[Union[int, str]] = None,
@@ -528,10 +523,10 @@ class APIMethods:
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
-                "InlineKeyboardMarkup",
-                "ReplyKeyboardMarkup",
-                "ReplyKeyboardRemove",
-                "ForceReply",
+                InlineKeyboardMarkup,
+                ReplyKeyboardMarkup,
+                ReplyKeyboardRemove,
+                ForceReply,
             ]
         ] = None,
         protect_content: Optional[bool] = None,
@@ -560,10 +555,10 @@ class APIMethods:
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
-                "InlineKeyboardMarkup",
-                "ReplyKeyboardMarkup",
-                "ReplyKeyboardRemove",
-                "ForceReply",
+                InlineKeyboardMarkup,
+                ReplyKeyboardMarkup,
+                ReplyKeyboardRemove,
+                ForceReply,
             ]
         ] = None,
         protect_content: Optional[bool] = None,
@@ -588,10 +583,10 @@ class APIMethods:
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
-                "InlineKeyboardMarkup",
-                "ReplyKeyboardMarkup",
-                "ReplyKeyboardRemove",
-                "ForceReply",
+                InlineKeyboardMarkup,
+                ReplyKeyboardMarkup,
+                ReplyKeyboardRemove,
+                ForceReply,
             ]
         ] = None,
         protect_content: Optional[bool] = None,
@@ -600,7 +595,7 @@ class APIMethods:
         is_closed: Optional[bool] = None,
         is_anonymous: Optional[bool] = None,
         explanation_parse_mode: Optional[str] = None,
-        explanation_entities: Optional[List["MessageEntity"]] = None,
+        explanation_entities: Optional[List[MessageEntity]] = None,
         explanation: Optional[str] = None,
         disable_notification: Optional[bool] = None,
         correct_option_id: Optional[int] = None,
@@ -621,10 +616,10 @@ class APIMethods:
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
-                "InlineKeyboardMarkup",
-                "ReplyKeyboardMarkup",
-                "ReplyKeyboardRemove",
-                "ForceReply",
+                InlineKeyboardMarkup,
+                ReplyKeyboardMarkup,
+                ReplyKeyboardRemove,
+                ForceReply,
             ]
         ] = None,
         protect_content: Optional[bool] = None,
@@ -730,7 +725,7 @@ class APIMethods:
     async def restrict_chat_member(
         self,
         user_id: int,
-        permissions: "ChatPermissions",
+        permissions: ChatPermissions,
         chat_id: Union[int, str],
         until_date: Optional[int] = None,
         **kwargs
@@ -816,7 +811,7 @@ class APIMethods:
         return response
 
     async def set_chat_permissions(
-        self, permissions: "ChatPermissions", chat_id: Union[int, str], **kwargs
+        self, permissions: ChatPermissions, chat_id: Union[int, str], **kwargs
     ) -> bool:
         """
         Use this method to set default chat permissions for all members. The bot must be an
@@ -921,7 +916,7 @@ class APIMethods:
         return response
 
     async def set_chat_photo(
-        self, photo: "InputFile", chat_id: Union[int, str], **kwargs
+        self, photo: InputFile, chat_id: Union[int, str], **kwargs
     ) -> bool:
         """
         Use this method to set a new profile photo for the chat. Photos can't be changed for
@@ -1263,8 +1258,8 @@ class APIMethods:
 
     async def set_my_commands(
         self,
-        commands: List["BotCommand"],
-        scope: Optional["BotCommandScope"] = None,
+        commands: List[BotCommand],
+        scope: Optional[BotCommandScope] = None,
         language_code: Optional[str] = None,
         **kwargs
     ) -> bool:
@@ -1277,7 +1272,7 @@ class APIMethods:
 
     async def delete_my_commands(
         self,
-        scope: Optional["BotCommandScope"] = None,
+        scope: Optional[BotCommandScope] = None,
         language_code: Optional[str] = None,
         **kwargs
     ) -> bool:
@@ -1291,7 +1286,7 @@ class APIMethods:
 
     async def get_my_commands(
         self,
-        scope: Optional["BotCommandScope"] = None,
+        scope: Optional[BotCommandScope] = None,
         language_code: Optional[str] = None,
         **kwargs
     ) -> List[BotCommand]:
@@ -1305,7 +1300,7 @@ class APIMethods:
 
     async def set_chat_menu_button(
         self,
-        menu_button: Optional["MenuButton"] = None,
+        menu_button: Optional[MenuButton] = None,
         chat_id: Optional[int] = None,
         **kwargs
     ) -> bool:
@@ -1332,7 +1327,7 @@ class APIMethods:
 
     async def set_my_default_administrator_rights(
         self,
-        rights: Optional["ChatAdministratorRights"] = None,
+        rights: Optional[ChatAdministratorRights] = None,
         for_channels: Optional[bool] = None,
         **kwargs
     ) -> bool:
@@ -1362,11 +1357,11 @@ class APIMethods:
     async def edit_message_text(
         self,
         text: str,
-        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        reply_markup: Optional[InlineKeyboardMarkup] = None,
         parse_mode: Optional[str] = None,
         message_id: Optional[int] = None,
         inline_message_id: Optional[str] = None,
-        entities: Optional[List["MessageEntity"]] = None,
+        entities: Optional[List[MessageEntity]] = None,
         disable_web_page_preview: Optional[bool] = None,
         chat_id: Optional[Union[int, str]] = None,
         **kwargs
@@ -1380,12 +1375,12 @@ class APIMethods:
 
     async def edit_message_caption(
         self,
-        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        reply_markup: Optional[InlineKeyboardMarkup] = None,
         parse_mode: Optional[str] = None,
         message_id: Optional[int] = None,
         inline_message_id: Optional[str] = None,
         chat_id: Optional[Union[int, str]] = None,
-        caption_entities: Optional[List["MessageEntity"]] = None,
+        caption_entities: Optional[List[MessageEntity]] = None,
         caption: Optional[str] = None,
         **kwargs
     ) -> Union[Message, bool]:
@@ -1400,8 +1395,8 @@ class APIMethods:
 
     async def edit_message_media(
         self,
-        media: "InputMedia",
-        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        media: InputMedia,
+        reply_markup: Optional[InlineKeyboardMarkup] = None,
         message_id: Optional[int] = None,
         inline_message_id: Optional[str] = None,
         chat_id: Optional[Union[int, str]] = None,
@@ -1420,7 +1415,7 @@ class APIMethods:
 
     async def edit_message_reply_markup(
         self,
-        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        reply_markup: Optional[InlineKeyboardMarkup] = None,
         message_id: Optional[int] = None,
         inline_message_id: Optional[str] = None,
         chat_id: Optional[Union[int, str]] = None,
@@ -1440,7 +1435,7 @@ class APIMethods:
         self,
         message_id: int,
         chat_id: Union[int, str],
-        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        reply_markup: Optional[InlineKeyboardMarkup] = None,
         **kwargs
     ) -> Poll:
         """
@@ -1470,15 +1465,15 @@ class APIMethods:
 
     async def send_sticker(
         self,
-        sticker: Union["InputFile", str],
+        sticker: Union[InputFile, str],
         chat_id: Union[int, str],
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
-                "InlineKeyboardMarkup",
-                "ReplyKeyboardMarkup",
-                "ReplyKeyboardRemove",
-                "ForceReply",
+                InlineKeyboardMarkup,
+                ReplyKeyboardMarkup,
+                ReplyKeyboardRemove,
+                ForceReply,
             ]
         ] = None,
         protect_content: Optional[bool] = None,
@@ -1514,7 +1509,7 @@ class APIMethods:
         return parse_obj_as(List[Sticker], response)
 
     async def upload_sticker_file(
-        self, user_id: int, png_sticker: "InputFile", **kwargs
+        self, user_id: int, png_sticker: InputFile, **kwargs
     ) -> File:
         """
         Use this method to upload a .PNG file with a sticker for later use in
@@ -1532,11 +1527,11 @@ class APIMethods:
         title: str,
         name: str,
         emojis: str,
-        webm_sticker: Optional["InputFile"] = None,
-        tgs_sticker: Optional["InputFile"] = None,
+        webm_sticker: Optional[InputFile] = None,
+        tgs_sticker: Optional[InputFile] = None,
         sticker_type: Optional[str] = None,
-        png_sticker: Optional[Union["InputFile", str]] = None,
-        mask_position: Optional["MaskPosition"] = None,
+        png_sticker: Optional[Union[InputFile, str]] = None,
+        mask_position: Optional[MaskPosition] = None,
         **kwargs
     ) -> bool:
         """
@@ -1554,10 +1549,10 @@ class APIMethods:
         user_id: int,
         name: str,
         emojis: str,
-        webm_sticker: Optional["InputFile"] = None,
-        tgs_sticker: Optional["InputFile"] = None,
-        png_sticker: Optional[Union["InputFile", str]] = None,
-        mask_position: Optional["MaskPosition"] = None,
+        webm_sticker: Optional[InputFile] = None,
+        tgs_sticker: Optional[InputFile] = None,
+        png_sticker: Optional[Union[InputFile, str]] = None,
+        mask_position: Optional[MaskPosition] = None,
         **kwargs
     ) -> bool:
         """
@@ -1596,7 +1591,7 @@ class APIMethods:
         self,
         user_id: int,
         name: str,
-        thumb: Optional[Union["InputFile", str]] = None,
+        thumb: Optional[Union[InputFile, str]] = None,
         **kwargs
     ) -> bool:
         """
@@ -1611,7 +1606,7 @@ class APIMethods:
 
     async def answer_inline_query(
         self,
-        results: List["InlineQueryResult"],
+        results: List[InlineQueryResult],
         inline_query_id: str,
         switch_pm_text: Optional[str] = None,
         switch_pm_parameter: Optional[str] = None,
@@ -1630,7 +1625,7 @@ class APIMethods:
         return response
 
     async def answer_web_app_query(
-        self, web_app_query_id: str, result: "InlineQueryResult", **kwargs
+        self, web_app_query_id: str, result: InlineQueryResult, **kwargs
     ) -> SentWebAppMessage:
         """
         Use this method to set the result of an interaction with a Web App and send a
@@ -1646,7 +1641,7 @@ class APIMethods:
         self,
         title: str,
         provider_token: str,
-        prices: List["LabeledPrice"],
+        prices: List[LabeledPrice],
         payload: str,
         description: str,
         currency: str,
@@ -1656,7 +1651,7 @@ class APIMethods:
         send_phone_number_to_provider: Optional[bool] = None,
         send_email_to_provider: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        reply_markup: Optional[InlineKeyboardMarkup] = None,
         provider_data: Optional[str] = None,
         protect_content: Optional[bool] = None,
         photo_width: Optional[int] = None,
@@ -1684,7 +1679,7 @@ class APIMethods:
         self,
         title: str,
         provider_token: str,
-        prices: List["LabeledPrice"],
+        prices: List[LabeledPrice],
         payload: str,
         description: str,
         currency: str,
@@ -1717,7 +1712,7 @@ class APIMethods:
         self,
         shipping_query_id: str,
         ok: bool,
-        shipping_options: Optional[List["ShippingOption"]] = None,
+        shipping_options: Optional[List[ShippingOption]] = None,
         error_message: Optional[str] = None,
         **kwargs
     ) -> bool:
@@ -1751,7 +1746,7 @@ class APIMethods:
         return response
 
     async def set_passport_data_errors(
-        self, user_id: int, errors: List["PassportElementError"], **kwargs
+        self, user_id: int, errors: List[PassportElementError], **kwargs
     ) -> bool:
         """
         Informs a user that some of the Telegram Passport elements they provided contains
@@ -1773,7 +1768,7 @@ class APIMethods:
         game_short_name: str,
         chat_id: int,
         reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional["InlineKeyboardMarkup"] = None,
+        reply_markup: Optional[InlineKeyboardMarkup] = None,
         protect_content: Optional[bool] = None,
         message_thread_id: Optional[int] = None,
         disable_notification: Optional[bool] = None,
