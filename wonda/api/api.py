@@ -46,8 +46,8 @@ class API(ABCAPI, APIMethods):
 
     async def validate_request(self, request: dict) -> dict:
         """
-        Performs request validation. Can modify
-        sent data in place.
+        Performs validation of the request data.
+        If necessary, modifies and transforms it.
         """
         for validator in self.request_validators:
             request = await validator.validate(request)

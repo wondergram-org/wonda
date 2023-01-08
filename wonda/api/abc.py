@@ -22,14 +22,14 @@ class ABCAPI(ABC):
     @property
     def api_url(self) -> str:
         """
-        A property which computes a URL for API requests
+        Address for API requests
         """
         return self.API_URL + f"bot{self.token}/"
 
     @property
     def file_url(self) -> str:
         """
-        A property which computes a link to a file storage
+        Link to the file storage
         """
         return self.API_URL + f"file/bot{self.token}/"
 
@@ -38,7 +38,7 @@ class ABCAPI(ABC):
         self, method: str, params: typing.Optional[dict] = None
     ) -> APIResponse:
         """
-        Opens a session and makes a single API request
+        Opens a request session and makes a single API call
         """
         pass
 
@@ -46,7 +46,7 @@ class ABCAPI(ABC):
         self, requests: typing.Iterable[APIRequest]
     ) -> typing.AsyncIterator[APIResponse]:
         """
-        Makes multiple requests to the API opening session for each
+        Makes multiple calls to the API opening session for each
         """
         for request in requests:
             yield await self.request(request.method, request.params)
