@@ -4,40 +4,42 @@ from wonda.bot.rules import Command
 # Make a bot with a token from an environment variable.
 bot = Bot(Token.from_env())
 
+# Load a file from a given path using <.from_path(...)>. Path can be
+# given in the form of a string or a Path object.
+SAMPLE_PHOTO = File.from_path("examples/high_level/assets/apples.webp")
 
-# Register a handler that will upload files.
+
 @bot.on.message(Command("upload"))
 async def upload_handler(msg: Message) -> None:
-    # Upload a picture of fresh red apples.
+    # With File, you can upload any file to Telegram - be it
+    # a photo, audio, video, or a document.
     await msg.ctx_api.send_photo(
-        chat_id=msg.chat.id,
-        caption="Testing pictures!",
-        # Open the file and pass its contents directly in `photo` param.
-        photo=File.from_path("examples/high_level/assets/apples.webp"),
+        chat_id=msg.chat.id, caption="Lookin' tasty!", photo=SAMPLE_PHOTO
     )
 
-    # Upload a recording of soothing melody.
-    await msg.ctx_api.send_audio(
-        chat_id=msg.chat.id,
-        caption="Wonda for the win!",
-        # Open the file and pass its contents directly in `audio` param.
-        audio=File.from_path("examples/high_level/assets/music.mp3"),
+    # Download a sample image from Lorem Picsum using the HTTP client.
+    content = await msg.ctx_api.http_client.request_content("https://picsum.photos/300")
+
+    # While we download the image, let the user know something's brewing.
+    await msg.ctx_api.send_chat_action(chat_id=msg.chat.id, action="upload_photo")
+
+    # Construct a file using <.from_bytes(...) method. It has "unnamed.bin"
+    # name by default, so it's advised to give it a proper name.
+    photo = File.from_bytes(content, name="random.jpg")
+
+    # Just like that, another photo is uploaded to Telegram.
+    await msg.ctx_api.send_photo(
+        caption="Yay! A photo from the internet!", photo=photo, chat_id=msg.chat.id
     )
 
-    # You can use raw bytes to create a file. Here we are downloading
-    # some sample image from Lorem Picsum using built-in HTTP client.
-    content = await msg.ctx_api.http_client.request_content("https://picsum.photos/500")
+    # To enable faster uploads, use File directly. Supply it with a link to a file
+    # or a file_id and Telegram will take care of the rest.
+    larger_photo = File("https://picsum.photos/1000.webp")
 
-    # Now we are using the same file helper class, but it is being fed
-    # an array of raw bytes. You can optionally set the name
-    # for the resulting file.
-    photo = File.from_bytes(content)
-
-    # Now that we've created the file, let's send it.
+    # Despite the image being a lot larger,
+    # it will be uploaded just as fast as the previous one!
     await msg.ctx_api.send_photo(
-        caption="Look, mom! I pulled this photo from the Internet!",
-        chat_id=msg.chat.id,
-        photo=photo,
+        caption="This one's bigger!", photo=larger_photo, chat_id=msg.chat.id
     )
 
 
