@@ -68,4 +68,4 @@ If you want to report a bug or suggest a feature, [create an issue](https://gith
 
 This project is MIT licensed. Based upon hard work of maintainers and contributors of [VKBottle](https://github.com/vkbottle/vkbottle).
 
-Copyright © timoniq (2019-2021), feeeek (2022), geo-madness (2022)
+Copyright © timoniq (2019-2021), feeeek (2022), geo-madness (2022-2023)
