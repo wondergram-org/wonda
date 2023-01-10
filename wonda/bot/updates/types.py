@@ -122,7 +122,9 @@ class CallbackQueryUpdate(BaseBotUpdate, CallbackQuery):
         **kwargs
     ) -> bool:
         params = APIMethods.get_params(locals())
-        return await self.ctx_api.answer_callback_query(self.id, **params)
+        return await self.ctx_api.answer_callback_query(
+            callback_query_id=self.id, **params
+        )
 
     def get_state_key(self) -> Optional[int]:
         return self.from_.id
@@ -140,7 +142,7 @@ class InlineQueryUpdate(BaseBotUpdate, InlineQuery):
         **kwargs
     ) -> bool:
         params = APIMethods.get_params(locals())
-        return await self.ctx_api.answer_inline_query(self.id, **params)
+        return await self.ctx_api.answer_inline_query(inline_query_id=self.id, **params)
 
     def get_state_key(self) -> Optional[int]:
         return self.from_.id
