@@ -5,7 +5,7 @@ description = "Asynchronous, feature-rich, high performant Telegram Bot API fram
 authors = []
 license = "MIT"
 readme = "README.md"
-homepage = "https://pypi.org/project/wonda/"
+homepage = "https://github.com/wondergram-org/wonda/"
 
 [tool.poetry.dependencies]
 python = "^3.8"
