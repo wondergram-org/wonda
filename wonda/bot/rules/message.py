@@ -61,7 +61,7 @@ class Fuzzy(ABCRule[MessageUpdate]):
     and returns the closest match.
     """
 
-    def __init__(self, texts: Union[str, List[str]], min_ratio: int = 1) -> None:
+    def __init__(self, texts: Union[str, List[str]], min_ratio: int = 0.7) -> None:
         self.texts = texts if isinstance(texts, list) else [texts]
         self.min_ratio = min_ratio
 
