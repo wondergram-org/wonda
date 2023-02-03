@@ -10,14 +10,13 @@ bot = Bot(Token.from_env())
 # built-in rules or make your own by inheriting from
 # wonda.bot.rules.abc.ABCRule.
 @bot.on.private_message(Text(["hi", "hello", "howdy"]))
-async def message_handler(_) -> str:
-    # Match (text for short) rule compares previously set and newly received
-    # text and validates it. After checks are satisfied, following lines
-    # will be executed.
+async def message_handler(msg: Message) -> str:
+    # Text rule matches the message text with the given list of strings.
+    # If the match is successful, the following lines will be executed.
 
     # This line returns specific value to answer message from user
     # (see https://github.com/wondergram-org/wonda/blob/main/wonda/bot/dispatch/return_manager/message.py).
-    return "Howdy, friend!"
+    return f"{msg.text.capitalize()}, friend!"
 
 
 # A good example of how you can use this mechanic is to kick people that say inappropriate things from the chat.
@@ -49,7 +48,7 @@ async def edited_message_handler(msg: Message) -> None:
 
 
 # Let's talk a little bit more about shortcut methods. There's many
-# of them in wonda - in fact, nearly every update has them!
+# of them in Wonda - in fact, nearly every update has them!
 # They are used to answer messages, queries, and to do many more
 # with a single line of code. To show them in action, let's answer
 # a join request to a dog chat in which only dogs are allowed.
