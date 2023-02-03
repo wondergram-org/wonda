@@ -159,6 +159,8 @@ class Message(BaseModel):
     pinned_message: Optional["Message"] = Field(default=None)
     invoice: Optional["Invoice"] = Field(default=None)
     successful_payment: Optional["SuccessfulPayment"] = Field(default=None)
+    user_shared: Optional["UserShared"] = Field(default=None)
+    chat_shared: Optional["ChatShared"] = Field(default=None)
     connected_website: Optional[str] = Field(default=None)
     write_access_allowed: Optional["WriteAccessAllowed"] = Field(default=None)
     passport_data: Optional["PassportData"] = Field(default=None)
@@ -478,6 +480,26 @@ class GeneralForumTopicUnhidden(BaseModel):
     pass
 
 
+class UserShared(BaseModel):
+    """
+    This object contains information about the user whose identifier was shared with the
+    bot using a KeyboardButtonRequestUser button.
+    """
+
+    request_id: int = Field()
+    user_id: int = Field()
+
+
+class ChatShared(BaseModel):
+    """
+    This object contains information about the chat whose identifier was shared with the
+    bot using a KeyboardButtonRequestChat button.
+    """
+
+    request_id: int = Field()
+    chat_id: int = Field()
+
+
 class WriteAccessAllowed(BaseModel):
     """
     This object represents a service message about a user allowing a bot added to the
@@ -567,17 +589,48 @@ class ReplyKeyboardMarkup(BaseModel):
 
 class KeyboardButton(BaseModel):
     """
-    This object represents one button of the reply keyboard. For simple text buttons
-    String can be used instead of this object to specify text of the button. Optional
-    fields web_app, request_contact, request_location, and request_poll are mutually
-    exclusive.
+    This object represents one button of the reply keyboard. For simple text buttons,
+    String can be used instead of this object to specify the button text. The optional
+    fields web_app, request_user, request_chat, request_contact, request_location, and
+    request_poll are mutually exclusive.
     """
 
     text: str = Field()
+    request_user: Optional["KeyboardButtonRequestUser"] = Field(default=None)
+    request_chat: Optional["KeyboardButtonRequestChat"] = Field(default=None)
     request_contact: Optional[bool] = Field(default=None)
     request_location: Optional[bool] = Field(default=None)
     request_poll: Optional["KeyboardButtonPollType"] = Field(default=None)
     web_app: Optional["WebAppInfo"] = Field(default=None)
+
+
+class KeyboardButtonRequestUser(BaseModel):
+    """
+    This object defines the criteria used to request a suitable user. The identifier of
+    the selected user will be shared with the bot when the corresponding button is
+    pressed.
+    """
+
+    request_id: int = Field()
+    user_is_bot: Optional[bool] = Field(default=None)
+    user_is_premium: Optional[bool] = Field(default=None)
+
+
+class KeyboardButtonRequestChat(BaseModel):
+    """
+    This object defines the criteria used to request a suitable chat. The identifier of
+    the selected chat will be shared with the bot when the corresponding button is
+    pressed.
+    """
+
+    request_id: int = Field()
+    chat_is_channel: bool = Field()
+    chat_is_forum: Optional[bool] = Field(default=None)
+    chat_has_username: Optional[bool] = Field(default=None)
+    chat_is_created: Optional[bool] = Field(default=None)
+    user_administrator_rights: Optional["ChatAdministratorRights"] = Field(default=None)
+    bot_administrator_rights: Optional["ChatAdministratorRights"] = Field(default=None)
+    bot_is_member: Optional[bool] = Field(default=None)
 
 
 class KeyboardButtonPollType(BaseModel):
@@ -772,15 +825,20 @@ class ChatMemberRestricted(BaseModel):
     status: Literal["restricted"] = Field(default="restricted")
     user: "User" = Field()
     is_member: bool = Field()
+    can_send_messages: bool = Field()
+    can_send_audios: bool = Field()
+    can_send_documents: bool = Field()
+    can_send_photos: bool = Field()
+    can_send_videos: bool = Field()
+    can_send_video_notes: bool = Field()
+    can_send_voice_notes: bool = Field()
+    can_send_polls: bool = Field()
+    can_send_other_messages: bool = Field()
+    can_add_web_page_previews: bool = Field()
     can_change_info: bool = Field()
     can_invite_users: bool = Field()
     can_pin_messages: bool = Field()
     can_manage_topics: bool = Field()
-    can_send_messages: bool = Field()
-    can_send_media_messages: bool = Field()
-    can_send_polls: bool = Field()
-    can_send_other_messages: bool = Field()
-    can_add_web_page_previews: bool = Field()
     until_date: int = Field()
 
 
@@ -825,6 +883,7 @@ class ChatJoinRequest(BaseModel):
 
     chat: "Chat" = Field()
     from_: "User" = Field(alias="from")
+    user_chat_id: int = Field()
     date: int = Field()
     bio: Optional[str] = Field(default=None)
     invite_link: Optional["ChatInviteLink"] = Field(default=None)
@@ -836,7 +895,12 @@ class ChatPermissions(BaseModel):
     """
 
     can_send_messages: Optional[bool] = Field(default=None)
-    can_send_media_messages: Optional[bool] = Field(default=None)
+    can_send_audios: Optional[bool] = Field(default=None)
+    can_send_documents: Optional[bool] = Field(default=None)
+    can_send_photos: Optional[bool] = Field(default=None)
+    can_send_videos: Optional[bool] = Field(default=None)
+    can_send_video_notes: Optional[bool] = Field(default=None)
+    can_send_voice_notes: Optional[bool] = Field(default=None)
     can_send_polls: Optional[bool] = Field(default=None)
     can_send_other_messages: Optional[bool] = Field(default=None)
     can_add_web_page_previews: Optional[bool] = Field(default=None)
@@ -2059,6 +2123,8 @@ __all__ = (
     "ForumTopicReopened",
     "GeneralForumTopicHidden",
     "GeneralForumTopicUnhidden",
+    "UserShared",
+    "ChatShared",
     "WriteAccessAllowed",
     "VideoChatScheduled",
     "VideoChatStarted",
@@ -2069,6 +2135,8 @@ __all__ = (
     "WebAppInfo",
     "ReplyKeyboardMarkup",
     "KeyboardButton",
+    "KeyboardButtonRequestUser",
+    "KeyboardButtonRequestChat",
     "KeyboardButtonPollType",
     "ReplyKeyboardRemove",
     "InlineKeyboardMarkup",

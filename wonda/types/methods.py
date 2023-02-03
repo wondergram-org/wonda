@@ -727,6 +727,7 @@ class APIMethods:
         user_id: int,
         permissions: ChatPermissions,
         chat_id: Union[int, str],
+        use_independent_chat_permissions: Optional[bool] = None,
         until_date: Optional[int] = None,
         **kwargs
     ) -> bool:
@@ -811,7 +812,11 @@ class APIMethods:
         return response
 
     async def set_chat_permissions(
-        self, permissions: ChatPermissions, chat_id: Union[int, str], **kwargs
+        self,
+        permissions: ChatPermissions,
+        chat_id: Union[int, str],
+        use_independent_chat_permissions: Optional[bool] = None,
+        **kwargs
     ) -> bool:
         """
         Use this method to set default chat permissions for all members. The bot must be an
