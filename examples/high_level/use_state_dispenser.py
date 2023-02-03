@@ -5,17 +5,17 @@ from wonda.tools.keyboard import Button, ReplyKeyboard
 # Make a bot with a token from an environment variable.
 bot = Bot(Token.from_env())
 
-# Create a new state group
-# describing the flow of the conversation.
+# Create a new state group describing the flow of the conversation.
 class MenuState(BaseStateGroup):
-    START, BUY = "start", "buy"
+    START = "start"
+    BUY = "buy"
 
 
 MENU_KEYBOARD = (
     ReplyKeyboard().add(Button("About us")).add(Button("Buy a drink")).build()
 )
 BEVERAGE_KEYBOARD = (
-    ReplyKeyboard().add(Button("Espresso")).add(Button("Cappuccino")).build()
+    ReplyKeyboard().add(Button("Espresso")).add(Button("Cappuccino")).add().build()
 )
 
 
