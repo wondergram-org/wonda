@@ -8,9 +8,7 @@ class MemoryStorage(ABCStorage):
     def __init__(self) -> None:
         self.data: Dict[Key, Value] = {}
 
-    async def get(
-        self, key: Key, default: Optional[Value] = NO_KEY
-    ) -> Union[Value, NoReturn]:
+    async def get(self, key: Key, default: Value = NO_KEY) -> Union[Value, NoReturn]:
         if await self.contains(key):
             return self.data[key]
 

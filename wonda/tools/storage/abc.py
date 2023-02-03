@@ -1,12 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from wonda.tools.storage.types import NO_KEY, TTL, Key, Value
 
 
 class ABCBaseStorage(ABC):
     @abstractmethod
-    def get(self, key: Key, default: Optional[Value] = NO_KEY) -> Value:
+    def get(self, key: Key, default: Value = NO_KEY) -> Value:
         pass
 
     @abstractmethod
