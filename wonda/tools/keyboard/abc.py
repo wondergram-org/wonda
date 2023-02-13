@@ -7,10 +7,10 @@ if TYPE_CHECKING:
     AnyMarkup = Union[ReplyKeyboardMarkup, InlineKeyboardMarkup]
 
 
-class BaseButton:
+class Button:
     """
-    A text-only keyboard button interface.
-    All other keyboard button types should inherit this class.
+    A text-only keyboard button interface. All 
+    other button types should inherit this class.
     """
 
     def __init__(self, text: str) -> None:
@@ -28,9 +28,9 @@ class ABCBuilder(ABC):
     An abstract keyboard builder interface.
     """
 
-    buttons: List[List[BaseButton]]
+    buttons: List[List[Button]]
 
-    def add(self, button: BaseButton) -> "ABCBuilder":
+    def add(self, button: Button) -> "ABCBuilder":
         """
         Adds a button to the keyboard.
         """
@@ -62,7 +62,7 @@ class ABCBuilder(ABC):
         return [[button.get_data() for button in row] for row in self.buttons]
 
     @property
-    def last_row(self) -> List[BaseButton]:
+    def last_row(self) -> List[Button]:
         """
         Convenience property to get the last button row.
         """
@@ -84,4 +84,4 @@ class ABCBuilder(ABC):
         return self
 
     def __repr__(self) -> str:
-        return str(self.build().dict())
+        return self.build().json()
