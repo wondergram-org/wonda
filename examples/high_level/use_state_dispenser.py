@@ -15,7 +15,7 @@ MENU_KEYBOARD = (
     ReplyKeyboard().add(Button("About us")).add(Button("Buy a drink")).build()
 )
 BEVERAGE_KEYBOARD = (
-    ReplyKeyboard().add(Button("Espresso")).add(Button("Cappuccino")).add().build()
+    ReplyKeyboard().add(Button("Espresso")).add(Button("Cappuccino")).build()
 )
 
 
