@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 class ABCRequestValidator(ABC):
     @abstractmethod
-    async def validate(self, request: dict) -> Union[dict, NoReturn]:
+    async def validate(self, request: dict) -> Union[Any, NoReturn]:
         pass
 
 

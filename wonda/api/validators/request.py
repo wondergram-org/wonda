@@ -32,7 +32,7 @@ def translate(v: Any, rec: bool = False) -> Any:
 
 
 class TranslateFriendlyTypesRequestValidator(ABCRequestValidator):
-    async def validate(self, request: dict) -> dict:
+    async def validate(self, request: dict) -> FormData:
         return FormData({k: translate(v) for k, v in request.items() if v is not None})
 
 
