@@ -12,7 +12,7 @@ bot = Bot(Token.from_env())
 @bot.on.private_message(Text(["hi", "hello", "howdy"]))
 async def message_handler(msg: Message) -> str:
     # Text rule matches the message text with the given list of strings.
-    # If the match is successful, the following lines will be executed.
+    # If the match is successful, following lines will be executed.
 
     # This line returns specific value to answer message from user
     # (see https://github.com/wondergram-org/wonda/blob/main/wonda/bot/dispatch/return_manager/message.py).
@@ -23,18 +23,17 @@ async def message_handler(msg: Message) -> str:
 # Also, in this example we'll be using another great shortcut to answer properly.
 @bot.on.chat_message(Fuzzy(["shit", "fuck", "bastard", "asshole"]))
 async def chat_message_handler(msg: Message) -> None:
-    # Levenstein (lev for short) rule measures the differences between previously set and newly received
-    # string sequence. After it is satisfied, following lines will be executed.
+    # Fuzzy rule measures the ratio between two string sequences.
+    # If the ratio is greater than or equal to set `min_ratio`,
+    # following lines will be executed.
 
     try:
-        # This is a basic API call. Please notice that the bot.api (or blueprint api)
-        # is not accessible in case multibot is used, so we strongly recommend you to use
-        # ctx_apis everywhere you can.
-        await bot.api.ban_chat_member(chat_id=msg.chat.id, user_id=msg.from_.id)
+        # This is a basic API call. Please use ctx_api as it is always available (that
+        # can't be said for bot API, for example, while using blueprints).
+        await msg.ctx_api.ban_chat_member(chat_id=msg.chat.id, user_id=msg.from_.id)
     except TelegramAPIError[400]:
-        await msg.ctx_api.send_message(
-            chat_id=msg.chat.id, text="An error occured while kicking a chat member."
-        )
+        # Gracefully handle the error and make an apology.
+        await msg.answer("Sorry, can't kick this member because of an error.")
 
 
 # You can also handle other types of updates besides messages. To do that,
@@ -47,11 +46,11 @@ async def edited_message_handler(msg: Message) -> None:
     await msg.answer("Hm? I heard you edit a message.")
 
 
-# Let's talk a little bit more about shortcut methods. There's many
-# of them in Wonda - in fact, nearly every update has them!
-# They are used to answer messages, queries, and to do many more
-# with a single line of code. To show them in action, let's answer
-# a join request to a dog chat in which only dogs are allowed.
+# A bit more about shortcut methods: there's many of them in Wonda.
+# In fact, nearly every update has them! They are used to answer
+# messages and queries. To show them in action, 
+# let's answer a join request to a dog chat 
+# in which only good boys are allowed.
 @bot.on.raw_update(BotUpdateType.CHAT_JOIN_REQUEST, ChatJoinRequest)
 async def chat_join_request_handler(req: ChatJoinRequest) -> None:
     # Verify that the user who sent the request is actually a dog
