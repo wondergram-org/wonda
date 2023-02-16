@@ -1,5 +1,5 @@
 from wonda import Bot, Token
-from wonda.bot.rules import Command, Data
+from wonda.bot.rules import Command, Text
 from wonda.bot.updates import BotUpdateType, CallbackQuery, Message
 from wonda.tools.keyboard import Callback, InlineKeyboard
 
@@ -28,7 +28,7 @@ async def start_handler(msg: Message) -> None:
 
 
 @bot.on.raw_update(
-    BotUpdateType.CALLBACK_QUERY, CallbackQuery, Data(["apple", "orange"])
+    BotUpdateType.CALLBACK_QUERY, CallbackQuery, Text(["apple", "orange"])
 )
 async def fruit_handler(upd: CallbackQuery) -> None:
     # Answer a callback query <.answer()> method. To display
@@ -38,7 +38,7 @@ async def fruit_handler(upd: CallbackQuery) -> None:
     )
 
 
-@bot.on.raw_update(BotUpdateType.CALLBACK_QUERY, CallbackQuery, Data("stop"))
+@bot.on.raw_update(BotUpdateType.CALLBACK_QUERY, CallbackQuery, Text("stop"))
 async def shoe_handler(upd: CallbackQuery) -> None:
     await upd.ctx_api.edit_message_text(
         "That's ok. Some choices are just too hard to make.",
