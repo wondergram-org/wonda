@@ -175,28 +175,3 @@ class Regex(ABCRule[MessageUpdate]):
                 return {"match": result.groups()}
 
         return False
-
-
-class Text(ABCRule[MessageUpdate]):
-    """
-    Checks if the message text is equal to the given text.
-    """
-
-    def __init__(self, texts: Union[str, List[str]], ignore_case: bool = False) -> None:
-        if not isinstance(texts, list):
-            texts = [texts]
-
-        self.texts = texts
-        self.ignore_case = ignore_case
-
-    async def check(self, msg: MessageUpdate) -> bool:
-        text = msg.text or msg.caption
-
-        if not text:
-            return False
-
-        return (
-            text in self.texts
-            if not self.ignore_case
-            else text.lower() in list(map(str.lower, self.texts))
-        )

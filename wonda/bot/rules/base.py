@@ -9,9 +9,8 @@ from wonda.bot.updates import BaseBotUpdate
 
 class Function(ABCRule[BaseBotUpdate]):
     """
-    A rule that calls a sync/async function to check
-    if the update should be handled. It can accept
-    any update objects, but always returns a boolean.
+    Calls a function to check whether the update should be handled.
+    Accepts any update objects, but always returns a boolean.
     """
 
     def __init__(self, func: Callable[[BaseBotUpdate], bool]) -> None:
@@ -25,8 +24,7 @@ class Function(ABCRule[BaseBotUpdate]):
 
 class Has(ABCRule[BaseBotUpdate]):
     """
-    A rule that checks if the update dataclass
-    has the specified attributes at its upper level.
+    Checks if the update dataclass has the specified attributes at its upper level.
     """
 
     def __init__(self, attr_names: Union[str, List[str]]) -> None:
@@ -37,6 +35,10 @@ class Has(ABCRule[BaseBotUpdate]):
 
 
 class State(ABCRule[BaseBotUpdate]):
+    """
+    Checks that the user's state is currently set to one of the specified values.
+    """
+
     def __init__(
         self,
         state: Optional[Union[BaseStateGroup, List[BaseStateGroup]]] = None,
@@ -52,6 +54,10 @@ class State(ABCRule[BaseBotUpdate]):
 
 
 class StateGroup(ABCRule[BaseBotUpdate]):
+    """
+    Checks that the state set for the current user belongs to one of the specified groups.
+    """
+
     def __init__(
         self,
         state_group: Union[Type[BaseStateGroup], List[Type[BaseStateGroup]]],
@@ -68,6 +74,31 @@ class StateGroup(ABCRule[BaseBotUpdate]):
         return group_name in self.state_group
 
 
+class Text(ABCRule[BaseBotUpdate]):
+    """
+    Checks if text/caption/query etc. is equal to one of the specified texts.
+    """
+
+    def __init__(self, texts: Union[str, List[str]], ignore_case: bool = False) -> None:
+        if not isinstance(texts, list):
+            texts = [texts]
+
+        self.texts = texts
+        self.ignore_case = ignore_case
+
+    async def check(self, upd: BaseBotUpdate) -> bool:
+        if any(
+            (text := getattr(upd, src, None))
+            for src in ("text", "caption", "data", "query", "question")
+        ):
+
+            return (
+                text in self.texts
+                if not self.ignore_case
+                else text.lower() in list(map(str.lower, self.texts))
+            )
+
+
 try:
     import vbml
 except ImportError:
@@ -76,9 +107,9 @@ except ImportError:
 
 if vbml:
 
-    class VBML(ABCRule[BaseBotUpdate]):
+    class Match(ABCRule[BaseBotUpdate]):
         """
-        Matches text, captions and queries against given VBML patterns.
+        Matches text, captions and queries against given patterns.
         Docs: https://github.com/tesseradecade/vbml
         """
 
