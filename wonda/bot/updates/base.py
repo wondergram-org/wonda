@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from typing import Any, Optional, Union
 
 from pydantic import BaseModel
@@ -7,7 +6,7 @@ from wonda.api import ABCAPI, API
 from wonda.bot.states import StateRepr
 
 
-class BaseBotUpdate(ABC, BaseModel):
+class BaseBotUpdate(BaseModel):
     state_repr: Optional[StateRepr] = None
     unprepared_ctx_api: Optional[Any] = None
 
