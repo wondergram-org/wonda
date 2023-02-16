@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "wonda"
-version = "0.5.4"
-description = "Asynchronous, feature-rich, high performant Telegram Bot API framework for building stunning bots"
+version = "0.5.5"
+description = "Asynchronous feature-rich Telegram bot framework for building great bots"
 authors = []
 license = "MIT"
 readme = "README.md"
@@ -9,14 +9,14 @@ homepage = "https://github.com/wondergram-org/wonda/"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-aiohttp = "^3.8.1"
 certifi = "^2022.6.15"
+choicelib = "^0.1.5"
+aiohttp = "^3.8.1"
+pydantic = "^1.10.4"
 typing-extensions = "^4.3.0"
 uvloop = {version = "^0.16.0", optional = true}
 watchfiles = {version = "^0.16.0", optional = true}
 orjson = {version = "^3.8.5", optional = true}
-choicelib = "^0.1.5"
-pydantic = "^1.10.4"
 
 [tool.poetry.dev-dependencies]
 black = "^22.6.0"
