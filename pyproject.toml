@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wonda"
-version = "0.5.5"
+version = "0.5.6"
 description = "Asynchronous feature-rich Telegram bot framework for building great bots"
 authors = []
 license = "MIT"
