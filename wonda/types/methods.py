@@ -223,7 +223,7 @@ class APIMethods:
         chat_id: Union[int, str],
         audio: Union[InputFile, str],
         title: Optional[str] = None,
-        thumb: Optional[Union[InputFile, str]] = None,
+        thumbnail: Optional[Union[InputFile, str]] = None,
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
@@ -258,7 +258,7 @@ class APIMethods:
         self,
         document: Union[InputFile, str],
         chat_id: Union[int, str],
-        thumb: Optional[Union[InputFile, str]] = None,
+        thumbnail: Optional[Union[InputFile, str]] = None,
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
@@ -291,7 +291,7 @@ class APIMethods:
         video: Union[InputFile, str],
         chat_id: Union[int, str],
         width: Optional[int] = None,
-        thumb: Optional[Union[InputFile, str]] = None,
+        thumbnail: Optional[Union[InputFile, str]] = None,
         supports_streaming: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
@@ -328,7 +328,7 @@ class APIMethods:
         chat_id: Union[int, str],
         animation: Union[InputFile, str],
         width: Optional[int] = None,
-        thumb: Optional[Union[InputFile, str]] = None,
+        thumbnail: Optional[Union[InputFile, str]] = None,
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
@@ -395,7 +395,7 @@ class APIMethods:
         self,
         video_note: Union[InputFile, str],
         chat_id: Union[int, str],
-        thumb: Optional[Union[InputFile, str]] = None,
+        thumbnail: Optional[Union[InputFile, str]] = None,
         reply_to_message_id: Optional[int] = None,
         reply_markup: Optional[
             Union[
@@ -471,48 +471,6 @@ class APIMethods:
         """
         response = await self.api.request("sendLocation", self.get_params(locals()))
         return Message(**response)
-
-    async def edit_message_live_location(
-        self,
-        longitude: float,
-        latitude: float,
-        reply_markup: Optional[InlineKeyboardMarkup] = None,
-        proximity_alert_radius: Optional[int] = None,
-        message_id: Optional[int] = None,
-        inline_message_id: Optional[str] = None,
-        horizontal_accuracy: Optional[float] = None,
-        heading: Optional[int] = None,
-        chat_id: Optional[Union[int, str]] = None,
-        **kwargs
-    ) -> Union[Message, bool]:
-        """
-        Use this method to edit live location messages. A location can be edited until its
-        live_period expires or editing is explicitly disabled by a call to
-        stopMessageLiveLocation. On success, if the edited message is not an inline message,
-        the edited Message is returned, otherwise True is returned.
-        """
-        response = await self.api.request(
-            "editMessageLiveLocation", self.get_params(locals())
-        )
-        return parse_obj_as(Union[Message, bool], response)
-
-    async def stop_message_live_location(
-        self,
-        reply_markup: Optional[InlineKeyboardMarkup] = None,
-        message_id: Optional[int] = None,
-        inline_message_id: Optional[str] = None,
-        chat_id: Optional[Union[int, str]] = None,
-        **kwargs
-    ) -> Union[Message, bool]:
-        """
-        Use this method to stop updating a live location message before live_period expires.
-        On success, if the message is not an inline message, the edited Message is returned,
-        otherwise True is returned.
-        """
-        response = await self.api.request(
-            "stopMessageLiveLocation", self.get_params(locals())
-        )
-        return parse_obj_as(Union[Message, bool], response)
 
     async def send_venue(
         self,
@@ -1047,8 +1005,8 @@ class APIMethods:
         self, user_id: int, chat_id: Union[int, str], **kwargs
     ) -> ChatMember:
         """
-        Use this method to get information about a member of a chat. The method is
-        guaranteed to work for other users, only if the bot is an administrator in the chat.
+        Use this method to get information about a member of a chat. The method is only
+        guaranteed to work for other users if the bot is an administrator in the chat.
         Returns a ChatMember object on success.
         """
         response = await self.api.request("getChatMember", self.get_params(locals()))
@@ -1303,6 +1261,57 @@ class APIMethods:
         response = await self.api.request("getMyCommands", self.get_params(locals()))
         return parse_obj_as(List[BotCommand], response)
 
+    async def set_my_description(
+        self,
+        language_code: Optional[str] = None,
+        description: Optional[str] = None,
+        **kwargs
+    ) -> bool:
+        """
+        Use this method to change the bot's description, which is shown in the chat with the
+        bot if the chat is empty. Returns True on success.
+        """
+        response = await self.api.request("setMyDescription", self.get_params(locals()))
+        return response
+
+    async def get_my_description(
+        self, language_code: Optional[str] = None, **kwargs
+    ) -> BotDescription:
+        """
+        Use this method to get the current bot description for the given user language.
+        Returns BotDescription on success.
+        """
+        response = await self.api.request("getMyDescription", self.get_params(locals()))
+        return BotDescription(**response)
+
+    async def set_my_short_description(
+        self,
+        short_description: Optional[str] = None,
+        language_code: Optional[str] = None,
+        **kwargs
+    ) -> bool:
+        """
+        Use this method to change the bot's short description, which is shown on the bot's
+        profile page and is sent together with the link when users share the bot. Returns
+        True on success.
+        """
+        response = await self.api.request(
+            "setMyShortDescription", self.get_params(locals())
+        )
+        return response
+
+    async def get_my_short_description(
+        self, language_code: Optional[str] = None, **kwargs
+    ) -> BotShortDescription:
+        """
+        Use this method to get the current bot short description for the given user
+        language. Returns BotShortDescription on success.
+        """
+        response = await self.api.request(
+            "getMyShortDescription", self.get_params(locals())
+        )
+        return BotShortDescription(**response)
+
     async def set_chat_menu_button(
         self,
         menu_button: Optional[MenuButton] = None,
@@ -1339,8 +1348,8 @@ class APIMethods:
         """
         Use this method to change the default administrator rights requested by the bot when
         it's added as an administrator to groups or channels. These rights will be suggested
-        to users, but they are are free to modify the list before adding the bot. Returns
-        True on success.
+        to users, but they are free to modify the list before adding the bot. Returns True
+        on success.
         """
         response = await self.api.request(
             "setMyDefaultAdministratorRights", self.get_params(locals())
@@ -1418,6 +1427,48 @@ class APIMethods:
         response = await self.api.request("editMessageMedia", self.get_params(locals()))
         return parse_obj_as(Union[Message, bool], response)
 
+    async def edit_message_live_location(
+        self,
+        longitude: float,
+        latitude: float,
+        reply_markup: Optional[InlineKeyboardMarkup] = None,
+        proximity_alert_radius: Optional[int] = None,
+        message_id: Optional[int] = None,
+        inline_message_id: Optional[str] = None,
+        horizontal_accuracy: Optional[float] = None,
+        heading: Optional[int] = None,
+        chat_id: Optional[Union[int, str]] = None,
+        **kwargs
+    ) -> Union[Message, bool]:
+        """
+        Use this method to edit live location messages. A location can be edited until its
+        live_period expires or editing is explicitly disabled by a call to
+        stopMessageLiveLocation. On success, if the edited message is not an inline message,
+        the edited Message is returned, otherwise True is returned.
+        """
+        response = await self.api.request(
+            "editMessageLiveLocation", self.get_params(locals())
+        )
+        return parse_obj_as(Union[Message, bool], response)
+
+    async def stop_message_live_location(
+        self,
+        reply_markup: Optional[InlineKeyboardMarkup] = None,
+        message_id: Optional[int] = None,
+        inline_message_id: Optional[str] = None,
+        chat_id: Optional[Union[int, str]] = None,
+        **kwargs
+    ) -> Union[Message, bool]:
+        """
+        Use this method to stop updating a live location message before live_period expires.
+        On success, if the message is not an inline message, the edited Message is returned,
+        otherwise True is returned.
+        """
+        response = await self.api.request(
+            "stopMessageLiveLocation", self.get_params(locals())
+        )
+        return parse_obj_as(Union[Message, bool], response)
+
     async def edit_message_reply_markup(
         self,
         reply_markup: Optional[InlineKeyboardMarkup] = None,
@@ -1483,6 +1534,7 @@ class APIMethods:
         ] = None,
         protect_content: Optional[bool] = None,
         message_thread_id: Optional[int] = None,
+        emoji: Optional[str] = None,
         disable_notification: Optional[bool] = None,
         allow_sending_without_reply: Optional[bool] = None,
         **kwargs
@@ -1514,12 +1566,12 @@ class APIMethods:
         return parse_obj_as(List[Sticker], response)
 
     async def upload_sticker_file(
-        self, user_id: int, png_sticker: InputFile, **kwargs
+        self, user_id: int, sticker_format: str, sticker: InputFile, **kwargs
     ) -> File:
         """
-        Use this method to upload a .PNG file with a sticker for later use in
-        createNewStickerSet and addStickerToSet methods (can be used multiple times).
-        Returns the uploaded File on success.
+        Use this method to upload a file with a sticker for later use in the
+        createNewStickerSet and addStickerToSet methods (the file can be used multiple
+        times). Returns the uploaded File on success.
         """
         response = await self.api.request(
             "uploadStickerFile", self.get_params(locals())
@@ -1530,19 +1582,16 @@ class APIMethods:
         self,
         user_id: int,
         title: str,
+        stickers: List[InputSticker],
+        sticker_format: str,
         name: str,
-        emojis: str,
-        webm_sticker: Optional[InputFile] = None,
-        tgs_sticker: Optional[InputFile] = None,
         sticker_type: Optional[str] = None,
-        png_sticker: Optional[Union[InputFile, str]] = None,
-        mask_position: Optional[MaskPosition] = None,
+        needs_repainting: Optional[bool] = None,
         **kwargs
     ) -> bool:
         """
         Use this method to create a new sticker set owned by a user. The bot will be able to
-        edit the sticker set thus created. You must use exactly one of the fields
-        png_sticker, tgs_sticker, or webm_sticker. Returns True on success.
+        edit the sticker set thus created. Returns True on success.
         """
         response = await self.api.request(
             "createNewStickerSet", self.get_params(locals())
@@ -1550,22 +1599,13 @@ class APIMethods:
         return response
 
     async def add_sticker_to_set(
-        self,
-        user_id: int,
-        name: str,
-        emojis: str,
-        webm_sticker: Optional[InputFile] = None,
-        tgs_sticker: Optional[InputFile] = None,
-        png_sticker: Optional[Union[InputFile, str]] = None,
-        mask_position: Optional[MaskPosition] = None,
-        **kwargs
+        self, user_id: int, sticker: InputSticker, name: str, **kwargs
     ) -> bool:
         """
-        Use this method to add a new sticker to a set created by the bot. You must use
-        exactly one of the fields png_sticker, tgs_sticker, or webm_sticker. Animated
-        stickers can be added to animated sticker sets and only to them. Animated sticker
-        sets can have up to 50 stickers. Static sticker sets can have up to 120 stickers.
-        Returns True on success.
+        Use this method to add a new sticker to a set created by the bot. The format of the
+        added sticker must match the format of the other stickers in the set. Emoji sticker
+        sets can have up to 200 stickers. Animated and video sticker sets can have up to 50
+        stickers. Static sticker sets can have up to 120 stickers. Returns True on success.
         """
         response = await self.api.request("addStickerToSet", self.get_params(locals()))
         return response
@@ -1592,21 +1632,88 @@ class APIMethods:
         )
         return response
 
-    async def set_sticker_set_thumb(
+    async def set_sticker_emoji_list(
+        self, sticker: str, emoji_list: List[str], **kwargs
+    ) -> bool:
+        """
+        Use this method to change the list of emoji assigned to a regular or custom emoji
+        sticker. The sticker must belong to a sticker set created by the bot. Returns True
+        on success.
+        """
+        response = await self.api.request(
+            "setStickerEmojiList", self.get_params(locals())
+        )
+        return response
+
+    async def set_sticker_keywords(
+        self, sticker: str, keywords: Optional[List[str]] = None, **kwargs
+    ) -> bool:
+        """
+        Use this method to change search keywords assigned to a regular or custom emoji
+        sticker. The sticker must belong to a sticker set created by the bot. Returns True
+        on success.
+        """
+        response = await self.api.request(
+            "setStickerKeywords", self.get_params(locals())
+        )
+        return response
+
+    async def set_sticker_mask_position(
+        self, sticker: str, mask_position: Optional[MaskPosition] = None, **kwargs
+    ) -> bool:
+        """
+        Use this method to change the mask position of a mask sticker. The sticker must
+        belong to a sticker set that was created by the bot. Returns True on success.
+        """
+        response = await self.api.request(
+            "setStickerMaskPosition", self.get_params(locals())
+        )
+        return response
+
+    async def set_sticker_set_title(self, title: str, name: str, **kwargs) -> bool:
+        """
+        Use this method to set the title of a created sticker set. Returns True on success.
+        """
+        response = await self.api.request(
+            "setStickerSetTitle", self.get_params(locals())
+        )
+        return response
+
+    async def set_sticker_set_thumbnail(
         self,
         user_id: int,
         name: str,
-        thumb: Optional[Union[InputFile, str]] = None,
+        thumbnail: Optional[Union[InputFile, str]] = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to set the thumbnail of a sticker set. Animated thumbnails can be
-        set for animated sticker sets only. Video thumbnails can be set only for video
-        sticker sets only. Returns True on success.
+        Use this method to set the thumbnail of a regular or mask sticker set. The format of
+        the thumbnail file must match the format of the stickers in the set. Returns True on
+        success.
         """
         response = await self.api.request(
-            "setStickerSetThumb", self.get_params(locals())
+            "setStickerSetThumbnail", self.get_params(locals())
         )
+        return response
+
+    async def set_custom_emoji_sticker_set_thumbnail(
+        self, name: str, custom_emoji_id: Optional[str] = None, **kwargs
+    ) -> bool:
+        """
+        Use this method to set the thumbnail of a custom emoji sticker set. Returns True on
+        success.
+        """
+        response = await self.api.request(
+            "setCustomEmojiStickerSetThumbnail", self.get_params(locals())
+        )
+        return response
+
+    async def delete_sticker_set(self, name: str, **kwargs) -> bool:
+        """
+        Use this method to delete a sticker set that was created by the bot. Returns True on
+        success.
+        """
+        response = await self.api.request("deleteStickerSet", self.get_params(locals()))
         return response
 
     async def answer_inline_query(

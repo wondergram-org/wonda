@@ -231,7 +231,7 @@ class Animation(BaseModel):
     width: int = Field()
     height: int = Field()
     duration: int = Field()
-    thumb: Optional["PhotoSize"] = Field(default=None)
+    thumbnail: Optional["PhotoSize"] = Field(default=None)
     file_name: Optional[str] = Field(default=None)
     mime_type: Optional[str] = Field(default=None)
     file_size: Optional[int] = Field(default=None)
@@ -250,7 +250,7 @@ class Audio(BaseModel):
     file_name: Optional[str] = Field(default=None)
     mime_type: Optional[str] = Field(default=None)
     file_size: Optional[int] = Field(default=None)
-    thumb: Optional["PhotoSize"] = Field(default=None)
+    thumbnail: Optional["PhotoSize"] = Field(default=None)
 
 
 class Document(BaseModel):
@@ -261,7 +261,7 @@ class Document(BaseModel):
 
     file_id: str = Field()
     file_unique_id: str = Field()
-    thumb: Optional["PhotoSize"] = Field(default=None)
+    thumbnail: Optional["PhotoSize"] = Field(default=None)
     file_name: Optional[str] = Field(default=None)
     mime_type: Optional[str] = Field(default=None)
     file_size: Optional[int] = Field(default=None)
@@ -277,7 +277,7 @@ class Video(BaseModel):
     width: int = Field()
     height: int = Field()
     duration: int = Field()
-    thumb: Optional["PhotoSize"] = Field(default=None)
+    thumbnail: Optional["PhotoSize"] = Field(default=None)
     file_name: Optional[str] = Field(default=None)
     mime_type: Optional[str] = Field(default=None)
     file_size: Optional[int] = Field(default=None)
@@ -292,7 +292,7 @@ class VideoNote(BaseModel):
     file_unique_id: str = Field()
     length: int = Field()
     duration: int = Field()
-    thumb: Optional["PhotoSize"] = Field(default=None)
+    thumbnail: Optional["PhotoSize"] = Field(default=None)
     file_size: Optional[int] = Field(default=None)
 
 
@@ -1003,6 +1003,22 @@ class BotCommandScopeChatMember(BaseModel):
     user_id: int = Field()
 
 
+class BotDescription(BaseModel):
+    """
+    This object represents the bot's description.
+    """
+
+    description: str = Field()
+
+
+class BotShortDescription(BaseModel):
+    """
+    This object represents the bot's short description.
+    """
+
+    short_description: str = Field()
+
+
 class MenuButtonCommands(BaseModel):
     """
     Represents a menu button, which opens the bot's list of commands.
@@ -1058,7 +1074,7 @@ class InputMediaVideo(BaseModel):
 
     type: Literal["video"] = Field(default="video")
     media: str = Field()
-    thumb: Optional[Union["InputFile", str]] = Field(default=None)
+    thumbnail: Optional[Union["InputFile", str]] = Field(default=None)
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
     caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
@@ -1077,7 +1093,7 @@ class InputMediaAnimation(BaseModel):
 
     type: Literal["animation"] = Field(default="animation")
     media: str = Field()
-    thumb: Optional[Union["InputFile", str]] = Field(default=None)
+    thumbnail: Optional[Union["InputFile", str]] = Field(default=None)
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
     caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
@@ -1094,7 +1110,7 @@ class InputMediaAudio(BaseModel):
 
     type: Literal["audio"] = Field(default="audio")
     media: str = Field()
-    thumb: Optional[Union["InputFile", str]] = Field(default=None)
+    thumbnail: Optional[Union["InputFile", str]] = Field(default=None)
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
     caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
@@ -1110,7 +1126,7 @@ class InputMediaDocument(BaseModel):
 
     type: Literal["document"] = Field(default="document")
     media: str = Field()
-    thumb: Optional[Union["InputFile", str]] = Field(default=None)
+    thumbnail: Optional[Union["InputFile", str]] = Field(default=None)
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
     caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
@@ -1138,12 +1154,13 @@ class Sticker(BaseModel):
     height: int = Field()
     is_animated: bool = Field()
     is_video: bool = Field()
-    thumb: Optional["PhotoSize"] = Field(default=None)
+    thumbnail: Optional["PhotoSize"] = Field(default=None)
     emoji: Optional[str] = Field(default=None)
     set_name: Optional[str] = Field(default=None)
     premium_animation: Optional["File"] = Field(default=None)
     mask_position: Optional["MaskPosition"] = Field(default=None)
     custom_emoji_id: Optional[str] = Field(default=None)
+    needs_repainting: Optional[bool] = Field(default=None)
     file_size: Optional[int] = Field(default=None)
 
 
@@ -1158,7 +1175,7 @@ class StickerSet(BaseModel):
     is_animated: bool = Field()
     is_video: bool = Field()
     stickers: List["Sticker"] = Field()
-    thumb: Optional["PhotoSize"] = Field(default=None)
+    thumbnail: Optional["PhotoSize"] = Field(default=None)
 
 
 class MaskPosition(BaseModel):
@@ -1171,6 +1188,17 @@ class MaskPosition(BaseModel):
     x_shift: float = Field()
     y_shift: float = Field()
     scale: float = Field()
+
+
+class InputSticker(BaseModel):
+    """
+    This object describes a sticker to be added to a sticker set.
+    """
+
+    sticker: Union["InputFile", str] = Field()
+    emoji_list: List[str] = Field()
+    mask_position: Optional["MaskPosition"] = Field(default=None)
+    keywords: Optional[List[str]] = Field(default_factory=list)
 
 
 class InlineQuery(BaseModel):
@@ -1200,9 +1228,9 @@ class InlineQueryResultArticle(BaseModel):
     url: Optional[str] = Field(default=None)
     hide_url: Optional[bool] = Field(default=None)
     description: Optional[str] = Field(default=None)
-    thumb_url: Optional[str] = Field(default=None)
-    thumb_width: Optional[int] = Field(default=None)
-    thumb_height: Optional[int] = Field(default=None)
+    thumbnail_url: Optional[str] = Field(default=None)
+    thumbnail_width: Optional[int] = Field(default=None)
+    thumbnail_height: Optional[int] = Field(default=None)
 
 
 class InlineQueryResultPhoto(BaseModel):
@@ -1215,7 +1243,7 @@ class InlineQueryResultPhoto(BaseModel):
     type: Literal["photo"] = Field(default="photo")
     id: str = Field()
     photo_url: str = Field()
-    thumb_url: str = Field()
+    thumbnail_url: str = Field()
     photo_width: Optional[int] = Field(default=None)
     photo_height: Optional[int] = Field(default=None)
     title: Optional[str] = Field(default=None)
@@ -1241,8 +1269,10 @@ class InlineQueryResultGif(BaseModel):
     gif_width: Optional[int] = Field(default=None)
     gif_height: Optional[int] = Field(default=None)
     gif_duration: Optional[int] = Field(default=None)
-    thumb_url: str = Field()
-    thumb_mime_type: InlineQueryResultGifThumbMimeType = Field(default="image/jpeg")
+    thumbnail_url: str = Field()
+    thumbnail_mime_type: InlineQueryResultGifThumbnailMimeType = Field(
+        default="image/jpeg"
+    )
     title: Optional[str] = Field(default=None)
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
@@ -1265,8 +1295,8 @@ class InlineQueryResultMpeg4Gif(BaseModel):
     mpeg4_width: Optional[int] = Field(default=None)
     mpeg4_height: Optional[int] = Field(default=None)
     mpeg4_duration: Optional[int] = Field(default=None)
-    thumb_url: str = Field()
-    thumb_mime_type: InlineQueryResultMpeg4GifThumbMimeType = Field(
+    thumbnail_url: str = Field()
+    thumbnail_mime_type: InlineQueryResultMpeg4GifThumbnailMimeType = Field(
         default="image/jpeg"
     )
     title: Optional[str] = Field(default=None)
@@ -1291,7 +1321,7 @@ class InlineQueryResultVideo(BaseModel):
     id: str = Field()
     video_url: str = Field()
     mime_type: InlineQueryResultVideoMimeType = Field()
-    thumb_url: str = Field()
+    thumbnail_url: str = Field()
     title: str = Field()
     caption: Optional[str] = Field(default=None)
     parse_mode: Optional[str] = Field(default=None)
@@ -1363,9 +1393,9 @@ class InlineQueryResultDocument(BaseModel):
     description: Optional[str] = Field(default=None)
     reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
     input_message_content: Optional["InputMessageContent"] = Field(default=None)
-    thumb_url: Optional[str] = Field(default=None)
-    thumb_width: Optional[int] = Field(default=None)
-    thumb_height: Optional[int] = Field(default=None)
+    thumbnail_url: Optional[str] = Field(default=None)
+    thumbnail_width: Optional[int] = Field(default=None)
+    thumbnail_height: Optional[int] = Field(default=None)
 
 
 class InlineQueryResultLocation(BaseModel):
@@ -1386,9 +1416,9 @@ class InlineQueryResultLocation(BaseModel):
     proximity_alert_radius: Optional[int] = Field(default=None)
     reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
     input_message_content: Optional["InputMessageContent"] = Field(default=None)
-    thumb_url: Optional[str] = Field(default=None)
-    thumb_width: Optional[int] = Field(default=None)
-    thumb_height: Optional[int] = Field(default=None)
+    thumbnail_url: Optional[str] = Field(default=None)
+    thumbnail_width: Optional[int] = Field(default=None)
+    thumbnail_height: Optional[int] = Field(default=None)
 
 
 class InlineQueryResultVenue(BaseModel):
@@ -1410,9 +1440,9 @@ class InlineQueryResultVenue(BaseModel):
     google_place_type: Optional[str] = Field(default=None)
     reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
     input_message_content: Optional["InputMessageContent"] = Field(default=None)
-    thumb_url: Optional[str] = Field(default=None)
-    thumb_width: Optional[int] = Field(default=None)
-    thumb_height: Optional[int] = Field(default=None)
+    thumbnail_url: Optional[str] = Field(default=None)
+    thumbnail_width: Optional[int] = Field(default=None)
+    thumbnail_height: Optional[int] = Field(default=None)
 
 
 class InlineQueryResultContact(BaseModel):
@@ -1430,9 +1460,9 @@ class InlineQueryResultContact(BaseModel):
     vcard: Optional[str] = Field(default=None)
     reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
     input_message_content: Optional["InputMessageContent"] = Field(default=None)
-    thumb_url: Optional[str] = Field(default=None)
-    thumb_width: Optional[int] = Field(default=None)
-    thumb_height: Optional[int] = Field(default=None)
+    thumbnail_url: Optional[str] = Field(default=None)
+    thumbnail_width: Optional[int] = Field(default=None)
+    thumbnail_height: Optional[int] = Field(default=None)
 
 
 class InlineQueryResultGame(BaseModel):
@@ -2168,6 +2198,8 @@ __all__ = (
     "BotCommandScopeChat",
     "BotCommandScopeChatAdministrators",
     "BotCommandScopeChatMember",
+    "BotDescription",
+    "BotShortDescription",
     "MenuButton",
     "MenuButtonCommands",
     "MenuButtonWebApp",
@@ -2183,6 +2215,7 @@ __all__ = (
     "Sticker",
     "StickerSet",
     "MaskPosition",
+    "InputSticker",
     "InlineQuery",
     "InlineQueryResult",
     "InlineQueryResultArticle",

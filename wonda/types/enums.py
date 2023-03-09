@@ -60,13 +60,13 @@ class InlineQueryChatType(Enum):
     CHANNEL = "channel"
 
 
-class InlineQueryResultGifThumbMimeType(Enum):
+class InlineQueryResultGifThumbnailMimeType(Enum):
     IMAGE_JPEG = "image/jpeg"
     IMAGE_GIF = "image/gif"
     VIDEO_MP4 = "video/mp4"
 
 
-class InlineQueryResultMpeg4GifThumbMimeType(Enum):
+class InlineQueryResultMpeg4GifThumbnailMimeType(Enum):
     IMAGE_JPEG = "image/jpeg"
     IMAGE_GIF = "image/gif"
     VIDEO_MP4 = "video/mp4"
