@@ -105,9 +105,6 @@ class MessageUpdate(BaseBotUpdate, Message):
     ) -> Message:
         params = APIMethods.get_params(locals())
 
-        if "message_thread_id" not in params and self.is_topic_message:
-            params["message_thread_id"] = self.message_thread_id
-
         return await self.ctx_api.forward_message(
             from_chat_id=self.chat.id, message_id=self.message_id, **params
         )
