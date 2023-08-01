@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import AsyncIterator
+from typing import TYPE_CHECKING, AsyncIterator
 
-from wonda.api.abc import ABCAPI
-from wonda.errors import ABCErrorHandler
+if TYPE_CHECKING:
+    from wonda.api.abc import ABCAPI
+    from wonda.errors import ABCErrorHandler
+    from wonda.types.objects import Update
 
 
 class ABCPolling(ABC):
@@ -10,7 +12,7 @@ class ABCPolling(ABC):
     error_handler: "ABCErrorHandler"
 
     @abstractmethod
-    async def listen(self) -> AsyncIterator:
+    async def listen(self) -> AsyncIterator["Update"]:
         """
         Receives and yields update objects
         """

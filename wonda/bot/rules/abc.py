@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import Generic, TypeVar, Union
+from typing import Generic, TypeVar
 
 T = TypeVar("T")
 
 
 class ABCRule(ABC, Generic[T]):
     @abstractmethod
-    async def check(self, update: T) -> Union[bool, dict]:
+    async def check(self, update: T, ctx: dict) -> bool:
         pass
 
     def __and__(self, other: "ABCRule") -> "AndRule":
@@ -26,32 +26,27 @@ class AndRule(ABCRule[T]):
     def __init__(self, *rules: ABCRule[T]) -> None:
         self.rules = rules
 
-    async def check(self, update: T) -> Union[bool, dict]:
-        context = {}
+    async def check(self, update: T, ctx: dict) -> bool:
+        ctx_copy = ctx.copy()
 
         for rule in self.rules:
-            check_response = await rule.check(update)
-            if check_response is False:
-                return check_response
-            elif isinstance(check_response, dict):
-                context.update(check_response)
+            if not await rule.check(update, ctx_copy):
+                return False
 
-        return context
+        ctx |= ctx_copy
+        return True
 
     def __repr__(self):
         return f"<{self.__class__.__qualname__} rules={self.rules}>"
 
 
 class NotRule(ABCRule[T]):
-    def __init__(self, *rules: ABCRule[T]) -> None:
-        self.rules = rules
+    def __init__(self, rule: ABCRule[T]) -> None:
+        self.rule = rule
 
-    async def check(self, update: T) -> bool:
-        for rule in self.rules:
-            check_response = await rule.check(update)
-            if check_response is False:
-                return True
-        return False
+    async def check(self, update: T, ctx: dict) -> bool:
+        ctx_copy = ctx.copy()
+        return not await self.rule.check(update, ctx_copy)
 
     def __repr__(self):
         return f"<{self.__class__.__qualname__} rules={self.rules}>"
@@ -61,11 +56,15 @@ class OrRule(ABCRule[T]):
     def __init__(self, *rules: ABCRule[T]) -> None:
         self.rules = rules
 
-    async def check(self, update: T) -> None:
+    async def check(self, update: T, ctx: dict) -> bool:
         for rule in self.rules:
-            check_response = await rule.check(update)
-            if check_response is not False:
-                return check_response
+            ctx_copy = ctx.copy()
+
+            if not await rule.check(update, ctx):
+                return False
+
+            ctx |= ctx_copy
+            return True
         return False
 
     def __repr__(self):

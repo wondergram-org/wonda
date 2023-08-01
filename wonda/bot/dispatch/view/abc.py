@@ -1,128 +1,110 @@
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
-from wonda.bot.dispatch.middlewares.base import BaseMiddleware
-from wonda.bot.updates import BaseBotUpdate, BotUpdateType
-from wonda.modules import logger
+from wonda.bot.dispatch.handler.func import FuncHandler
+from wonda.bot.dispatch.middlewares.abc import ABCMiddleware
+from wonda.bot.rules.abc import ABCRule
+from wonda.bot.updates.base import BaseUpdate
 
 if TYPE_CHECKING:
     from wonda.api import ABCAPI, API
-    from wonda.bot.dispatch.handlers.abc import ABCHandler
+    from wonda.bot.dispatch.handler.abc import ABCHandler
     from wonda.bot.states.dispenser.abc import ABCStateDispenser
+    from wonda.types.objects import Update
 
 
-class ABCView(ABC):
-    handlers: Union[List["ABCHandler"], Dict[Any, List[Any]]]
-    middlewares: List[Type["BaseMiddleware"]]
+_ = Any
+T = TypeVar("T", bound=BaseUpdate)
+
+
+def get_update_type(update: "Update") -> str:
+    for k in update.__struct_fields__:
+        v = getattr(update, k, None)
+
+        # Handle None values and `update_id` field
+        if v is not None and not isinstance(v, int):
+            return k
+
+    return ""
+
+
+class ABCView(ABC, Generic[T]):
+    matches: str | list[str]
+
+    def __init__(self) -> None:
+        self.handlers: list["ABCHandler"] = []
+        self.middlewares: list["ABCMiddleware"] = []
+        self.auto_rules: list["ABCRule"] = []
+
+    def __init_subclass__(cls, matches: str | list[str]) -> None:
+        cls.matches = [matches] if isinstance(matches, str) else matches
+
+    def __call__(self, *rules: "ABCRule", blocking: bool = True):
+        """ """
+        assert all(
+            isinstance(rule, ABCRule) for rule in rules
+        ), "All rules must be subclasses of ABCRule"
+
+        def decorator(func) -> None:
+            self.handlers.append(
+                FuncHandler(func, [*self.auto_rules, *rules], blocking=blocking)
+            )
+
+        return decorator
 
     @abstractmethod
-    async def process_update(self, update: dict) -> bool:
-        """
-        Checks if the update is of the type
-        that this view supports
-        """
+    def get_state_key(self, update: T) -> int | None:
         pass
 
-    @abstractmethod
-    async def handle_update(
-        self,
-        update: dict,
-        ctx_api: "ABCAPI",
-        state_dispenser: "ABCStateDispenser",
+    async def filter(self, update: "Update") -> bool:
+        """
+        Checks if the update is of the type this view supports.
+        """
+        return get_update_type(update) in self.matches
+
+    async def handle(
+        self, update: "Update", ctx_api: "ABCAPI", state_dispenser: "ABCStateDispenser"
     ) -> None:
-        pass
+        """
+        Handles the update, casting it into suitable model and saturating it with
+        useful properties like contextual API and FSM representation.
+        """
 
-    @staticmethod
-    @abstractmethod
-    def get_update_model(
-        update: dict, ctx_api: Union["ABCAPI", "API"]
-    ) -> "BaseBotUpdate":
-        """
-        Performs data validation and parses update
-        into BaseBotUpdate subclass
-        """
-        pass
+        upd = self.get_update_model(update)
+        upd.ctx_api, upd.state_repr = ctx_api, await state_dispenser.cast(  # type: ignore
+            self.get_state_key(upd)
+        )
 
-    async def pre_middleware(
-        self,
-        update: dict,
-        context_variables: Optional[dict] = None,
-    ) -> Optional[List[BaseMiddleware]]:
-        """
-        Runs all of the pre middleware methods
-        and returns an exception if any error occurs
-        """
-        mw_instances = []
+        ctx: dict[str, _] = {}
+        responses: list[_] = []
 
         for middleware in self.middlewares:
-            mw_instance = middleware(update, view=self)
-            await mw_instance.pre()
-            if not mw_instance.can_forward:
-                logger.debug(
-                    f"Pre middleware {mw_instance} "
-                    f"returned error {mw_instance.error}"
-                )
-                return None
+            result = await middleware.pre(upd, ctx)
 
-            mw_instances.append(mw_instance)
+            if result is False:
+                return
 
-            if context_variables is not None:
-                context_variables.update(mw_instance.context_update)
+        for handler in self.handlers:
+            if not await handler.filter(upd, ctx):
+                continue
 
-        return mw_instances
+            response = await handler.handle(upd, ctx)
+            responses.append(response)
 
-    async def post_middleware(
-        self,
-        mw_instances: List[BaseMiddleware],
-        handle_responses: Optional[List] = None,
-        handlers: Optional[List["ABCHandler"]] = None,
-    ):
+        for middleware in self.middlewares:
+            await middleware.post(upd, ctx, responses)
+
+    def get_update_model(self, update: "Update") -> T:
+        upd = getattr(update, get_update_type(update))
+        return self.__orig_bases__[0].__args__[0](**upd.dict())  # type: ignore
+
+    def register_middleware(self, middleware: ABCMiddleware):
         """
-        Runs all of the post middleware methods
-        and returns an exception if any error occurs
-        """
-        for middleware in mw_instances:
-            middleware.handle_responses = (
-                handle_responses or middleware.handle_responses
-            )
-            middleware.handlers = handlers or middleware.handlers
-
-            await middleware.post()
-            if not middleware.can_forward:
-                logger.debug(
-                    f"Post middleware {middleware} "
-                    f"returned error {middleware.error!r}"
-                )
-                return middleware.error
-
-    def register_middleware(self, middleware: Type[BaseMiddleware]):
-        """
-        Registers an uninitialized middleware.
-        This can also work as a decorator if needed
+        Registers a middleware. You can use this as a decorator.
         """
         try:
-            if not issubclass(middleware, BaseMiddleware):
-                raise ValueError("Argument is not a subclass of BaseMiddleware")
+            if not isinstance(middleware, ABCMiddleware):
+                raise ValueError("Argument is not an instance of ABCMiddleware")
         except TypeError:
             raise ValueError("Argument is not a class")
         self.middlewares.append(middleware)
-
-    @staticmethod
-    def get_update_type(update: dict) -> BotUpdateType:
-        """
-        Extracts the update type assuming that it is
-        always a second field in the object.
-
-        This method is a workaround for getting update types
-        because Telegram does not explicitly return them
-        """
-        update_type = list(update.keys())[1]
-        return BotUpdateType(update_type)
-
-    def __repr__(self) -> str:
-        return (
-            f"<{self.__class__.__name__} "
-            f"handlers={self.handlers} "
-            f"middlewares={self.middlewares} "
-            f"handler_return_manager={self.handler_return_manager}"
-        )

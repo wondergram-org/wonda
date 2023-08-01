@@ -1,12 +1,12 @@
-from typing import Dict, Tuple, Type, TypeVar, Union, cast, no_type_check, overload
+from typing import TypeVar, cast, no_type_check, overload
 
-T = TypeVar("T", bound=Type["CodeException"])
+T = TypeVar("T", bound=type["CodeException"])
 
 
 class CodeException(Exception):
     code: int
     __code_specified__: bool = False
-    __exceptions__: Dict[int, Type["CodeException"]] = {}
+    __exceptions__: dict[int, type["CodeException"]] = {}
 
     @no_type_check
     def __new__(cls, *args, **kwargs):
@@ -25,12 +25,10 @@ class CodeException(Exception):
         ...
 
     @overload
-    def __class_getitem__(cls: T, code: Tuple[int, ...]) -> Tuple[T, ...]:
+    def __class_getitem__(cls: T, code: tuple[int, ...]) -> tuple[T, ...]:
         ...
 
-    def __class_getitem__(
-        cls: T, code: Union[int, Tuple[int, ...]]
-    ) -> Union[T, Tuple[T, ...]]:
+    def __class_getitem__(cls: T, code: int | tuple[int, ...]) -> T | tuple[T, ...]:
         if cls.__code_specified__:
             raise TypeError("exception code already specified")
 

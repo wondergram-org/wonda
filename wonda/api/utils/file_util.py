@@ -1,25 +1,20 @@
-from io import BytesIO
 from pathlib import Path
-from typing import Optional, Union
+
+from wonda.types.objects import InputFile
 
 
 class File:
-    def __init__(self, content: Union[str, bytes], name: Optional[str] = None) -> None:
-        self.name, self.content = name, content
+    def __init__(self, content: bytes, name: str | None = None) -> None:
+        self.content, self.name = content, name
 
     @classmethod
-    def from_bytes(
-        cls, data: Union[bytes, BytesIO], name: Optional[str] = None
-    ) -> "File":
-        content = data.getvalue() if isinstance(data, BytesIO) else data
-        return cls(name=name or "unnamed.bin", content=content)
+    def from_bytes(cls, source: bytes, name: str | None = None) -> InputFile:
+        return InputFile(name or f"{hash(source)}.bin", source)
 
     @classmethod
-    def from_path(cls, source: Union[str, Path], name: Optional[str] = None) -> "File":
-        path = Path(source) if isinstance(source, str) else path
+    def from_path(cls, source: str | Path, name: str | None = None) -> InputFile:
+        source = Path(source) if isinstance(source, str) else source
 
-        with open(path, "rb") as f:
-            return cls(name=name or path.name, content=f.read())
+        with source.open("rb") as f:
+            return InputFile(name or source.name, f.read())
 
-    def __repr__(self) -> str:
-        return f"File(name={self.name!r})"

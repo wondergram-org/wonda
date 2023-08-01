@@ -10,11 +10,12 @@ from .blueprints import bps
 
 # Iterate over a list of blueprints and register them.
 for bp in bps:
-    # Register a blueprint via <.load()> method. This will load the blueprint's labeler
-    # into the labeler of the given framework and then return blueprint constructed with
+    # Register a blueprint via <.load_into()> method. This will load the blueprint's dispatcher
+    # into the dispatcher of the given framework and then return blueprint constructed with
     # framework's API and polling.
-    bp.load(bot)
+    bp.load_into(bot)
 
-# Run loop > loop.run_forever() > with tasks created in loop_wrapper before.
-# The main polling task for bot is bot.run_polling()
+
+# Run the bot. This function uses `.run_polling()` under the hood to start receiving updates.
+# It will also run any tasks you may've added in `loop_wrapper`.
 bot.run_forever()

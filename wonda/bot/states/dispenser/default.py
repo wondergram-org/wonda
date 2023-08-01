@@ -1,15 +1,13 @@
-from typing import Optional
-
 from wonda.bot.states.dispenser import ABCStateDispenser
 from wonda.bot.states.types import BaseStateGroup, StateRepr
 from wonda.tools.storage import ABCStorage, MemoryStorage
 
 
-class BotStateDispenser(ABCStateDispenser):
-    def __init__(self, storage: Optional[ABCStorage] = None):
+class DefaultStateDispenser(ABCStateDispenser):
+    def __init__(self, storage: ABCStorage | None = None) -> None:
         self.storage = storage or MemoryStorage()
 
-    async def get(self, chat_id: int) -> Optional[StateRepr]:
+    async def get(self, chat_id: int) -> StateRepr | None:
         return await self.storage.get(f"fsm_state:{chat_id}", default=None)
 
     async def set(self, chat_id: int, state: BaseStateGroup, **payload) -> None:

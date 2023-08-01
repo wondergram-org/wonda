@@ -1,9 +1,7 @@
-from typing import Any, Callable, NewType
+from typing import Any, Callable
 
-NO_KEY = object()
-
-Key = NewType("Key", str)
-TTL = NewType("TTL", float)
+Key = str
+Ex = float
 
 Value = Any
 Dumper, Loader = Callable[[Value], str], Callable[[str], Value]

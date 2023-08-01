@@ -1,19 +1,14 @@
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, NoReturn, Union
-
-if TYPE_CHECKING:
-    from wonda.api import ABCAPI, API
+from typing import NoReturn
 
 
 class ABCRequestValidator(ABC):
     @abstractmethod
-    async def validate(self, request: dict) -> Union[Any, NoReturn]:
+    async def validate(self, data: dict) -> dict | NoReturn:
         pass
 
 
 class ABCResponseValidator(ABC):
     @abstractmethod
-    async def validate(
-        self, method: str, data: dict, response: Any, ctx_api: Union["ABCAPI", "API"]
-    ) -> Union[Any, NoReturn]:
+    async def validate(self, response: bytes) -> bytes | NoReturn:
         pass

@@ -21,28 +21,25 @@ async def upload_handler(msg: Message) -> None:
     await msg.ctx_api.send_chat_action(chat_id=msg.chat.id, action="upload_photo")
 
     # Download a sample image from Lorem Picsum using the HTTP client.
-    content = await msg.ctx_api.http_client.request_content("https://picsum.photos/300")
-
-    # Construct a file using <.from_bytes(...) method. It has "unnamed.bin"
-    # name by default, so it's advised to give it a proper name.
-    photo = File.from_bytes(content, name="random.jpg")
+    content = await msg.ctx_api.http_client.request_bytes("https://picsum.photos/300")
 
     # Just like that, another photo is uploaded to Telegram.
+    photo = File.from_bytes(content, "random.jpg")
     await msg.ctx_api.send_photo(
-        caption="Yay! A photo from the internet!", photo=photo, chat_id=msg.chat.id
+        photo=photo, chat_id=msg.chat.id, caption="Yay! A photo from the internet!"
     )
 
-    # To enable faster uploads, use File directly. Supply it with a link to a file
-    # or a file_id and Telegram will take care of the rest.
-    larger_photo = File("https://picsum.photos/1000")
-
-    # Despite the image being a lot larger,
-    # it will be uploaded just as fast as the previous one!
+    # To enable faster uploads, you may not use File at all. Instead, pass a URL
+    # or a file_id to the method and Telegram will take care of it.
+    # Despite the image being a lot larger, it will be uploaded
+    # just as fast as the previous one!
     await msg.ctx_api.send_photo(
-        caption="This one's bigger!", photo=larger_photo, chat_id=msg.chat.id
+        chat_id=msg.chat.id,
+        caption="This one's bigger!",
+        photo="https://picsum.photos/1000",
     )
 
 
-# Run loop > loop.run_forever() > with tasks created in loop_wrapper before.
-# The main polling task for bot is bot.run_polling()
+# Run the bot. This function uses `.run_polling()` under the hood to start receiving updates.
+# It will also run any tasks you may've added in `loop_wrapper`.
 bot.run_forever()

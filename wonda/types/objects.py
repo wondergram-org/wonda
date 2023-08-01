@@ -1,2274 +1,2162 @@
-import inspect
-from typing import List, Literal, Optional, Union
-
-from pydantic import BaseModel, Field
-from typing_extensions import Annotated
+from typing import NamedTuple
 
 from .enums import *
+from .helper import *
 
 
-class Update(BaseModel):
+class Update(Model):
     """
-    This object represents an incoming update. At most one of the optional parameters
-    can be present in any given update.
+    This object represents an incoming update. At most one of the optional
+    parameters can be present in any given update.
     """
 
-    update_id: int = Field()
-    message: Optional["Message"] = Field(default=None)
-    edited_message: Optional["Message"] = Field(default=None)
-    channel_post: Optional["Message"] = Field(default=None)
-    edited_channel_post: Optional["Message"] = Field(default=None)
-    inline_query: Optional["InlineQuery"] = Field(default=None)
-    chosen_inline_result: Optional["ChosenInlineResult"] = Field(default=None)
-    callback_query: Optional["CallbackQuery"] = Field(default=None)
-    shipping_query: Optional["ShippingQuery"] = Field(default=None)
-    pre_checkout_query: Optional["PreCheckoutQuery"] = Field(default=None)
-    poll: Optional["Poll"] = Field(default=None)
-    poll_answer: Optional["PollAnswer"] = Field(default=None)
-    my_chat_member: Optional["ChatMemberUpdated"] = Field(default=None)
-    chat_member: Optional["ChatMemberUpdated"] = Field(default=None)
-    chat_join_request: Optional["ChatJoinRequest"] = Field(default=None)
+    update_id: int
+    message: "Message | None" = None
+    edited_message: "Message | None" = None
+    channel_post: "Message | None" = None
+    edited_channel_post: "Message | None" = None
+    inline_query: "InlineQuery | None" = None
+    chosen_inline_result: "ChosenInlineResult | None" = None
+    callback_query: "CallbackQuery | None" = None
+    shipping_query: "ShippingQuery | None" = None
+    pre_checkout_query: "PreCheckoutQuery | None" = None
+    poll: "Poll | None" = None
+    poll_answer: "PollAnswer | None" = None
+    my_chat_member: "ChatMemberUpdated | None" = None
+    chat_member: "ChatMemberUpdated | None" = None
+    chat_join_request: "ChatJoinRequest | None" = None
 
 
-class WebhookInfo(BaseModel):
+class WebhookInfo(Model):
     """
     Describes the current status of a webhook.
     """
 
-    url: str = Field()
-    has_custom_certificate: bool = Field()
-    pending_update_count: int = Field()
-    ip_address: Optional[str] = Field(default=None)
-    last_error_date: Optional[int] = Field(default=None)
-    last_error_message: Optional[str] = Field(default=None)
-    last_synchronization_error_date: Optional[int] = Field(default=None)
-    max_connections: Optional[int] = Field(default=None)
-    allowed_updates: Optional[List[str]] = Field(default_factory=list)
+    url: str
+    has_custom_certificate: bool
+    pending_update_count: int
+    ip_address: str | None = None
+    last_error_date: int | None = None
+    last_error_message: str | None = None
+    last_synchronization_error_date: int | None = None
+    max_connections: int | None = None
+    allowed_updates: "list[str] | None" = None
 
 
-class User(BaseModel):
+class User(Model):
     """
     This object represents a Telegram user or bot.
     """
 
-    id: int = Field()
-    is_bot: bool = Field()
-    first_name: str = Field()
-    last_name: Optional[str] = Field(default=None)
-    username: Optional[str] = Field(default=None)
-    language_code: Optional[str] = Field(default=None)
-    is_premium: Optional[bool] = Field(default=None)
-    added_to_attachment_menu: Optional[bool] = Field(default=None)
-    can_join_groups: Optional[bool] = Field(default=None)
-    can_read_all_group_messages: Optional[bool] = Field(default=None)
-    supports_inline_queries: Optional[bool] = Field(default=None)
+    id: int
+    is_bot: bool
+    first_name: str
+    last_name: str | None = None
+    username: str | None = None
+    language_code: str | None = None
+    is_premium: bool | None = None
+    added_to_attachment_menu: bool | None = None
+    can_join_groups: bool | None = None
+    can_read_all_group_messages: bool | None = None
+    supports_inline_queries: bool | None = None
 
 
-class Chat(BaseModel):
+class Chat(Model):
     """
     This object represents a chat.
     """
 
-    id: int = Field()
-    type: ChatType = Field()
-    title: Optional[str] = Field(default=None)
-    username: Optional[str] = Field(default=None)
-    first_name: Optional[str] = Field(default=None)
-    last_name: Optional[str] = Field(default=None)
-    is_forum: Optional[bool] = Field(default=None)
-    photo: Optional["ChatPhoto"] = Field(default=None)
-    active_usernames: Optional[List[str]] = Field(default_factory=list)
-    emoji_status_custom_emoji_id: Optional[str] = Field(default=None)
-    bio: Optional[str] = Field(default=None)
-    has_private_forwards: Optional[bool] = Field(default=None)
-    has_restricted_voice_and_video_messages: Optional[bool] = Field(default=None)
-    join_to_send_messages: Optional[bool] = Field(default=None)
-    join_by_request: Optional[bool] = Field(default=None)
-    description: Optional[str] = Field(default=None)
-    invite_link: Optional[str] = Field(default=None)
-    pinned_message: Optional["Message"] = Field(default=None)
-    permissions: Optional["ChatPermissions"] = Field(default=None)
-    slow_mode_delay: Optional[int] = Field(default=None)
-    message_auto_delete_time: Optional[int] = Field(default=None)
-    has_aggressive_anti_spam_enabled: Optional[bool] = Field(default=None)
-    has_hidden_members: Optional[bool] = Field(default=None)
-    has_protected_content: Optional[bool] = Field(default=None)
-    sticker_set_name: Optional[str] = Field(default=None)
-    can_set_sticker_set: Optional[bool] = Field(default=None)
-    linked_chat_id: Optional[int] = Field(default=None)
-    location: Optional["ChatLocation"] = Field(default=None)
+    id: int
+    type: ChatType
+    title: str | None = None
+    username: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    is_forum: bool | None = None
+    photo: "ChatPhoto | None" = None
+    active_usernames: "list[str] | None" = None
+    emoji_status_custom_emoji_id: str | None = None
+    bio: str | None = None
+    has_private_forwards: bool | None = None
+    has_restricted_voice_and_video_messages: bool | None = None
+    join_to_send_messages: bool | None = None
+    join_by_request: bool | None = None
+    description: str | None = None
+    invite_link: str | None = None
+    pinned_message: "Message | None" = None
+    permissions: "ChatPermissions | None" = None
+    slow_mode_delay: int | None = None
+    message_auto_delete_time: int | None = None
+    has_aggressive_anti_spam_enabled: bool | None = None
+    has_hidden_members: bool | None = None
+    has_protected_content: bool | None = None
+    sticker_set_name: str | None = None
+    can_set_sticker_set: bool | None = None
+    linked_chat_id: int | None = None
+    location: "ChatLocation | None" = None
 
 
-class Message(BaseModel):
+class Message(Model):
     """
     This object represents a message.
     """
 
-    message_id: int = Field()
-    message_thread_id: Optional[int] = Field(default=None)
-    from_: Optional["User"] = Field(default=None, alias="from")
-    sender_chat: Optional["Chat"] = Field(default=None)
-    date: int = Field()
-    chat: "Chat" = Field()
-    forward_from: Optional["User"] = Field(default=None)
-    forward_from_chat: Optional["Chat"] = Field(default=None)
-    forward_from_message_id: Optional[int] = Field(default=None)
-    forward_signature: Optional[str] = Field(default=None)
-    forward_sender_name: Optional[str] = Field(default=None)
-    forward_date: Optional[int] = Field(default=None)
-    is_topic_message: Optional[bool] = Field(default=None)
-    is_automatic_forward: Optional[bool] = Field(default=None)
-    reply_to_message: Optional["Message"] = Field(default=None)
-    via_bot: Optional["User"] = Field(default=None)
-    edit_date: Optional[int] = Field(default=None)
-    has_protected_content: Optional[bool] = Field(default=None)
-    media_group_id: Optional[str] = Field(default=None)
-    author_signature: Optional[str] = Field(default=None)
-    text: Optional[str] = Field(default=None)
-    entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    animation: Optional["Animation"] = Field(default=None)
-    audio: Optional["Audio"] = Field(default=None)
-    document: Optional["Document"] = Field(default=None)
-    photo: Optional[List["PhotoSize"]] = Field(default_factory=list)
-    sticker: Optional["Sticker"] = Field(default=None)
-    video: Optional["Video"] = Field(default=None)
-    video_note: Optional["VideoNote"] = Field(default=None)
-    voice: Optional["Voice"] = Field(default=None)
-    caption: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    has_media_spoiler: Optional[bool] = Field(default=None)
-    contact: Optional["Contact"] = Field(default=None)
-    dice: Optional["Dice"] = Field(default=None)
-    game: Optional["Game"] = Field(default=None)
-    poll: Optional["Poll"] = Field(default=None)
-    venue: Optional["Venue"] = Field(default=None)
-    location: Optional["Location"] = Field(default=None)
-    new_chat_members: Optional[List["User"]] = Field(default_factory=list)
-    left_chat_member: Optional["User"] = Field(default=None)
-    new_chat_title: Optional[str] = Field(default=None)
-    new_chat_photo: Optional[List["PhotoSize"]] = Field(default_factory=list)
-    delete_chat_photo: Optional[bool] = Field(default=None)
-    group_chat_created: Optional[bool] = Field(default=None)
-    supergroup_chat_created: Optional[bool] = Field(default=None)
-    channel_chat_created: Optional[bool] = Field(default=None)
-    message_auto_delete_timer_changed: Optional[
-        "MessageAutoDeleteTimerChanged"
-    ] = Field(default=None)
-    migrate_to_chat_id: Optional[int] = Field(default=None)
-    migrate_from_chat_id: Optional[int] = Field(default=None)
-    pinned_message: Optional["Message"] = Field(default=None)
-    invoice: Optional["Invoice"] = Field(default=None)
-    successful_payment: Optional["SuccessfulPayment"] = Field(default=None)
-    user_shared: Optional["UserShared"] = Field(default=None)
-    chat_shared: Optional["ChatShared"] = Field(default=None)
-    connected_website: Optional[str] = Field(default=None)
-    write_access_allowed: Optional["WriteAccessAllowed"] = Field(default=None)
-    passport_data: Optional["PassportData"] = Field(default=None)
-    proximity_alert_triggered: Optional["ProximityAlertTriggered"] = Field(default=None)
-    forum_topic_created: Optional["ForumTopicCreated"] = Field(default=None)
-    forum_topic_edited: Optional["ForumTopicEdited"] = Field(default=None)
-    forum_topic_closed: Optional["ForumTopicClosed"] = Field(default=None)
-    forum_topic_reopened: Optional["ForumTopicReopened"] = Field(default=None)
-    general_forum_topic_hidden: Optional["GeneralForumTopicHidden"] = Field(
-        default=None
-    )
-    general_forum_topic_unhidden: Optional["GeneralForumTopicUnhidden"] = Field(
-        default=None
-    )
-    video_chat_scheduled: Optional["VideoChatScheduled"] = Field(default=None)
-    video_chat_started: Optional["VideoChatStarted"] = Field(default=None)
-    video_chat_ended: Optional["VideoChatEnded"] = Field(default=None)
-    video_chat_participants_invited: Optional["VideoChatParticipantsInvited"] = Field(
-        default=None
-    )
-    web_app_data: Optional["WebAppData"] = Field(default=None)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
+    message_id: int
+    date: int
+    chat: "Chat"
+    message_thread_id: int | None = None
+    from_: "User | None" = None
+    sender_chat: "Chat | None" = None
+    forward_from: "User | None" = None
+    forward_from_chat: "Chat | None" = None
+    forward_from_message_id: int | None = None
+    forward_signature: str | None = None
+    forward_sender_name: str | None = None
+    forward_date: int | None = None
+    is_topic_message: bool | None = None
+    is_automatic_forward: bool | None = None
+    reply_to_message: "Message | None" = None
+    via_bot: "User | None" = None
+    edit_date: int | None = None
+    has_protected_content: bool | None = None
+    media_group_id: str | None = None
+    author_signature: str | None = None
+    text: str | None = None
+    entities: "list[MessageEntity] | None" = None
+    animation: "Animation | None" = None
+    audio: "Audio | None" = None
+    document: "Document | None" = None
+    photo: "list[PhotoSize] | None" = None
+    sticker: "Sticker | None" = None
+    video: "Video | None" = None
+    video_note: "VideoNote | None" = None
+    voice: "Voice | None" = None
+    caption: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    has_media_spoiler: bool | None = None
+    contact: "Contact | None" = None
+    dice: "Dice | None" = None
+    game: "Game | None" = None
+    poll: "Poll | None" = None
+    venue: "Venue | None" = None
+    location: "Location | None" = None
+    new_chat_members: "list[User] | None" = None
+    left_chat_member: "User | None" = None
+    new_chat_title: str | None = None
+    new_chat_photo: "list[PhotoSize] | None" = None
+    delete_chat_photo: bool | None = None
+    group_chat_created: bool | None = None
+    supergroup_chat_created: bool | None = None
+    channel_chat_created: bool | None = None
+    message_auto_delete_timer_changed: "MessageAutoDeleteTimerChanged | None" = None
+    migrate_to_chat_id: int | None = None
+    migrate_from_chat_id: int | None = None
+    pinned_message: "Message | None" = None
+    invoice: "Invoice | None" = None
+    successful_payment: "SuccessfulPayment | None" = None
+    user_shared: "UserShared | None" = None
+    chat_shared: "ChatShared | None" = None
+    connected_website: str | None = None
+    write_access_allowed: "WriteAccessAllowed | None" = None
+    passport_data: "PassportData | None" = None
+    proximity_alert_triggered: "ProximityAlertTriggered | None" = None
+    forum_topic_created: "ForumTopicCreated | None" = None
+    forum_topic_edited: "ForumTopicEdited | None" = None
+    forum_topic_closed: "ForumTopicClosed | None" = None
+    forum_topic_reopened: "ForumTopicReopened | None" = None
+    general_forum_topic_hidden: "GeneralForumTopicHidden | None" = None
+    general_forum_topic_unhidden: "GeneralForumTopicUnhidden | None" = None
+    video_chat_scheduled: "VideoChatScheduled | None" = None
+    video_chat_started: "VideoChatStarted | None" = None
+    video_chat_ended: "VideoChatEnded | None" = None
+    video_chat_participants_invited: "VideoChatParticipantsInvited | None" = None
+    web_app_data: "WebAppData | None" = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
 
 
-class MessageId(BaseModel):
+class MessageId(Model):
     """
     This object represents a unique message identifier.
     """
 
-    message_id: int = Field()
+    message_id: int
 
 
-class MessageEntity(BaseModel):
+class MessageEntity(Model):
     """
-    This object represents one special entity in a text message. For example, hashtags,
-    usernames, URLs, etc.
-    """
-
-    type: MessageEntityType = Field()
-    offset: int = Field()
-    length: int = Field()
-    url: Optional[str] = Field(default=None)
-    user: Optional["User"] = Field(default=None)
-    language: Optional[str] = Field(default=None)
-    custom_emoji_id: Optional[str] = Field(default=None)
-
-
-class PhotoSize(BaseModel):
-    """
-    This object represents one size of a photo or a file / sticker thumbnail.
+    This object represents one special entity in a text message. For
+    example, hashtags, usernames, URLs, etc.
     """
 
-    file_id: str = Field()
-    file_unique_id: str = Field()
-    width: int = Field()
-    height: int = Field()
-    file_size: Optional[int] = Field(default=None)
+    type: MessageEntityType
+    offset: int
+    length: int
+    url: str | None = None
+    user: "User | None" = None
+    language: str | None = None
+    custom_emoji_id: str | None = None
 
 
-class Animation(BaseModel):
+class PhotoSize(Model):
     """
-    This object represents an animation file (GIF or H.264/MPEG-4 AVC video without
-    sound).
-    """
-
-    file_id: str = Field()
-    file_unique_id: str = Field()
-    width: int = Field()
-    height: int = Field()
-    duration: int = Field()
-    thumbnail: Optional["PhotoSize"] = Field(default=None)
-    file_name: Optional[str] = Field(default=None)
-    mime_type: Optional[str] = Field(default=None)
-    file_size: Optional[int] = Field(default=None)
-
-
-class Audio(BaseModel):
-    """
-    This object represents an audio file to be treated as music by the Telegram clients.
+    This object represents one size of a photo or a file / sticker
+    thumbnail.
     """
 
-    file_id: str = Field()
-    file_unique_id: str = Field()
-    duration: int = Field()
-    performer: Optional[str] = Field(default=None)
-    title: Optional[str] = Field(default=None)
-    file_name: Optional[str] = Field(default=None)
-    mime_type: Optional[str] = Field(default=None)
-    file_size: Optional[int] = Field(default=None)
-    thumbnail: Optional["PhotoSize"] = Field(default=None)
+    file_id: str
+    file_unique_id: str
+    width: int
+    height: int
+    file_size: int | None = None
 
 
-class Document(BaseModel):
+class Animation(Model):
     """
-    This object represents a general file (as opposed to photos, voice messages and
-    audio files).
+    This object represents an animation file (GIF or H.264/MPEG-4 AVC
+    video without sound).
     """
 
-    file_id: str = Field()
-    file_unique_id: str = Field()
-    thumbnail: Optional["PhotoSize"] = Field(default=None)
-    file_name: Optional[str] = Field(default=None)
-    mime_type: Optional[str] = Field(default=None)
-    file_size: Optional[int] = Field(default=None)
+    file_id: str
+    file_unique_id: str
+    width: int
+    height: int
+    duration: int
+    thumbnail: "PhotoSize | None" = None
+    file_name: str | None = None
+    mime_type: str | None = None
+    file_size: int | None = None
 
 
-class Video(BaseModel):
+class Audio(Model):
+    """
+    This object represents an audio file to be treated as music by the
+    Telegram clients.
+    """
+
+    file_id: str
+    file_unique_id: str
+    duration: int
+    performer: str | None = None
+    title: str | None = None
+    file_name: str | None = None
+    mime_type: str | None = None
+    file_size: int | None = None
+    thumbnail: "PhotoSize | None" = None
+
+
+class Document(Model):
+    """
+    This object represents a general file (as opposed to photos, voice
+    messages and audio files).
+    """
+
+    file_id: str
+    file_unique_id: str
+    thumbnail: "PhotoSize | None" = None
+    file_name: str | None = None
+    mime_type: str | None = None
+    file_size: int | None = None
+
+
+class Video(Model):
     """
     This object represents a video file.
     """
 
-    file_id: str = Field()
-    file_unique_id: str = Field()
-    width: int = Field()
-    height: int = Field()
-    duration: int = Field()
-    thumbnail: Optional["PhotoSize"] = Field(default=None)
-    file_name: Optional[str] = Field(default=None)
-    mime_type: Optional[str] = Field(default=None)
-    file_size: Optional[int] = Field(default=None)
+    file_id: str
+    file_unique_id: str
+    width: int
+    height: int
+    duration: int
+    thumbnail: "PhotoSize | None" = None
+    file_name: str | None = None
+    mime_type: str | None = None
+    file_size: int | None = None
 
 
-class VideoNote(BaseModel):
+class VideoNote(Model):
     """
-    This object represents a video message (available in Telegram apps as of v.4.0).
+    This object represents a video message (available in Telegram apps as
+    of v.4.0).
     """
 
-    file_id: str = Field()
-    file_unique_id: str = Field()
-    length: int = Field()
-    duration: int = Field()
-    thumbnail: Optional["PhotoSize"] = Field(default=None)
-    file_size: Optional[int] = Field(default=None)
+    file_id: str
+    file_unique_id: str
+    length: int
+    duration: int
+    thumbnail: "PhotoSize | None" = None
+    file_size: int | None = None
 
 
-class Voice(BaseModel):
+class Voice(Model):
     """
     This object represents a voice note.
     """
 
-    file_id: str = Field()
-    file_unique_id: str = Field()
-    duration: int = Field()
-    mime_type: Optional[str] = Field(default=None)
-    file_size: Optional[int] = Field(default=None)
+    file_id: str
+    file_unique_id: str
+    duration: int
+    mime_type: str | None = None
+    file_size: int | None = None
 
 
-class Contact(BaseModel):
+class Contact(Model):
     """
     This object represents a phone contact.
     """
 
-    phone_number: str = Field()
-    first_name: str = Field()
-    last_name: Optional[str] = Field(default=None)
-    user_id: Optional[int] = Field(default=None)
-    vcard: Optional[str] = Field(default=None)
+    phone_number: str
+    first_name: str
+    last_name: str | None = None
+    user_id: int | None = None
+    vcard: str | None = None
 
 
-class Dice(BaseModel):
+class Dice(Model):
     """
     This object represents an animated emoji that displays a random value.
     """
 
-    emoji: str = Field()
-    value: int = Field()
+    emoji: str
+    value: int
 
 
-class PollOption(BaseModel):
+class PollOption(Model):
     """
     This object contains information about one answer option in a poll.
     """
 
-    text: str = Field()
-    voter_count: int = Field()
+    text: str
+    voter_count: int
 
 
-class PollAnswer(BaseModel):
+class PollAnswer(Model):
     """
     This object represents an answer of a user in a non-anonymous poll.
     """
 
-    poll_id: str = Field()
-    user: "User" = Field()
-    option_ids: List[int] = Field()
+    poll_id: str
+    user: "User"
+    option_ids: "list[int]"
 
 
-class Poll(BaseModel):
+class Poll(Model):
     """
     This object contains information about a poll.
     """
 
-    id: str = Field()
-    question: str = Field()
-    options: List["PollOption"] = Field()
-    total_voter_count: int = Field()
-    is_closed: bool = Field()
-    is_anonymous: bool = Field()
-    type: PollType = Field()
-    allows_multiple_answers: bool = Field()
-    correct_option_id: Optional[int] = Field(default=None)
-    explanation: Optional[str] = Field(default=None)
-    explanation_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    open_period: Optional[int] = Field(default=None)
-    close_date: Optional[int] = Field(default=None)
+    id: str
+    question: str
+    options: "list[PollOption]"
+    total_voter_count: int
+    is_closed: bool
+    is_anonymous: bool
+    type: PollType
+    allows_multiple_answers: bool
+    correct_option_id: int | None = None
+    explanation: str | None = None
+    explanation_entities: "list[MessageEntity] | None" = None
+    open_period: int | None = None
+    close_date: int | None = None
 
 
-class Location(BaseModel):
+class Location(Model):
     """
     This object represents a point on the map.
     """
 
-    longitude: float = Field()
-    latitude: float = Field()
-    horizontal_accuracy: Optional[float] = Field(default=None)
-    live_period: Optional[int] = Field(default=None)
-    heading: Optional[int] = Field(default=None)
-    proximity_alert_radius: Optional[int] = Field(default=None)
+    longitude: float
+    latitude: float
+    horizontal_accuracy: float | None = None
+    live_period: int | None = None
+    heading: int | None = None
+    proximity_alert_radius: int | None = None
 
 
-class Venue(BaseModel):
+class Venue(Model):
     """
     This object represents a venue.
     """
 
-    location: "Location" = Field()
-    title: str = Field()
-    address: str = Field()
-    foursquare_id: Optional[str] = Field(default=None)
-    foursquare_type: Optional[str] = Field(default=None)
-    google_place_id: Optional[str] = Field(default=None)
-    google_place_type: Optional[str] = Field(default=None)
+    location: "Location"
+    title: str
+    address: str
+    foursquare_id: str | None = None
+    foursquare_type: str | None = None
+    google_place_id: str | None = None
+    google_place_type: str | None = None
 
 
-class WebAppData(BaseModel):
+class WebAppData(Model):
     """
     Describes data sent from a Web App to the bot.
     """
 
-    data: str = Field()
-    button_text: str = Field()
+    data: str
+    button_text: str
 
 
-class ProximityAlertTriggered(BaseModel):
+class ProximityAlertTriggered(Model):
     """
-    This object represents the content of a service message, sent whenever a user in the
-    chat triggers a proximity alert set by another user.
-    """
-
-    traveler: "User" = Field()
-    watcher: "User" = Field()
-    distance: int = Field()
-
-
-class MessageAutoDeleteTimerChanged(BaseModel):
-    """
-    This object represents a service message about a change in auto-delete timer
-    settings.
+    This object represents the content of a service message, sent whenever
+    a user in the chat triggers a proximity alert set by another user.
     """
 
-    message_auto_delete_time: int = Field()
+    traveler: "User"
+    watcher: "User"
+    distance: int
 
 
-class ForumTopicCreated(BaseModel):
+class MessageAutoDeleteTimerChanged(Model):
     """
-    This object represents a service message about a new forum topic created in the
-    chat.
+    This object represents a service message about a change in auto-delete
+    timer settings.
     """
 
-    name: str = Field()
-    icon_color: int = Field()
-    icon_custom_emoji_id: Optional[str] = Field(default=None)
+    message_auto_delete_time: int
 
 
-class ForumTopicClosed(BaseModel):
+class ForumTopicCreated(Model):
     """
-    This object represents a service message about a forum topic closed in the chat.
-    Currently holds no information.
+    This object represents a service message about a new forum topic
+    created in the chat.
+    """
+
+    name: str
+    icon_color: int
+    icon_custom_emoji_id: str | None = None
+
+
+class ForumTopicClosed(Model):
+    """
+    This object represents a service message about a forum topic closed in
+    the chat. Currently holds no information.
     """
 
     pass
 
 
-class ForumTopicEdited(BaseModel):
+class ForumTopicEdited(Model):
     """
     This object represents a service message about an edited forum topic.
     """
 
-    name: Optional[str] = Field(default=None)
-    icon_custom_emoji_id: Optional[str] = Field(default=None)
+    name: str | None = None
+    icon_custom_emoji_id: str | None = None
 
 
-class ForumTopicReopened(BaseModel):
+class ForumTopicReopened(Model):
     """
-    This object represents a service message about a forum topic reopened in the chat.
-    Currently holds no information.
-    """
-
-    pass
-
-
-class GeneralForumTopicHidden(BaseModel):
-    """
-    This object represents a service message about General forum topic hidden in the
-    chat. Currently holds no information.
+    This object represents a service message about a forum topic reopened
+    in the chat. Currently holds no information.
     """
 
     pass
 
 
-class GeneralForumTopicUnhidden(BaseModel):
+class GeneralForumTopicHidden(Model):
     """
-    This object represents a service message about General forum topic unhidden in the
-    chat. Currently holds no information.
-    """
-
-    pass
-
-
-class UserShared(BaseModel):
-    """
-    This object contains information about the user whose identifier was shared with the
-    bot using a KeyboardButtonRequestUser button.
-    """
-
-    request_id: int = Field()
-    user_id: int = Field()
-
-
-class ChatShared(BaseModel):
-    """
-    This object contains information about the chat whose identifier was shared with the
-    bot using a KeyboardButtonRequestChat button.
-    """
-
-    request_id: int = Field()
-    chat_id: int = Field()
-
-
-class WriteAccessAllowed(BaseModel):
-    """
-    This object represents a service message about a user allowing a bot added to the
-    attachment menu to write messages. Currently holds no information.
+    This object represents a service message about General forum topic
+    hidden in the chat. Currently holds no information.
     """
 
     pass
 
 
-class VideoChatScheduled(BaseModel):
+class GeneralForumTopicUnhidden(Model):
     """
-    This object represents a service message about a video chat scheduled in the chat.
-    """
-
-    start_date: int = Field()
-
-
-class VideoChatStarted(BaseModel):
-    """
-    This object represents a service message about a video chat started in the chat.
-    Currently holds no information.
+    This object represents a service message about General forum topic
+    unhidden in the chat. Currently holds no information.
     """
 
     pass
 
 
-class VideoChatEnded(BaseModel):
+class UserShared(Model):
     """
-    This object represents a service message about a video chat ended in the chat.
-    """
-
-    duration: int = Field()
-
-
-class VideoChatParticipantsInvited(BaseModel):
-    """
-    This object represents a service message about new members invited to a video chat.
+    This object contains information about the user whose identifier was
+    shared with the bot using a KeyboardButtonRequestUser button.
     """
 
-    users: List["User"] = Field()
+    request_id: int
+    user_id: int
 
 
-class UserProfilePhotos(BaseModel):
+class ChatShared(Model):
+    """
+    This object contains information about the chat whose identifier was
+    shared with the bot using a KeyboardButtonRequestChat button.
+    """
+
+    request_id: int
+    chat_id: int
+
+
+class WriteAccessAllowed(Model):
+    """
+    This object represents a service message about a user allowing a bot
+    to write messages after adding the bot to the attachment menu or
+    launching a Web App from a link.
+    """
+
+    web_app_name: str | None = None
+
+
+class VideoChatScheduled(Model):
+    """
+    This object represents a service message about a video chat scheduled
+    in the chat.
+    """
+
+    start_date: int
+
+
+class VideoChatStarted(Model):
+    """
+    This object represents a service message about a video chat started in
+    the chat. Currently holds no information.
+    """
+
+    pass
+
+
+class VideoChatEnded(Model):
+    """
+    This object represents a service message about a video chat ended in
+    the chat.
+    """
+
+    duration: int
+
+
+class VideoChatParticipantsInvited(Model):
+    """
+    This object represents a service message about new members invited to
+    a video chat.
+    """
+
+    users: "list[User]"
+
+
+class UserProfilePhotos(Model):
     """
     This object represent a user's profile pictures.
     """
 
-    total_count: int = Field()
-    photos: List[List["PhotoSize"]] = Field()
+    total_count: int
+    photos: "list[list[PhotoSize]]"
 
 
-class File(BaseModel):
+class File(Model):
     """
-    This object represents a file ready to be downloaded. The file can be downloaded via
-    the link https://api.telegram.org/file/bot<token>/<file_path>. It is guaranteed that
-    the link will be valid for at least 1 hour. When the link expires, a new one can be
-    requested by calling getFile. The maximum file size to download is 20 MB
+    This object represents a file ready to be downloaded. The file can be
+    downloaded via the link
+    https://api.telegram.org/file/bot<token>/<file_path>. It is guaranteed
+    that the link will be valid for at least 1 hour. When the link
+    expires, a new one can be requested by calling getFile. The maximum
+    file size to download is 20 MB
     """
 
-    file_id: str = Field()
-    file_unique_id: str = Field()
-    file_size: Optional[int] = Field(default=None)
-    file_path: Optional[str] = Field(default=None)
+    file_id: str
+    file_unique_id: str
+    file_size: int | None = None
+    file_path: str | None = None
 
 
-class WebAppInfo(BaseModel):
+class WebAppInfo(Model):
     """
     Describes a Web App.
     """
 
-    url: str = Field()
+    url: str
 
 
-class ReplyKeyboardMarkup(BaseModel):
+class ReplyKeyboardMarkup(Model):
     """
-    This object represents a custom keyboard with reply options (see Introduction to
-    bots for details and examples).
-    """
-
-    keyboard: List[List["KeyboardButton"]] = Field()
-    is_persistent: Optional[bool] = Field(default=None)
-    resize_keyboard: Optional[bool] = Field(default=None)
-    one_time_keyboard: Optional[bool] = Field(default=None)
-    input_field_placeholder: Optional[str] = Field(default=None)
-    selective: Optional[bool] = Field(default=None)
-
-
-class KeyboardButton(BaseModel):
-    """
-    This object represents one button of the reply keyboard. For simple text buttons,
-    String can be used instead of this object to specify the button text. The optional
-    fields web_app, request_user, request_chat, request_contact, request_location, and
-    request_poll are mutually exclusive.
+    This object represents a custom keyboard with reply options (see
+    Introduction to bots for details and examples).
     """
 
-    text: str = Field()
-    request_user: Optional["KeyboardButtonRequestUser"] = Field(default=None)
-    request_chat: Optional["KeyboardButtonRequestChat"] = Field(default=None)
-    request_contact: Optional[bool] = Field(default=None)
-    request_location: Optional[bool] = Field(default=None)
-    request_poll: Optional["KeyboardButtonPollType"] = Field(default=None)
-    web_app: Optional["WebAppInfo"] = Field(default=None)
+    keyboard: "list[list[KeyboardButton]]"
+    is_persistent: bool | None = None
+    resize_keyboard: bool | None = None
+    one_time_keyboard: bool | None = None
+    input_field_placeholder: str | None = None
+    selective: bool | None = None
 
 
-class KeyboardButtonRequestUser(BaseModel):
+class KeyboardButton(Model):
     """
-    This object defines the criteria used to request a suitable user. The identifier of
-    the selected user will be shared with the bot when the corresponding button is
-    pressed.
-    """
-
-    request_id: int = Field()
-    user_is_bot: Optional[bool] = Field(default=None)
-    user_is_premium: Optional[bool] = Field(default=None)
-
-
-class KeyboardButtonRequestChat(BaseModel):
-    """
-    This object defines the criteria used to request a suitable chat. The identifier of
-    the selected chat will be shared with the bot when the corresponding button is
-    pressed.
+    This object represents one button of the reply keyboard. For simple
+    text buttons, String can be used instead of this object to specify the
+    button text. The optional fields web_app, request_user, request_chat,
+    request_contact, request_location, and request_poll are mutually
+    exclusive.
     """
 
-    request_id: int = Field()
-    chat_is_channel: bool = Field()
-    chat_is_forum: Optional[bool] = Field(default=None)
-    chat_has_username: Optional[bool] = Field(default=None)
-    chat_is_created: Optional[bool] = Field(default=None)
-    user_administrator_rights: Optional["ChatAdministratorRights"] = Field(default=None)
-    bot_administrator_rights: Optional["ChatAdministratorRights"] = Field(default=None)
-    bot_is_member: Optional[bool] = Field(default=None)
+    text: str
+    request_user: "KeyboardButtonRequestUser | None" = None
+    request_chat: "KeyboardButtonRequestChat | None" = None
+    request_contact: bool | None = None
+    request_location: bool | None = None
+    request_poll: "KeyboardButtonPollType | None" = None
+    web_app: "WebAppInfo | None" = None
 
 
-class KeyboardButtonPollType(BaseModel):
+class KeyboardButtonRequestUser(Model):
     """
-    This object represents type of a poll, which is allowed to be created and sent when
-    the corresponding button is pressed.
-    """
-
-    type: Optional[str] = Field(default=None)
-
-
-class ReplyKeyboardRemove(BaseModel):
-    """
-    Upon receiving a message with this object, Telegram clients will remove the current
-    custom keyboard and display the default letter-keyboard. By default, custom
-    keyboards are displayed until a new keyboard is sent by a bot. An exception is made
-    for one-time keyboards that are hidden immediately after the user presses a button
-    (see ReplyKeyboardMarkup).
+    This object defines the criteria used to request a suitable user. The
+    identifier of the selected user will be shared with the bot when the
+    corresponding button is pressed. More about requesting users »
     """
 
-    remove_keyboard: bool = Field()
-    selective: Optional[bool] = Field(default=None)
+    request_id: int
+    user_is_bot: bool | None = None
+    user_is_premium: bool | None = None
 
 
-class InlineKeyboardMarkup(BaseModel):
+class KeyboardButtonRequestChat(Model):
     """
-    This object represents an inline keyboard that appears right next to the message it
-    belongs to.
-    """
-
-    inline_keyboard: List[List["InlineKeyboardButton"]] = Field()
-
-
-class InlineKeyboardButton(BaseModel):
-    """
-    This object represents one button of an inline keyboard. You must use exactly one of
-    the optional fields.
+    This object defines the criteria used to request a suitable chat. The
+    identifier of the selected chat will be shared with the bot when the
+    corresponding button is pressed. More about requesting chats »
     """
 
-    text: str = Field()
-    url: Optional[str] = Field(default=None)
-    callback_data: Optional[str] = Field(default=None)
-    web_app: Optional["WebAppInfo"] = Field(default=None)
-    login_url: Optional["LoginUrl"] = Field(default=None)
-    switch_inline_query: Optional[str] = Field(default=None)
-    switch_inline_query_current_chat: Optional[str] = Field(default=None)
-    callback_game: Optional["CallbackGame"] = Field(default=None)
-    pay: Optional[bool] = Field(default=None)
+    request_id: int
+    chat_is_channel: bool
+    chat_is_forum: bool | None = None
+    chat_has_username: bool | None = None
+    chat_is_created: bool | None = None
+    user_administrator_rights: "ChatAdministratorRights | None" = None
+    bot_administrator_rights: "ChatAdministratorRights | None" = None
+    bot_is_member: bool | None = None
 
 
-class LoginUrl(BaseModel):
+class KeyboardButtonPollType(Model):
     """
-    This object represents a parameter of the inline keyboard button used to
-    automatically authorize a user. Serves as a great replacement for the Telegram Login
-    Widget when the user is coming from Telegram. All the user needs to do is tap/click
-    a button and confirm that they want to log in: Telegram apps support these buttons
-    as of version 5.7. Sample bot: @discussbot
+    This object represents type of a poll, which is allowed to be created
+    and sent when the corresponding button is pressed.
     """
 
-    url: str = Field()
-    forward_text: Optional[str] = Field(default=None)
-    bot_username: Optional[str] = Field(default=None)
-    request_write_access: Optional[bool] = Field(default=None)
+    type: str | None = None
 
 
-class CallbackQuery(BaseModel):
+class ReplyKeyboardRemove(Model):
     """
-    This object represents an incoming callback query from a callback button in an
-    inline keyboard. If the button that originated the query was attached to a message
-    sent by the bot, the field message will be present. If the button was attached to a
-    message sent via the bot (in inline mode), the field inline_message_id will be
-    present. Exactly one of the fields data or game_short_name will be present.
+    Upon receiving a message with this object, Telegram clients will
+    remove the current custom keyboard and display the default letter-
+    keyboard. By default, custom keyboards are displayed until a new
+    keyboard is sent by a bot. An exception is made for one-time keyboards
+    that are hidden immediately after the user presses a button (see
+    ReplyKeyboardMarkup).
     """
 
-    id: str = Field()
-    from_: "User" = Field(alias="from")
-    message: Optional["Message"] = Field(default=None)
-    inline_message_id: Optional[str] = Field(default=None)
-    chat_instance: str = Field()
-    data: Optional[str] = Field(default=None)
-    game_short_name: Optional[str] = Field(default=None)
+    remove_keyboard: bool
+    selective: bool | None = None
 
 
-class ForceReply(BaseModel):
+class InlineKeyboardMarkup(Model):
     """
-    Upon receiving a message with this object, Telegram clients will display a reply
-    interface to the user (act as if the user has selected the bot's message and tapped
-    'Reply'). This can be extremely useful if you want to create user-friendly step-by-
-    step interfaces without having to sacrifice privacy mode.
+    This object represents an inline keyboard that appears right next to
+    the message it belongs to.
     """
 
-    force_reply: bool = Field()
-    input_field_placeholder: Optional[str] = Field(default=None)
-    selective: Optional[bool] = Field(default=None)
+    inline_keyboard: "list[list[InlineKeyboardButton]]"
 
 
-class ChatPhoto(BaseModel):
+class InlineKeyboardButton(Model):
+    """
+    This object represents one button of an inline keyboard. You must use
+    exactly one of the optional fields.
+    """
+
+    text: str
+    url: str | None = None
+    callback_data: str | None = None
+    web_app: "WebAppInfo | None" = None
+    login_url: "LoginUrl | None" = None
+    switch_inline_query: str | None = None
+    switch_inline_query_current_chat: str | None = None
+    switch_inline_query_chosen_chat: "SwitchInlineQueryChosenChat | None" = None
+    callback_game: "CallbackGame | None" = None
+    pay: bool | None = None
+
+
+class LoginUrl(Model):
+    """
+    This object represents a parameter of the inline keyboard button used
+    to automatically authorize a user. Serves as a great replacement for
+    the Telegram Login Widget when the user is coming from Telegram. All
+    the user needs to do is tap/click a button and confirm that they want
+    to log in: Telegram apps support these buttons as of version 5.7.
+    Sample bot: @discussbot
+    """
+
+    url: str
+    forward_text: str | None = None
+    bot_username: str | None = None
+    request_write_access: bool | None = None
+
+
+class SwitchInlineQueryChosenChat(Model):
+    """
+    This object represents an inline button that switches the current user
+    to inline mode in a chosen chat, with an optional default inline
+    query.
+    """
+
+    query: str | None = None
+    allow_user_chats: bool | None = None
+    allow_bot_chats: bool | None = None
+    allow_group_chats: bool | None = None
+    allow_channel_chats: bool | None = None
+
+
+class CallbackQuery(Model):
+    """
+    This object represents an incoming callback query from a callback
+    button in an inline keyboard. If the button that originated the query
+    was attached to a message sent by the bot, the field message will be
+    present. If the button was attached to a message sent via the bot (in
+    inline mode), the field inline_message_id will be present. Exactly one
+    of the fields data or game_short_name will be present.
+    """
+
+    id: str
+    from_: "User"
+    chat_instance: str
+    message: "Message | None" = None
+    inline_message_id: str | None = None
+    data: str | None = None
+    game_short_name: str | None = None
+
+
+class ForceReply(Model):
+    """
+    Upon receiving a message with this object, Telegram clients will
+    display a reply interface to the user (act as if the user has selected
+    the bot's message and tapped 'Reply'). This can be extremely useful if
+    you want to create user-friendly step-by-step interfaces without
+    having to sacrifice privacy mode.
+    """
+
+    force_reply: bool
+    input_field_placeholder: str | None = None
+    selective: bool | None = None
+
+
+class ChatPhoto(Model):
     """
     This object represents a chat photo.
     """
 
-    small_file_id: str = Field()
-    small_file_unique_id: str = Field()
-    big_file_id: str = Field()
-    big_file_unique_id: str = Field()
+    small_file_id: str
+    small_file_unique_id: str
+    big_file_id: str
+    big_file_unique_id: str
 
 
-class ChatInviteLink(BaseModel):
+class ChatInviteLink(Model):
     """
     Represents an invite link for a chat.
     """
 
-    invite_link: str = Field()
-    creator: "User" = Field()
-    creates_join_request: bool = Field()
-    is_primary: bool = Field()
-    is_revoked: bool = Field()
-    name: Optional[str] = Field(default=None)
-    expire_date: Optional[int] = Field(default=None)
-    member_limit: Optional[int] = Field(default=None)
-    pending_join_request_count: Optional[int] = Field(default=None)
+    invite_link: str
+    creator: "User"
+    creates_join_request: bool
+    is_primary: bool
+    is_revoked: bool
+    name: str | None = None
+    expire_date: int | None = None
+    member_limit: int | None = None
+    pending_join_request_count: int | None = None
 
 
-class ChatAdministratorRights(BaseModel):
+class ChatAdministratorRights(Model):
     """
     Represents the rights of an administrator in a chat.
     """
 
-    is_anonymous: bool = Field()
-    can_manage_chat: bool = Field()
-    can_delete_messages: bool = Field()
-    can_manage_video_chats: bool = Field()
-    can_restrict_members: bool = Field()
-    can_promote_members: bool = Field()
-    can_change_info: bool = Field()
-    can_invite_users: bool = Field()
-    can_post_messages: Optional[bool] = Field(default=None)
-    can_edit_messages: Optional[bool] = Field(default=None)
-    can_pin_messages: Optional[bool] = Field(default=None)
-    can_manage_topics: Optional[bool] = Field(default=None)
+    is_anonymous: bool
+    can_manage_chat: bool
+    can_delete_messages: bool
+    can_manage_video_chats: bool
+    can_restrict_members: bool
+    can_promote_members: bool
+    can_change_info: bool
+    can_invite_users: bool
+    can_post_messages: bool | None = None
+    can_edit_messages: bool | None = None
+    can_pin_messages: bool | None = None
+    can_manage_topics: bool | None = None
 
 
-class ChatMemberOwner(BaseModel):
+class ChatMember(Model, tag_field="status"):
     """
-    Represents a chat member that owns the chat and has all administrator privileges.
+    This object contains information about one member of a chat.
+    Currently, the following 6 types of chat members are supported:
+    ChatMemberOwner ChatMemberAdministrator ChatMemberMember
+    ChatMemberRestricted ChatMemberLeft ChatMemberBanned
     """
 
-    status: Literal["creator"] = Field(default="creator")
-    user: "User" = Field()
-    is_anonymous: bool = Field()
-    custom_title: Optional[str] = Field(default=None)
+
+class ChatMemberOwner(ChatMember, tag="creator"):
+    """
+    Represents a chat member that owns the chat and has all administrator
+    privileges.
+    """
+
+    user: "User"
+    is_anonymous: bool
+    custom_title: str | None = None
 
 
-class ChatMemberAdministrator(BaseModel):
+class ChatMemberAdministrator(ChatMember, tag="administrator"):
     """
     Represents a chat member that has some additional privileges.
     """
 
-    status: Literal["administrator"] = Field(default="administrator")
-    user: "User" = Field()
-    can_be_edited: bool = Field()
-    is_anonymous: bool = Field()
-    can_manage_chat: bool = Field()
-    can_delete_messages: bool = Field()
-    can_manage_video_chats: bool = Field()
-    can_restrict_members: bool = Field()
-    can_promote_members: bool = Field()
-    can_change_info: bool = Field()
-    can_invite_users: bool = Field()
-    can_post_messages: Optional[bool] = Field(default=None)
-    can_edit_messages: Optional[bool] = Field(default=None)
-    can_pin_messages: Optional[bool] = Field(default=None)
-    can_manage_topics: Optional[bool] = Field(default=None)
-    custom_title: Optional[str] = Field(default=None)
+    user: "User"
+    can_be_edited: bool
+    is_anonymous: bool
+    can_manage_chat: bool
+    can_delete_messages: bool
+    can_manage_video_chats: bool
+    can_restrict_members: bool
+    can_promote_members: bool
+    can_change_info: bool
+    can_invite_users: bool
+    can_post_messages: bool | None = None
+    can_edit_messages: bool | None = None
+    can_pin_messages: bool | None = None
+    can_manage_topics: bool | None = None
+    custom_title: str | None = None
 
 
-class ChatMemberMember(BaseModel):
+class ChatMemberMember(ChatMember, tag="member"):
     """
-    Represents a chat member that has no additional privileges or restrictions.
-    """
-
-    status: Literal["member"] = Field(default="member")
-    user: "User" = Field()
-
-
-class ChatMemberRestricted(BaseModel):
-    """
-    Represents a chat member that is under certain restrictions in the chat. Supergroups
-    only.
+    Represents a chat member that has no additional privileges or
+    restrictions.
     """
 
-    status: Literal["restricted"] = Field(default="restricted")
-    user: "User" = Field()
-    is_member: bool = Field()
-    can_send_messages: bool = Field()
-    can_send_audios: bool = Field()
-    can_send_documents: bool = Field()
-    can_send_photos: bool = Field()
-    can_send_videos: bool = Field()
-    can_send_video_notes: bool = Field()
-    can_send_voice_notes: bool = Field()
-    can_send_polls: bool = Field()
-    can_send_other_messages: bool = Field()
-    can_add_web_page_previews: bool = Field()
-    can_change_info: bool = Field()
-    can_invite_users: bool = Field()
-    can_pin_messages: bool = Field()
-    can_manage_topics: bool = Field()
-    until_date: int = Field()
+    user: "User"
 
 
-class ChatMemberLeft(BaseModel):
+class ChatMemberRestricted(ChatMember, tag="restricted"):
     """
-    Represents a chat member that isn't currently a member of the chat, but may join it
-    themselves.
+    Represents a chat member that is under certain restrictions in the
+    chat. Supergroups only.
     """
 
-    status: Literal["left"] = Field(default="left")
-    user: "User" = Field()
+    user: "User"
+    is_member: bool
+    can_send_messages: bool
+    can_send_audios: bool
+    can_send_documents: bool
+    can_send_photos: bool
+    can_send_videos: bool
+    can_send_video_notes: bool
+    can_send_voice_notes: bool
+    can_send_polls: bool
+    can_send_other_messages: bool
+    can_add_web_page_previews: bool
+    can_change_info: bool
+    can_invite_users: bool
+    can_pin_messages: bool
+    can_manage_topics: bool
+    until_date: int
 
 
-class ChatMemberBanned(BaseModel):
+class ChatMemberLeft(ChatMember, tag="left"):
     """
-    Represents a chat member that was banned in the chat and can't return to the chat or
-    view chat messages.
+    Represents a chat member that isn't currently a member of the chat,
+    but may join it themselves.
     """
 
-    status: Literal["kicked"] = Field(default="kicked")
-    user: "User" = Field()
-    until_date: int = Field()
+    user: "User"
 
 
-class ChatMemberUpdated(BaseModel):
+class ChatMemberBanned(ChatMember, tag="kicked"):
+    """
+    Represents a chat member that was banned in the chat and can't return
+    to the chat or view chat messages.
+    """
+
+    user: "User"
+    until_date: int
+
+
+class ChatMemberUpdated(Model):
     """
     This object represents changes in the status of a chat member.
     """
 
-    chat: "Chat" = Field()
-    from_: "User" = Field(alias="from")
-    date: int = Field()
-    old_chat_member: "ChatMember" = Field()
-    new_chat_member: "ChatMember" = Field()
-    invite_link: Optional["ChatInviteLink"] = Field(default=None)
+    chat: "Chat"
+    from_: "User"
+    date: int
+    old_chat_member: "ChatMember"
+    new_chat_member: "ChatMember"
+    invite_link: "ChatInviteLink | None" = None
+    via_chat_folder_invite_link: bool | None = None
 
 
-class ChatJoinRequest(BaseModel):
+class ChatJoinRequest(Model):
     """
     Represents a join request sent to a chat.
     """
 
-    chat: "Chat" = Field()
-    from_: "User" = Field(alias="from")
-    user_chat_id: int = Field()
-    date: int = Field()
-    bio: Optional[str] = Field(default=None)
-    invite_link: Optional["ChatInviteLink"] = Field(default=None)
+    chat: "Chat"
+    from_: "User"
+    user_chat_id: int
+    date: int
+    bio: str | None = None
+    invite_link: "ChatInviteLink | None" = None
 
 
-class ChatPermissions(BaseModel):
+class ChatPermissions(Model):
     """
-    Describes actions that a non-administrator user is allowed to take in a chat.
+    Describes actions that a non-administrator user is allowed to take in
+    a chat.
     """
 
-    can_send_messages: Optional[bool] = Field(default=None)
-    can_send_audios: Optional[bool] = Field(default=None)
-    can_send_documents: Optional[bool] = Field(default=None)
-    can_send_photos: Optional[bool] = Field(default=None)
-    can_send_videos: Optional[bool] = Field(default=None)
-    can_send_video_notes: Optional[bool] = Field(default=None)
-    can_send_voice_notes: Optional[bool] = Field(default=None)
-    can_send_polls: Optional[bool] = Field(default=None)
-    can_send_other_messages: Optional[bool] = Field(default=None)
-    can_add_web_page_previews: Optional[bool] = Field(default=None)
-    can_change_info: Optional[bool] = Field(default=None)
-    can_invite_users: Optional[bool] = Field(default=None)
-    can_pin_messages: Optional[bool] = Field(default=None)
-    can_manage_topics: Optional[bool] = Field(default=None)
+    can_send_messages: bool | None = None
+    can_send_audios: bool | None = None
+    can_send_documents: bool | None = None
+    can_send_photos: bool | None = None
+    can_send_videos: bool | None = None
+    can_send_video_notes: bool | None = None
+    can_send_voice_notes: bool | None = None
+    can_send_polls: bool | None = None
+    can_send_other_messages: bool | None = None
+    can_add_web_page_previews: bool | None = None
+    can_change_info: bool | None = None
+    can_invite_users: bool | None = None
+    can_pin_messages: bool | None = None
+    can_manage_topics: bool | None = None
 
 
-class ChatLocation(BaseModel):
+class ChatLocation(Model):
     """
     Represents a location to which a chat is connected.
     """
 
-    location: "Location" = Field()
-    address: str = Field()
+    location: "Location"
+    address: str
 
 
-class ForumTopic(BaseModel):
+class ForumTopic(Model):
     """
     This object represents a forum topic.
     """
 
-    message_thread_id: int = Field()
-    name: str = Field()
-    icon_color: int = Field()
-    icon_custom_emoji_id: Optional[str] = Field(default=None)
+    message_thread_id: int
+    name: str
+    icon_color: int
+    icon_custom_emoji_id: str | None = None
 
 
-class BotCommand(BaseModel):
+class BotCommand(Model):
     """
     This object represents a bot command.
     """
 
-    command: str = Field()
-    description: str = Field()
+    command: str
+    description: str
 
 
-class BotCommandScopeDefault(BaseModel):
+class BotCommandScope(Model, tag_field="type"):
     """
-    Represents the default scope of bot commands. Default commands are used if no
-    commands with a narrower scope are specified for the user.
+    This object represents the scope to which bot commands are applied.
+    Currently, the following 7 scopes are supported:
+    BotCommandScopeDefault BotCommandScopeAllPrivateChats
+    BotCommandScopeAllGroupChats BotCommandScopeAllChatAdministrators
+    BotCommandScopeChat BotCommandScopeChatAdministrators
+    BotCommandScopeChatMember
     """
 
-    type: Literal["default"] = Field(default="default")
+
+class BotCommandScopeDefault(BotCommandScope, tag="default"):
+    """
+    Represents the default scope of bot commands. Default commands are
+    used if no commands with a narrower scope are specified for the user.
+    """
 
 
-class BotCommandScopeAllPrivateChats(BaseModel):
+class BotCommandScopeAllPrivateChats(BotCommandScope, tag="all_private_chats"):
     """
     Represents the scope of bot commands, covering all private chats.
     """
 
-    type: Literal["all_private_chats"] = Field(default="all_private_chats")
 
-
-class BotCommandScopeAllGroupChats(BaseModel):
+class BotCommandScopeAllGroupChats(BotCommandScope, tag="all_group_chats"):
     """
-    Represents the scope of bot commands, covering all group and supergroup chats.
-    """
-
-    type: Literal["all_group_chats"] = Field(default="all_group_chats")
-
-
-class BotCommandScopeAllChatAdministrators(BaseModel):
-    """
-    Represents the scope of bot commands, covering all group and supergroup chat
-    administrators.
+    Represents the scope of bot commands, covering all group and
+    supergroup chats.
     """
 
-    type: Literal["all_chat_administrators"] = Field(default="all_chat_administrators")
+
+class BotCommandScopeAllChatAdministrators(
+    BotCommandScope, tag="all_chat_administrators"
+):
+    """
+    Represents the scope of bot commands, covering all group and
+    supergroup chat administrators.
+    """
 
 
-class BotCommandScopeChat(BaseModel):
+class BotCommandScopeChat(BotCommandScope, tag="chat"):
     """
     Represents the scope of bot commands, covering a specific chat.
     """
 
-    type: Literal["chat"] = Field(default="chat")
-    chat_id: Union[int, str] = Field()
+    chat_id: int | str
 
 
-class BotCommandScopeChatAdministrators(BaseModel):
+class BotCommandScopeChatAdministrators(BotCommandScope, tag="chat_administrators"):
     """
-    Represents the scope of bot commands, covering all administrators of a specific
+    Represents the scope of bot commands, covering all administrators of a
+    specific group or supergroup chat.
+    """
+
+    chat_id: int | str
+
+
+class BotCommandScopeChatMember(BotCommandScope, tag="chat_member"):
+    """
+    Represents the scope of bot commands, covering a specific member of a
     group or supergroup chat.
     """
 
-    type: Literal["chat_administrators"] = Field(default="chat_administrators")
-    chat_id: Union[int, str] = Field()
+    chat_id: int | str
+    user_id: int
 
 
-class BotCommandScopeChatMember(BaseModel):
+class BotName(Model):
     """
-    Represents the scope of bot commands, covering a specific member of a group or
-    supergroup chat.
+    This object represents the bot's name.
     """
 
-    type: Literal["chat_member"] = Field(default="chat_member")
-    chat_id: Union[int, str] = Field()
-    user_id: int = Field()
+    name: str
 
 
-class BotDescription(BaseModel):
+class BotDescription(Model):
     """
     This object represents the bot's description.
     """
 
-    description: str = Field()
+    description: str
 
 
-class BotShortDescription(BaseModel):
+class BotShortDescription(Model):
     """
     This object represents the bot's short description.
     """
 
-    short_description: str = Field()
+    short_description: str
 
 
-class MenuButtonCommands(BaseModel):
+class MenuButton(Model, tag_field="type"):
+    """
+    This object describes the bot's menu button in a private chat. It
+    should be one of  MenuButtonCommands MenuButtonWebApp
+    MenuButtonDefault
+    """
+
+
+class MenuButtonCommands(MenuButton, tag="commands"):
     """
     Represents a menu button, which opens the bot's list of commands.
     """
 
-    type: Literal["commands"] = Field(default="commands")
 
-
-class MenuButtonWebApp(BaseModel):
+class MenuButtonWebApp(MenuButton, tag="web_app"):
     """
     Represents a menu button, which launches a Web App.
     """
 
-    type: Literal["web_app"] = Field(default="web_app")
-    text: str = Field()
-    web_app: "WebAppInfo" = Field()
+    text: str
+    web_app: "WebAppInfo"
 
 
-class MenuButtonDefault(BaseModel):
+class MenuButtonDefault(MenuButton, tag="default"):
     """
     Describes that no specific value for the menu button was set.
     """
 
-    type: Literal["default"] = Field(default="default")
 
-
-class ResponseParameters(BaseModel):
+class ResponseParameters(Model):
     """
     Describes why a request was unsuccessful.
     """
 
-    migrate_to_chat_id: Optional[int] = Field(default=None)
-    retry_after: Optional[int] = Field(default=None)
+    migrate_to_chat_id: int | None = None
+    retry_after: int | None = None
 
 
-class InputMediaPhoto(BaseModel):
+class InputMedia(Model, tag_field="type"):
+    """
+    This object represents the content of a media message to be sent. It
+    should be one of  InputMediaAnimation InputMediaDocument
+    InputMediaAudio InputMediaPhoto InputMediaVideo
+    """
+
+
+class InputMediaPhoto(InputMedia, tag="photo"):
     """
     Represents a photo to be sent.
     """
 
-    type: Literal["photo"] = Field(default="photo")
-    media: str = Field()
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    has_spoiler: Optional[bool] = Field(default=None)
+    media: str
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    has_spoiler: bool | None = None
 
 
-class InputMediaVideo(BaseModel):
+class InputMediaVideo(InputMedia, tag="video"):
     """
     Represents a video to be sent.
     """
 
-    type: Literal["video"] = Field(default="video")
-    media: str = Field()
-    thumbnail: Optional[Union["InputFile", str]] = Field(default=None)
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    width: Optional[int] = Field(default=None)
-    height: Optional[int] = Field(default=None)
-    duration: Optional[int] = Field(default=None)
-    supports_streaming: Optional[bool] = Field(default=None)
-    has_spoiler: Optional[bool] = Field(default=None)
+    media: str
+    thumbnail: "InputFile | str | None" = None
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    width: int | None = None
+    height: int | None = None
+    duration: int | None = None
+    supports_streaming: bool | None = None
+    has_spoiler: bool | None = None
 
 
-class InputMediaAnimation(BaseModel):
+class InputMediaAnimation(InputMedia, tag="animation"):
     """
-    Represents an animation file (GIF or H.264/MPEG-4 AVC video without sound) to be
-    sent.
+    Represents an animation file (GIF or H.264/MPEG-4 AVC video without
+    sound) to be sent.
     """
 
-    type: Literal["animation"] = Field(default="animation")
-    media: str = Field()
-    thumbnail: Optional[Union["InputFile", str]] = Field(default=None)
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    width: Optional[int] = Field(default=None)
-    height: Optional[int] = Field(default=None)
-    duration: Optional[int] = Field(default=None)
-    has_spoiler: Optional[bool] = Field(default=None)
+    media: str
+    thumbnail: "InputFile | str | None" = None
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    width: int | None = None
+    height: int | None = None
+    duration: int | None = None
+    has_spoiler: bool | None = None
 
 
-class InputMediaAudio(BaseModel):
+class InputMediaAudio(InputMedia, tag="audio"):
     """
     Represents an audio file to be treated as music to be sent.
     """
 
-    type: Literal["audio"] = Field(default="audio")
-    media: str = Field()
-    thumbnail: Optional[Union["InputFile", str]] = Field(default=None)
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    duration: Optional[int] = Field(default=None)
-    performer: Optional[str] = Field(default=None)
-    title: Optional[str] = Field(default=None)
+    media: str
+    thumbnail: "InputFile | str | None" = None
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    duration: int | None = None
+    performer: str | None = None
+    title: str | None = None
 
 
-class InputMediaDocument(BaseModel):
+class InputMediaDocument(InputMedia, tag="document"):
     """
     Represents a general file to be sent.
     """
 
-    type: Literal["document"] = Field(default="document")
-    media: str = Field()
-    thumbnail: Optional[Union["InputFile", str]] = Field(default=None)
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    disable_content_type_detection: Optional[bool] = Field(default=None)
+    media: str
+    thumbnail: "InputFile | str | None" = None
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    disable_content_type_detection: bool | None = None
 
 
-class InputFile(BaseModel):
-    """
-    This object represents the contents of a file to be uploaded. Must be posted using
-    multipart/form-data in the usual way that files are uploaded via the browser.
-    """
-
-    pass
+InputFile = NamedTuple("InputFile", [("name", str), ("content", bytes)])
 
 
-class Sticker(BaseModel):
+class Sticker(Model):
     """
     This object represents a sticker.
     """
 
-    file_id: str = Field()
-    file_unique_id: str = Field()
-    type: StickerType = Field()
-    width: int = Field()
-    height: int = Field()
-    is_animated: bool = Field()
-    is_video: bool = Field()
-    thumbnail: Optional["PhotoSize"] = Field(default=None)
-    emoji: Optional[str] = Field(default=None)
-    set_name: Optional[str] = Field(default=None)
-    premium_animation: Optional["File"] = Field(default=None)
-    mask_position: Optional["MaskPosition"] = Field(default=None)
-    custom_emoji_id: Optional[str] = Field(default=None)
-    needs_repainting: Optional[bool] = Field(default=None)
-    file_size: Optional[int] = Field(default=None)
+    file_id: str
+    file_unique_id: str
+    type: StickerType
+    width: int
+    height: int
+    is_animated: bool
+    is_video: bool
+    thumbnail: "PhotoSize | None" = None
+    emoji: str | None = None
+    set_name: str | None = None
+    premium_animation: "File | None" = None
+    mask_position: "MaskPosition | None" = None
+    custom_emoji_id: str | None = None
+    needs_repainting: bool | None = None
+    file_size: int | None = None
 
 
-class StickerSet(BaseModel):
+class StickerSet(Model):
     """
     This object represents a sticker set.
     """
 
-    name: str = Field()
-    title: str = Field()
-    sticker_type: StickerSetStickerType = Field()
-    is_animated: bool = Field()
-    is_video: bool = Field()
-    stickers: List["Sticker"] = Field()
-    thumbnail: Optional["PhotoSize"] = Field(default=None)
+    name: str
+    title: str
+    sticker_type: StickerSetStickerType
+    is_animated: bool
+    is_video: bool
+    stickers: "list[Sticker]"
+    thumbnail: "PhotoSize | None" = None
 
 
-class MaskPosition(BaseModel):
+class MaskPosition(Model):
     """
-    This object describes the position on faces where a mask should be placed by
-    default.
+    This object describes the position on faces where a mask should be
+    placed by default.
     """
 
-    point: MaskPositionPoint = Field()
-    x_shift: float = Field()
-    y_shift: float = Field()
-    scale: float = Field()
+    point: MaskPositionPoint
+    x_shift: float
+    y_shift: float
+    scale: float
 
 
-class InputSticker(BaseModel):
+class InputSticker(Model):
     """
     This object describes a sticker to be added to a sticker set.
     """
 
-    sticker: Union["InputFile", str] = Field()
-    emoji_list: List[str] = Field()
-    mask_position: Optional["MaskPosition"] = Field(default=None)
-    keywords: Optional[List[str]] = Field(default_factory=list)
+    sticker: "InputFile | str"
+    emoji_list: "list[str]"
+    mask_position: "MaskPosition | None" = None
+    keywords: "list[str] | None" = None
 
 
-class InlineQuery(BaseModel):
+class InlineQuery(Model):
     """
-    This object represents an incoming inline query. When the user sends an empty query,
-    your bot could return some default or trending results.
+    This object represents an incoming inline query. When the user sends
+    an empty query, your bot could return some default or trending
+    results.
     """
 
-    id: str = Field()
-    from_: "User" = Field(alias="from")
-    query: str = Field()
-    offset: str = Field()
-    chat_type: InlineQueryChatType = Field(default=None)
-    location: Optional["Location"] = Field(default=None)
+    id: str
+    from_: "User"
+    query: str
+    offset: str
+    chat_type: InlineQueryChatType
+    location: "Location | None" = None
 
 
-class InlineQueryResultArticle(BaseModel):
+class InlineQueryResultsButton(Model):
+    """
+    This object represents a button to be shown above inline query
+    results. You must use exactly one of the optional fields.
+    """
+
+    text: str
+    web_app: "WebAppInfo | None" = None
+    start_parameter: str | None = None
+
+
+class InlineQueryResult(Model, tag_field="type"):
+    """
+    This object represents one result of an inline query. Telegram clients
+    currently support results of the following 20 types:
+    InlineQueryResultCachedAudio InlineQueryResultCachedDocument
+    InlineQueryResultCachedGif InlineQueryResultCachedMpeg4Gif
+    InlineQueryResultCachedPhoto InlineQueryResultCachedSticker
+    InlineQueryResultCachedVideo InlineQueryResultCachedVoice
+    InlineQueryResultArticle InlineQueryResultAudio
+    InlineQueryResultContact InlineQueryResultGame
+    InlineQueryResultDocument InlineQueryResultGif
+    InlineQueryResultLocation InlineQueryResultMpeg4Gif
+    InlineQueryResultPhoto InlineQueryResultVenue InlineQueryResultVideo
+    InlineQueryResultVoice
+    """
+
+
+class InlineQueryResultArticle(InlineQueryResult, tag="article"):
     """
     Represents a link to an article or web page.
     """
 
-    type: Literal["article"] = Field(default="article")
-    id: str = Field()
-    title: str = Field()
-    input_message_content: "InputMessageContent" = Field()
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    url: Optional[str] = Field(default=None)
-    hide_url: Optional[bool] = Field(default=None)
-    description: Optional[str] = Field(default=None)
-    thumbnail_url: Optional[str] = Field(default=None)
-    thumbnail_width: Optional[int] = Field(default=None)
-    thumbnail_height: Optional[int] = Field(default=None)
+    id: str
+    title: str
+    input_message_content: "InputMessageContent"
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    url: str | None = None
+    hide_url: bool | None = None
+    description: str | None = None
+    thumbnail_url: str | None = None
+    thumbnail_width: int | None = None
+    thumbnail_height: int | None = None
 
 
-class InlineQueryResultPhoto(BaseModel):
+class InlineQueryResultPhoto(InlineQueryResult, tag="photo"):
     """
-    Represents a link to a photo. By default, this photo will be sent by the user with
-    optional caption. Alternatively, you can use input_message_content to send a message
-    with the specified content instead of the photo.
-    """
-
-    type: Literal["photo"] = Field(default="photo")
-    id: str = Field()
-    photo_url: str = Field()
-    thumbnail_url: str = Field()
-    photo_width: Optional[int] = Field(default=None)
-    photo_height: Optional[int] = Field(default=None)
-    title: Optional[str] = Field(default=None)
-    description: Optional[str] = Field(default=None)
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
-
-
-class InlineQueryResultGif(BaseModel):
-    """
-    Represents a link to an animated GIF file. By default, this animated GIF file will
-    be sent by the user with optional caption. Alternatively, you can use
-    input_message_content to send a message with the specified content instead of the
-    animation.
+    Represents a link to a photo. By default, this photo will be sent by
+    the user with optional caption. Alternatively, you can use
+    input_message_content to send a message with the specified content
+    instead of the photo.
     """
 
-    type: Literal["gif"] = Field(default="gif")
-    id: str = Field()
-    gif_url: str = Field()
-    gif_width: Optional[int] = Field(default=None)
-    gif_height: Optional[int] = Field(default=None)
-    gif_duration: Optional[int] = Field(default=None)
-    thumbnail_url: str = Field()
-    thumbnail_mime_type: InlineQueryResultGifThumbnailMimeType = Field(
-        default="image/jpeg"
-    )
-    title: Optional[str] = Field(default=None)
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
+    id: str
+    photo_url: str
+    thumbnail_url: str
+    photo_width: int | None = None
+    photo_height: int | None = None
+    title: str | None = None
+    description: str | None = None
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
 
 
-class InlineQueryResultMpeg4Gif(BaseModel):
+class InlineQueryResultGif(InlineQueryResult, tag="gif"):
     """
-    Represents a link to a video animation (H.264/MPEG-4 AVC video without sound). By
-    default, this animated MPEG-4 file will be sent by the user with optional caption.
-    Alternatively, you can use input_message_content to send a message with the
-    specified content instead of the animation.
+    Represents a link to an animated GIF file. By default, this animated
+    GIF file will be sent by the user with optional caption.
+    Alternatively, you can use input_message_content to send a message
+    with the specified content instead of the animation.
     """
 
-    type: Literal["mpeg4_gif"] = Field(default="mpeg4_gif")
-    id: str = Field()
-    mpeg4_url: str = Field()
-    mpeg4_width: Optional[int] = Field(default=None)
-    mpeg4_height: Optional[int] = Field(default=None)
-    mpeg4_duration: Optional[int] = Field(default=None)
-    thumbnail_url: str = Field()
-    thumbnail_mime_type: InlineQueryResultMpeg4GifThumbnailMimeType = Field(
-        default="image/jpeg"
-    )
-    title: Optional[str] = Field(default=None)
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
+    thumbnail_mime_type: InlineQueryResultGifThumbnailMimeType
+    id: str
+    gif_url: str
+    thumbnail_url: str
+    gif_width: int | None = None
+    gif_height: int | None = None
+    gif_duration: int | None = None
+    title: str | None = None
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
 
 
-class InlineQueryResultVideo(BaseModel):
+class InlineQueryResultMpeg4Gif(InlineQueryResult, tag="mpeg4_gif"):
     """
-    Represents a link to a page containing an embedded video player or a video file. By
-    default, this video file will be sent by the user with an optional caption.
-    Alternatively, you can use input_message_content to send a message with the
-    specified content instead of the video. If an InlineQueryResultVideo message
-    contains an embedded video (e.g., YouTube), you must replace its content using
-    input_message_content.
+    Represents a link to a video animation (H.264/MPEG-4 AVC video without
+    sound). By default, this animated MPEG-4 file will be sent by the user
+    with optional caption. Alternatively, you can use
+    input_message_content to send a message with the specified content
+    instead of the animation.
     """
 
-    type: Literal["video"] = Field(default="video")
-    id: str = Field()
-    video_url: str = Field()
-    mime_type: InlineQueryResultVideoMimeType = Field()
-    thumbnail_url: str = Field()
-    title: str = Field()
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    video_width: Optional[int] = Field(default=None)
-    video_height: Optional[int] = Field(default=None)
-    video_duration: Optional[int] = Field(default=None)
-    description: Optional[str] = Field(default=None)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
+    thumbnail_mime_type: InlineQueryResultMpeg4GifThumbnailMimeType
+    id: str
+    mpeg4_url: str
+    thumbnail_url: str
+    mpeg4_width: int | None = None
+    mpeg4_height: int | None = None
+    mpeg4_duration: int | None = None
+    title: str | None = None
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
 
 
-class InlineQueryResultAudio(BaseModel):
+class InlineQueryResultVideo(InlineQueryResult, tag="video"):
     """
-    Represents a link to an MP3 audio file. By default, this audio file will be sent by
-    the user. Alternatively, you can use input_message_content to send a message with
-    the specified content instead of the audio.
-    """
-
-    type: Literal["audio"] = Field(default="audio")
-    id: str = Field()
-    audio_url: str = Field()
-    title: str = Field()
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    performer: Optional[str] = Field(default=None)
-    audio_duration: Optional[int] = Field(default=None)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
-
-
-class InlineQueryResultVoice(BaseModel):
-    """
-    Represents a link to a voice recording in an .OGG container encoded with OPUS. By
-    default, this voice recording will be sent by the user. Alternatively, you can use
-    input_message_content to send a message with the specified content instead of the
-    the voice message.
+    Represents a link to a page containing an embedded video player or a
+    video file. By default, this video file will be sent by the user with
+    an optional caption. Alternatively, you can use input_message_content
+    to send a message with the specified content instead of the video. If
+    an InlineQueryResultVideo message contains an embedded video (e.g.,
+    YouTube), you must replace its content using input_message_content.
     """
 
-    type: Literal["voice"] = Field(default="voice")
-    id: str = Field()
-    voice_url: str = Field()
-    title: str = Field()
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    voice_duration: Optional[int] = Field(default=None)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
+    id: str
+    video_url: str
+    mime_type: InlineQueryResultVideoMimeType
+    thumbnail_url: str
+    title: str
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    video_width: int | None = None
+    video_height: int | None = None
+    video_duration: int | None = None
+    description: str | None = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
 
 
-class InlineQueryResultDocument(BaseModel):
+class InlineQueryResultAudio(InlineQueryResult, tag="audio"):
     """
-    Represents a link to a file. By default, this file will be sent by the user with an
-    optional caption. Alternatively, you can use input_message_content to send a message
-    with the specified content instead of the file. Currently, only .PDF and .ZIP files
-    can be sent using this method.
-    """
-
-    type: Literal["document"] = Field(default="document")
-    id: str = Field()
-    title: str = Field()
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    document_url: str = Field()
-    mime_type: InlineQueryResultDocumentMimeType = Field()
-    description: Optional[str] = Field(default=None)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
-    thumbnail_url: Optional[str] = Field(default=None)
-    thumbnail_width: Optional[int] = Field(default=None)
-    thumbnail_height: Optional[int] = Field(default=None)
-
-
-class InlineQueryResultLocation(BaseModel):
-    """
-    Represents a location on a map. By default, the location will be sent by the user.
-    Alternatively, you can use input_message_content to send a message with the
-    specified content instead of the location.
+    Represents a link to an MP3 audio file. By default, this audio file
+    will be sent by the user. Alternatively, you can use
+    input_message_content to send a message with the specified content
+    instead of the audio.
     """
 
-    type: Literal["location"] = Field(default="location")
-    id: str = Field()
-    latitude: float = Field()
-    longitude: float = Field()
-    title: str = Field()
-    horizontal_accuracy: Optional[float] = Field(default=None)
-    live_period: Optional[int] = Field(default=None)
-    heading: Optional[int] = Field(default=None)
-    proximity_alert_radius: Optional[int] = Field(default=None)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
-    thumbnail_url: Optional[str] = Field(default=None)
-    thumbnail_width: Optional[int] = Field(default=None)
-    thumbnail_height: Optional[int] = Field(default=None)
+    id: str
+    audio_url: str
+    title: str
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    performer: str | None = None
+    audio_duration: int | None = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
 
 
-class InlineQueryResultVenue(BaseModel):
+class InlineQueryResultVoice(InlineQueryResult, tag="voice"):
     """
-    Represents a venue. By default, the venue will be sent by the user. Alternatively,
-    you can use input_message_content to send a message with the specified content
-    instead of the venue.
+    Represents a link to a voice recording in an .OGG container encoded
+    with OPUS. By default, this voice recording will be sent by the user.
+    Alternatively, you can use input_message_content to send a message
+    with the specified content instead of the the voice message.
     """
 
-    type: Literal["venue"] = Field(default="venue")
-    id: str = Field()
-    latitude: float = Field()
-    longitude: float = Field()
-    title: str = Field()
-    address: str = Field()
-    foursquare_id: Optional[str] = Field(default=None)
-    foursquare_type: Optional[str] = Field(default=None)
-    google_place_id: Optional[str] = Field(default=None)
-    google_place_type: Optional[str] = Field(default=None)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
-    thumbnail_url: Optional[str] = Field(default=None)
-    thumbnail_width: Optional[int] = Field(default=None)
-    thumbnail_height: Optional[int] = Field(default=None)
+    id: str
+    voice_url: str
+    title: str
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    voice_duration: int | None = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
 
 
-class InlineQueryResultContact(BaseModel):
+class InlineQueryResultDocument(InlineQueryResult, tag="document"):
     """
-    Represents a contact with a phone number. By default, this contact will be sent by
-    the user. Alternatively, you can use input_message_content to send a message with
-    the specified content instead of the contact.
+    Represents a link to a file. By default, this file will be sent by the
+    user with an optional caption. Alternatively, you can use
+    input_message_content to send a message with the specified content
+    instead of the file. Currently, only .PDF and .ZIP files can be sent
+    using this method.
     """
 
-    type: Literal["contact"] = Field(default="contact")
-    id: str = Field()
-    phone_number: str = Field()
-    first_name: str = Field()
-    last_name: Optional[str] = Field(default=None)
-    vcard: Optional[str] = Field(default=None)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
-    thumbnail_url: Optional[str] = Field(default=None)
-    thumbnail_width: Optional[int] = Field(default=None)
-    thumbnail_height: Optional[int] = Field(default=None)
+    id: str
+    title: str
+    document_url: str
+    mime_type: InlineQueryResultDocumentMimeType
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    description: str | None = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
+    thumbnail_url: str | None = None
+    thumbnail_width: int | None = None
+    thumbnail_height: int | None = None
 
 
-class InlineQueryResultGame(BaseModel):
+class InlineQueryResultLocation(InlineQueryResult, tag="location"):
+    """
+    Represents a location on a map. By default, the location will be sent
+    by the user. Alternatively, you can use input_message_content to send
+    a message with the specified content instead of the location.
+    """
+
+    id: str
+    latitude: float
+    longitude: float
+    title: str
+    horizontal_accuracy: float | None = None
+    live_period: int | None = None
+    heading: int | None = None
+    proximity_alert_radius: int | None = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
+    thumbnail_url: str | None = None
+    thumbnail_width: int | None = None
+    thumbnail_height: int | None = None
+
+
+class InlineQueryResultVenue(InlineQueryResult, tag="venue"):
+    """
+    Represents a venue. By default, the venue will be sent by the user.
+    Alternatively, you can use input_message_content to send a message
+    with the specified content instead of the venue.
+    """
+
+    id: str
+    latitude: float
+    longitude: float
+    title: str
+    address: str
+    foursquare_id: str | None = None
+    foursquare_type: str | None = None
+    google_place_id: str | None = None
+    google_place_type: str | None = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
+    thumbnail_url: str | None = None
+    thumbnail_width: int | None = None
+    thumbnail_height: int | None = None
+
+
+class InlineQueryResultContact(InlineQueryResult, tag="contact"):
+    """
+    Represents a contact with a phone number. By default, this contact
+    will be sent by the user. Alternatively, you can use
+    input_message_content to send a message with the specified content
+    instead of the contact.
+    """
+
+    id: str
+    phone_number: str
+    first_name: str
+    last_name: str | None = None
+    vcard: str | None = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
+    thumbnail_url: str | None = None
+    thumbnail_width: int | None = None
+    thumbnail_height: int | None = None
+
+
+class InlineQueryResultGame(InlineQueryResult, tag="game"):
     """
     Represents a Game.
     """
 
-    type: Literal["game"] = Field(default="game")
-    id: str = Field()
-    game_short_name: str = Field()
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
+    id: str
+    game_short_name: str
+    reply_markup: "InlineKeyboardMarkup | None" = None
 
 
-class InlineQueryResultCachedPhoto(BaseModel):
+class InlineQueryResultCachedPhoto(InlineQueryResult, tag="photo"):
     """
-    Represents a link to a photo stored on the Telegram servers. By default, this photo
-    will be sent by the user with an optional caption. Alternatively, you can use
-    input_message_content to send a message with the specified content instead of the
-    photo.
-    """
-
-    type: Literal["photo"] = Field(default="photo")
-    id: str = Field()
-    photo_file_id: str = Field()
-    title: Optional[str] = Field(default=None)
-    description: Optional[str] = Field(default=None)
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
-
-
-class InlineQueryResultCachedGif(BaseModel):
-    """
-    Represents a link to an animated GIF file stored on the Telegram servers. By
-    default, this animated GIF file will be sent by the user with an optional caption.
-    Alternatively, you can use input_message_content to send a message with specified
-    content instead of the animation.
+    Represents a link to a photo stored on the Telegram servers. By
+    default, this photo will be sent by the user with an optional caption.
+    Alternatively, you can use input_message_content to send a message
+    with the specified content instead of the photo.
     """
 
-    type: Literal["gif"] = Field(default="gif")
-    id: str = Field()
-    gif_file_id: str = Field()
-    title: Optional[str] = Field(default=None)
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
+    id: str
+    photo_file_id: str
+    title: str | None = None
+    description: str | None = None
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
 
 
-class InlineQueryResultCachedMpeg4Gif(BaseModel):
+class InlineQueryResultCachedGif(InlineQueryResult, tag="gif"):
     """
-    Represents a link to a video animation (H.264/MPEG-4 AVC video without sound) stored
-    on the Telegram servers. By default, this animated MPEG-4 file will be sent by the
-    user with an optional caption. Alternatively, you can use input_message_content to
-    send a message with the specified content instead of the animation.
-    """
-
-    type: Literal["mpeg4_gif"] = Field(default="mpeg4_gif")
-    id: str = Field()
-    mpeg4_file_id: str = Field()
-    title: Optional[str] = Field(default=None)
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
-
-
-class InlineQueryResultCachedSticker(BaseModel):
-    """
-    Represents a link to a sticker stored on the Telegram servers. By default, this
-    sticker will be sent by the user. Alternatively, you can use input_message_content
-    to send a message with the specified content instead of the sticker.
+    Represents a link to an animated GIF file stored on the Telegram
+    servers. By default, this animated GIF file will be sent by the user
+    with an optional caption. Alternatively, you can use
+    input_message_content to send a message with specified content instead
+    of the animation.
     """
 
-    type: Literal["sticker"] = Field(default="sticker")
-    id: str = Field()
-    sticker_file_id: str = Field()
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
+    id: str
+    gif_file_id: str
+    title: str | None = None
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
 
 
-class InlineQueryResultCachedDocument(BaseModel):
+class InlineQueryResultCachedMpeg4Gif(InlineQueryResult, tag="mpeg4_gif"):
     """
-    Represents a link to a file stored on the Telegram servers. By default, this file
-    will be sent by the user with an optional caption. Alternatively, you can use
-    input_message_content to send a message with the specified content instead of the
-    file.
-    """
-
-    type: Literal["document"] = Field(default="document")
-    id: str = Field()
-    title: str = Field()
-    document_file_id: str = Field()
-    description: Optional[str] = Field(default=None)
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
-
-
-class InlineQueryResultCachedVideo(BaseModel):
-    """
-    Represents a link to a video file stored on the Telegram servers. By default, this
-    video file will be sent by the user with an optional caption. Alternatively, you can
-    use input_message_content to send a message with the specified content instead of
-    the video.
+    Represents a link to a video animation (H.264/MPEG-4 AVC video without
+    sound) stored on the Telegram servers. By default, this animated
+    MPEG-4 file will be sent by the user with an optional caption.
+    Alternatively, you can use input_message_content to send a message
+    with the specified content instead of the animation.
     """
 
-    type: Literal["video"] = Field(default="video")
-    id: str = Field()
-    video_file_id: str = Field()
-    title: str = Field()
-    description: Optional[str] = Field(default=None)
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
+    id: str
+    mpeg4_file_id: str
+    title: str | None = None
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
 
 
-class InlineQueryResultCachedVoice(BaseModel):
+class InlineQueryResultCachedSticker(InlineQueryResult, tag="sticker"):
     """
-    Represents a link to a voice message stored on the Telegram servers. By default,
-    this voice message will be sent by the user. Alternatively, you can use
-    input_message_content to send a message with the specified content instead of the
-    voice message.
+    Represents a link to a sticker stored on the Telegram servers. By
+    default, this sticker will be sent by the user. Alternatively, you can
+    use input_message_content to send a message with the specified content
+    instead of the sticker.
     """
 
-    type: Literal["voice"] = Field(default="voice")
-    id: str = Field()
-    voice_file_id: str = Field()
-    title: str = Field()
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
+    id: str
+    sticker_file_id: str
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
 
 
-class InlineQueryResultCachedAudio(BaseModel):
+class InlineQueryResultCachedDocument(InlineQueryResult, tag="document"):
     """
-    Represents a link to an MP3 audio file stored on the Telegram servers. By default,
-    this audio file will be sent by the user. Alternatively, you can use
-    input_message_content to send a message with the specified content instead of the
-    audio.
+    Represents a link to a file stored on the Telegram servers. By
+    default, this file will be sent by the user with an optional caption.
+    Alternatively, you can use input_message_content to send a message
+    with the specified content instead of the file.
     """
 
-    type: Literal["audio"] = Field(default="audio")
-    id: str = Field()
-    audio_file_id: str = Field()
-    caption: Optional[str] = Field(default=None)
-    parse_mode: Optional[str] = Field(default=None)
-    caption_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    reply_markup: Optional["InlineKeyboardMarkup"] = Field(default=None)
-    input_message_content: Optional["InputMessageContent"] = Field(default=None)
+    id: str
+    title: str
+    document_file_id: str
+    description: str | None = None
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
 
 
-class InputTextMessageContent(BaseModel):
+class InlineQueryResultCachedVideo(InlineQueryResult, tag="video"):
     """
-    Represents the content of a text message to be sent as the result of an inline
-    query.
-    """
-
-    message_text: str = Field()
-    parse_mode: Optional[str] = Field(default=None)
-    entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    disable_web_page_preview: Optional[bool] = Field(default=None)
-
-
-class InputLocationMessageContent(BaseModel):
-    """
-    Represents the content of a location message to be sent as the result of an inline
-    query.
+    Represents a link to a video file stored on the Telegram servers. By
+    default, this video file will be sent by the user with an optional
+    caption. Alternatively, you can use input_message_content to send a
+    message with the specified content instead of the video.
     """
 
-    latitude: float = Field()
-    longitude: float = Field()
-    horizontal_accuracy: Optional[float] = Field(default=None)
-    live_period: Optional[int] = Field(default=None)
-    heading: Optional[int] = Field(default=None)
-    proximity_alert_radius: Optional[int] = Field(default=None)
+    id: str
+    video_file_id: str
+    title: str
+    description: str | None = None
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
 
 
-class InputVenueMessageContent(BaseModel):
+class InlineQueryResultCachedVoice(InlineQueryResult, tag="voice"):
     """
-    Represents the content of a venue message to be sent as the result of an inline
-    query.
-    """
-
-    latitude: float = Field()
-    longitude: float = Field()
-    title: str = Field()
-    address: str = Field()
-    foursquare_id: Optional[str] = Field(default=None)
-    foursquare_type: Optional[str] = Field(default=None)
-    google_place_id: Optional[str] = Field(default=None)
-    google_place_type: Optional[str] = Field(default=None)
-
-
-class InputContactMessageContent(BaseModel):
-    """
-    Represents the content of a contact message to be sent as the result of an inline
-    query.
+    Represents a link to a voice message stored on the Telegram servers.
+    By default, this voice message will be sent by the user.
+    Alternatively, you can use input_message_content to send a message
+    with the specified content instead of the voice message.
     """
 
-    phone_number: str = Field()
-    first_name: str = Field()
-    last_name: Optional[str] = Field(default=None)
-    vcard: Optional[str] = Field(default=None)
+    id: str
+    voice_file_id: str
+    title: str
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
 
 
-class InputInvoiceMessageContent(BaseModel):
+class InlineQueryResultCachedAudio(InlineQueryResult, tag="audio"):
     """
-    Represents the content of an invoice message to be sent as the result of an inline
-    query.
-    """
-
-    title: str = Field()
-    description: str = Field()
-    payload: str = Field()
-    provider_token: str = Field()
-    currency: str = Field()
-    prices: List["LabeledPrice"] = Field()
-    max_tip_amount: Optional[int] = Field(default=None)
-    suggested_tip_amounts: Optional[List[int]] = Field(default_factory=list)
-    provider_data: Optional[str] = Field(default=None)
-    photo_url: Optional[str] = Field(default=None)
-    photo_size: Optional[int] = Field(default=None)
-    photo_width: Optional[int] = Field(default=None)
-    photo_height: Optional[int] = Field(default=None)
-    need_name: Optional[bool] = Field(default=None)
-    need_phone_number: Optional[bool] = Field(default=None)
-    need_email: Optional[bool] = Field(default=None)
-    need_shipping_address: Optional[bool] = Field(default=None)
-    send_phone_number_to_provider: Optional[bool] = Field(default=None)
-    send_email_to_provider: Optional[bool] = Field(default=None)
-    is_flexible: Optional[bool] = Field(default=None)
-
-
-class ChosenInlineResult(BaseModel):
-    """
-    Represents a result of an inline query that was chosen by the user and sent to their
-    chat partner.
+    Represents a link to an MP3 audio file stored on the Telegram servers.
+    By default, this audio file will be sent by the user. Alternatively,
+    you can use input_message_content to send a message with the specified
+    content instead of the audio.
     """
 
-    result_id: str = Field()
-    from_: "User" = Field(alias="from")
-    location: Optional["Location"] = Field(default=None)
-    inline_message_id: Optional[str] = Field(default=None)
-    query: str = Field()
+    id: str
+    audio_file_id: str
+    caption: str | None = None
+    parse_mode: str | None = None
+    caption_entities: "list[MessageEntity] | None" = None
+    reply_markup: "InlineKeyboardMarkup | None" = None
+    input_message_content: "InputMessageContent | None" = None
 
 
-class SentWebAppMessage(BaseModel):
+class InputMessageContent(Model, tag_field="latitude"):
+    """
+    This object represents the content of a message to be sent as a result
+    of an inline query. Telegram clients currently support the following 5
+    types:  InputTextMessageContent InputLocationMessageContent
+    InputVenueMessageContent InputContactMessageContent
+    InputInvoiceMessageContent
+    """
+
+
+class InputTextMessageContent(InputMessageContent, tag="None"):
+    """
+    Represents the content of a text message to be sent as the result of
+    an inline query.
+    """
+
+    message_text: str
+    parse_mode: str | None = None
+    entities: "list[MessageEntity] | None" = None
+    disable_web_page_preview: bool | None = None
+
+
+class InputLocationMessageContent(InputMessageContent, tag="None"):
+    """
+    Represents the content of a location message to be sent as the result
+    of an inline query.
+    """
+
+    longitude: float
+    horizontal_accuracy: float | None = None
+    live_period: int | None = None
+    heading: int | None = None
+    proximity_alert_radius: int | None = None
+
+
+class InputVenueMessageContent(InputMessageContent, tag="None"):
+    """
+    Represents the content of a venue message to be sent as the result of
+    an inline query.
+    """
+
+    longitude: float
+    title: str
+    address: str
+    foursquare_id: str | None = None
+    foursquare_type: str | None = None
+    google_place_id: str | None = None
+    google_place_type: str | None = None
+
+
+class InputContactMessageContent(InputMessageContent, tag="None"):
+    """
+    Represents the content of a contact message to be sent as the result
+    of an inline query.
+    """
+
+    phone_number: str
+    first_name: str
+    last_name: str | None = None
+    vcard: str | None = None
+
+
+class InputInvoiceMessageContent(InputMessageContent, tag="None"):
+    """
+    Represents the content of an invoice message to be sent as the result
+    of an inline query.
+    """
+
+    title: str
+    description: str
+    payload: str
+    provider_token: str
+    currency: str
+    prices: "list[LabeledPrice]"
+    max_tip_amount: int | None = None
+    suggested_tip_amounts: "list[int] | None" = None
+    provider_data: str | None = None
+    photo_url: str | None = None
+    photo_size: int | None = None
+    photo_width: int | None = None
+    photo_height: int | None = None
+    need_name: bool | None = None
+    need_phone_number: bool | None = None
+    need_email: bool | None = None
+    need_shipping_address: bool | None = None
+    send_phone_number_to_provider: bool | None = None
+    send_email_to_provider: bool | None = None
+    is_flexible: bool | None = None
+
+
+class ChosenInlineResult(Model):
+    """
+    Represents a result of an inline query that was chosen by the user and
+    sent to their chat partner.
+    """
+
+    result_id: str
+    from_: "User"
+    query: str
+    location: "Location | None" = None
+    inline_message_id: str | None = None
+
+
+class SentWebAppMessage(Model):
     """
     Describes an inline message sent by a Web App on behalf of a user.
     """
 
-    inline_message_id: Optional[str] = Field(default=None)
+    inline_message_id: str | None = None
 
 
-class LabeledPrice(BaseModel):
+class LabeledPrice(Model):
     """
     This object represents a portion of the price for goods or services.
     """
 
-    label: str = Field()
-    amount: int = Field()
+    label: str
+    amount: int
 
 
-class Invoice(BaseModel):
+class Invoice(Model):
     """
     This object contains basic information about an invoice.
     """
 
-    title: str = Field()
-    description: str = Field()
-    start_parameter: str = Field()
-    currency: str = Field()
-    total_amount: int = Field()
+    title: str
+    description: str
+    start_parameter: str
+    currency: str
+    total_amount: int
 
 
-class ShippingAddress(BaseModel):
+class ShippingAddress(Model):
     """
     This object represents a shipping address.
     """
 
-    country_code: str = Field()
-    state: str = Field()
-    city: str = Field()
-    street_line1: str = Field()
-    street_line2: str = Field()
-    post_code: str = Field()
+    country_code: str
+    state: str
+    city: str
+    street_line1: str
+    street_line2: str
+    post_code: str
 
 
-class OrderInfo(BaseModel):
+class OrderInfo(Model):
     """
     This object represents information about an order.
     """
 
-    name: Optional[str] = Field(default=None)
-    phone_number: Optional[str] = Field(default=None)
-    email: Optional[str] = Field(default=None)
-    shipping_address: Optional["ShippingAddress"] = Field(default=None)
+    name: str | None = None
+    phone_number: str | None = None
+    email: str | None = None
+    shipping_address: "ShippingAddress | None" = None
 
 
-class ShippingOption(BaseModel):
+class ShippingOption(Model):
     """
     This object represents one shipping option.
     """
 
-    id: str = Field()
-    title: str = Field()
-    prices: List["LabeledPrice"] = Field()
+    id: str
+    title: str
+    prices: "list[LabeledPrice]"
 
 
-class SuccessfulPayment(BaseModel):
+class SuccessfulPayment(Model):
     """
     This object contains basic information about a successful payment.
     """
 
-    currency: str = Field()
-    total_amount: int = Field()
-    invoice_payload: str = Field()
-    shipping_option_id: Optional[str] = Field(default=None)
-    order_info: Optional["OrderInfo"] = Field(default=None)
-    telegram_payment_charge_id: str = Field()
-    provider_payment_charge_id: str = Field()
+    currency: str
+    total_amount: int
+    invoice_payload: str
+    telegram_payment_charge_id: str
+    provider_payment_charge_id: str
+    shipping_option_id: str | None = None
+    order_info: "OrderInfo | None" = None
 
 
-class ShippingQuery(BaseModel):
+class ShippingQuery(Model):
     """
     This object contains information about an incoming shipping query.
     """
 
-    id: str = Field()
-    from_: "User" = Field(alias="from")
-    invoice_payload: str = Field()
-    shipping_address: "ShippingAddress" = Field()
+    id: str
+    from_: "User"
+    invoice_payload: str
+    shipping_address: "ShippingAddress"
 
 
-class PreCheckoutQuery(BaseModel):
+class PreCheckoutQuery(Model):
     """
     This object contains information about an incoming pre-checkout query.
     """
 
-    id: str = Field()
-    from_: "User" = Field(alias="from")
-    currency: str = Field()
-    total_amount: int = Field()
-    invoice_payload: str = Field()
-    shipping_option_id: Optional[str] = Field(default=None)
-    order_info: Optional["OrderInfo"] = Field(default=None)
+    id: str
+    from_: "User"
+    currency: str
+    total_amount: int
+    invoice_payload: str
+    shipping_option_id: str | None = None
+    order_info: "OrderInfo | None" = None
 
 
-class PassportData(BaseModel):
+class PassportData(Model):
     """
     Describes Telegram Passport data shared with the bot by the user.
     """
 
-    data: List["EncryptedPassportElement"] = Field()
-    credentials: "EncryptedCredentials" = Field()
+    data: "list[EncryptedPassportElement]"
+    credentials: "EncryptedCredentials"
 
 
-class PassportFile(BaseModel):
+class PassportFile(Model):
     """
-    This object represents a file uploaded to Telegram Passport. Currently all Telegram
-    Passport files are in JPEG format when decrypted and don't exceed 10MB.
-    """
-
-    file_id: str = Field()
-    file_unique_id: str = Field()
-    file_size: int = Field()
-    file_date: int = Field()
-
-
-class EncryptedPassportElement(BaseModel):
-    """
-    Describes documents or other Telegram Passport elements shared with the bot by the
-    user.
+    This object represents a file uploaded to Telegram Passport. Currently
+    all Telegram Passport files are in JPEG format when decrypted and
+    don't exceed 10MB.
     """
 
-    type: EncryptedPassportElementType = Field()
-    data: Optional[str] = Field(default=None)
-    phone_number: Optional[str] = Field(default=None)
-    email: Optional[str] = Field(default=None)
-    files: Optional[List["PassportFile"]] = Field(default_factory=list)
-    front_side: Optional["PassportFile"] = Field(default=None)
-    reverse_side: Optional["PassportFile"] = Field(default=None)
-    selfie: Optional["PassportFile"] = Field(default=None)
-    translation: Optional[List["PassportFile"]] = Field(default_factory=list)
-    hash: str = Field()
+    file_id: str
+    file_unique_id: str
+    file_size: int
+    file_date: int
 
 
-class EncryptedCredentials(BaseModel):
+class EncryptedPassportElement(Model):
     """
-    Describes data required for decrypting and authenticating EncryptedPassportElement.
-    See the Telegram Passport Documentation for a complete description of the data
-    decryption and authentication processes.
+    Describes documents or other Telegram Passport elements shared with
+    the bot by the user.
     """
 
-    data: str = Field()
-    hash: str = Field()
-    secret: str = Field()
+    type: EncryptedPassportElementType
+    hash: str
+    data: str | None = None
+    phone_number: str | None = None
+    email: str | None = None
+    files: "list[PassportFile] | None" = None
+    front_side: "PassportFile | None" = None
+    reverse_side: "PassportFile | None" = None
+    selfie: "PassportFile | None" = None
+    translation: "list[PassportFile] | None" = None
 
 
-class PassportElementErrorDataField(BaseModel):
+class EncryptedCredentials(Model):
     """
-    Represents an issue in one of the data fields that was provided by the user. The
-    error is considered resolved when the field's value changes.
-    """
-
-    source: Literal["data"] = Field(default="data")
-    type: PassportElementErrorDataFieldType = Field()
-    field_name: str = Field()
-    data_hash: str = Field()
-    message: str = Field()
-
-
-class PassportElementErrorFrontSide(BaseModel):
-    """
-    Represents an issue with the front side of a document. The error is considered
-    resolved when the file with the front side of the document changes.
+    Describes data required for decrypting and authenticating
+    EncryptedPassportElement. See the Telegram Passport Documentation for
+    a complete description of the data decryption and authentication
+    processes.
     """
 
-    source: Literal["front_side"] = Field(default="front_side")
-    type: PassportElementErrorFrontSideType = Field()
-    file_hash: str = Field()
-    message: str = Field()
+    data: str
+    hash: str
+    secret: str
 
 
-class PassportElementErrorReverseSide(BaseModel):
+class PassportElementError(Model, tag_field="source"):
     """
-    Represents an issue with the reverse side of a document. The error is considered
-    resolved when the file with reverse side of the document changes.
-    """
-
-    source: Literal["reverse_side"] = Field(default="reverse_side")
-    type: PassportElementErrorReverseSideType = Field()
-    file_hash: str = Field()
-    message: str = Field()
-
-
-class PassportElementErrorSelfie(BaseModel):
-    """
-    Represents an issue with the selfie with a document. The error is considered
-    resolved when the file with the selfie changes.
+    This object represents an error in the Telegram Passport element which
+    was submitted that should be resolved by the user. It should be one
+    of:  PassportElementErrorDataField PassportElementErrorFrontSide
+    PassportElementErrorReverseSide PassportElementErrorSelfie
+    PassportElementErrorFile PassportElementErrorFiles
+    PassportElementErrorTranslationFile
+    PassportElementErrorTranslationFiles PassportElementErrorUnspecified
     """
 
-    source: Literal["selfie"] = Field(default="selfie")
-    type: PassportElementErrorSelfieType = Field()
-    file_hash: str = Field()
-    message: str = Field()
 
-
-class PassportElementErrorFile(BaseModel):
+class PassportElementErrorDataField(PassportElementError, tag="data"):
     """
-    Represents an issue with a document scan. The error is considered resolved when the
-    file with the document scan changes.
+    Represents an issue in one of the data fields that was provided by the
+    user. The error is considered resolved when the field's value changes.
     """
 
-    source: Literal["file"] = Field(default="file")
-    type: PassportElementErrorFileType = Field()
-    file_hash: str = Field()
-    message: str = Field()
+    type: PassportElementErrorDataFieldType
+    field_name: str
+    data_hash: str
+    message: str
 
 
-class PassportElementErrorFiles(BaseModel):
+class PassportElementErrorFrontSide(PassportElementError, tag="front_side"):
     """
-    Represents an issue with a list of scans. The error is considered resolved when the
-    list of files containing the scans changes.
-    """
-
-    source: Literal["files"] = Field(default="files")
-    type: PassportElementErrorFilesType = Field()
-    file_hashes: List[str] = Field()
-    message: str = Field()
-
-
-class PassportElementErrorTranslationFile(BaseModel):
-    """
-    Represents an issue with one of the files that constitute the translation of a
-    document. The error is considered resolved when the file changes.
+    Represents an issue with the front side of a document. The error is
+    considered resolved when the file with the front side of the document
+    changes.
     """
 
-    source: Literal["translation_file"] = Field(default="translation_file")
-    type: PassportElementErrorTranslationFileType = Field()
-    file_hash: str = Field()
-    message: str = Field()
+    type: PassportElementErrorFrontSideType
+    file_hash: str
+    message: str
 
 
-class PassportElementErrorTranslationFiles(BaseModel):
+class PassportElementErrorReverseSide(PassportElementError, tag="reverse_side"):
     """
-    Represents an issue with the translated version of a document. The error is
-    considered resolved when a file with the document translation change.
-    """
-
-    source: Literal["translation_files"] = Field(default="translation_files")
-    type: PassportElementErrorTranslationFilesType = Field()
-    file_hashes: List[str] = Field()
-    message: str = Field()
-
-
-class PassportElementErrorUnspecified(BaseModel):
-    """
-    Represents an issue in an unspecified place. The error is considered resolved when
-    new data is added.
+    Represents an issue with the reverse side of a document. The error is
+    considered resolved when the file with reverse side of the document
+    changes.
     """
 
-    source: Literal["unspecified"] = Field(default="unspecified")
-    type: str = Field()
-    element_hash: str = Field()
-    message: str = Field()
+    type: PassportElementErrorReverseSideType
+    file_hash: str
+    message: str
 
 
-class Game(BaseModel):
+class PassportElementErrorSelfie(PassportElementError, tag="selfie"):
     """
-    This object represents a game. Use BotFather to create and edit games, their short
-    names will act as unique identifiers.
+    Represents an issue with the selfie with a document. The error is
+    considered resolved when the file with the selfie changes.
     """
 
-    title: str = Field()
-    description: str = Field()
-    photo: List["PhotoSize"] = Field()
-    text: Optional[str] = Field(default=None)
-    text_entities: Optional[List["MessageEntity"]] = Field(default_factory=list)
-    animation: Optional["Animation"] = Field(default=None)
+    type: PassportElementErrorSelfieType
+    file_hash: str
+    message: str
 
 
-class CallbackGame(BaseModel):
+class PassportElementErrorFile(PassportElementError, tag="file"):
     """
-    A placeholder, currently holds no information. Use BotFather to set up your game.
+    Represents an issue with a document scan. The error is considered
+    resolved when the file with the document scan changes.
+    """
+
+    type: PassportElementErrorFileType
+    file_hash: str
+    message: str
+
+
+class PassportElementErrorFiles(PassportElementError, tag="files"):
+    """
+    Represents an issue with a list of scans. The error is considered
+    resolved when the list of files containing the scans changes.
+    """
+
+    type: PassportElementErrorFilesType
+    file_hashes: "list[str]"
+    message: str
+
+
+class PassportElementErrorTranslationFile(PassportElementError, tag="translation_file"):
+    """
+    Represents an issue with one of the files that constitute the
+    translation of a document. The error is considered resolved when the
+    file changes.
+    """
+
+    type: PassportElementErrorTranslationFileType
+    file_hash: str
+    message: str
+
+
+class PassportElementErrorTranslationFiles(
+    PassportElementError, tag="translation_files"
+):
+    """
+    Represents an issue with the translated version of a document. The
+    error is considered resolved when a file with the document translation
+    change.
+    """
+
+    type: PassportElementErrorTranslationFilesType
+    file_hashes: "list[str]"
+    message: str
+
+
+class PassportElementErrorUnspecified(PassportElementError, tag="unspecified"):
+    """
+    Represents an issue in an unspecified place. The error is considered
+    resolved when new data is added.
+    """
+
+    type: str
+    element_hash: str
+    message: str
+
+
+class Game(Model):
+    """
+    This object represents a game. Use BotFather to create and edit games,
+    their short names will act as unique identifiers.
+    """
+
+    title: str
+    description: str
+    photo: "list[PhotoSize]"
+    text: str | None = None
+    text_entities: "list[MessageEntity] | None" = None
+    animation: "Animation | None" = None
+
+
+class CallbackGame(Model):
+    """
+    A placeholder, currently holds no information. Use BotFather to set up
+    your game.
     """
 
     pass
 
 
-class GameHighScore(BaseModel):
+class GameHighScore(Model):
     """
     This object represents one row of the high scores table for a game.
     """
 
-    position: int = Field()
-    user: "User" = Field()
-    score: int = Field()
+    position: int
+    user: "User"
+    score: int
 
 
-ChatMember = Annotated[
-    Union[
-        ChatMemberOwner,
-        ChatMemberAdministrator,
-        ChatMemberMember,
-        ChatMemberRestricted,
-        ChatMemberLeft,
-        ChatMemberBanned,
-    ],
-    Field(discriminator="status"),
-]
+ChatMember = (
+    ChatMemberOwner
+    | ChatMemberAdministrator
+    | ChatMemberMember
+    | ChatMemberRestricted
+    | ChatMemberLeft
+    | ChatMemberBanned
+)
 
 
-BotCommandScope = Annotated[
-    Union[
-        BotCommandScopeDefault,
-        BotCommandScopeAllPrivateChats,
-        BotCommandScopeAllGroupChats,
-        BotCommandScopeAllChatAdministrators,
-        BotCommandScopeChat,
-        BotCommandScopeChatAdministrators,
-        BotCommandScopeChatMember,
-    ],
-    Field(discriminator="type"),
-]
+BotCommandScope = (
+    BotCommandScopeDefault
+    | BotCommandScopeAllPrivateChats
+    | BotCommandScopeAllGroupChats
+    | BotCommandScopeAllChatAdministrators
+    | BotCommandScopeChat
+    | BotCommandScopeChatAdministrators
+    | BotCommandScopeChatMember
+)
 
 
-MenuButton = Annotated[
-    Union[
-        MenuButtonCommands,
-        MenuButtonWebApp,
-        MenuButtonDefault,
-    ],
-    Field(discriminator="type"),
-]
+MenuButton = MenuButtonCommands | MenuButtonWebApp | MenuButtonDefault
 
 
-InputMedia = Annotated[
-    Union[
-        InputMediaAnimation,
-        InputMediaDocument,
-        InputMediaAudio,
-        InputMediaPhoto,
-        InputMediaVideo,
-    ],
-    Field(discriminator="type"),
-]
+InputMedia = (
+    InputMediaAnimation
+    | InputMediaDocument
+    | InputMediaAudio
+    | InputMediaPhoto
+    | InputMediaVideo
+)
 
 
-InlineQueryResult = Annotated[
-    Union[
-        InlineQueryResultCachedAudio,
-        InlineQueryResultCachedDocument,
-        InlineQueryResultCachedGif,
-        InlineQueryResultCachedMpeg4Gif,
-        InlineQueryResultCachedPhoto,
-        InlineQueryResultCachedSticker,
-        InlineQueryResultCachedVideo,
-        InlineQueryResultCachedVoice,
-        InlineQueryResultArticle,
-        InlineQueryResultAudio,
-        InlineQueryResultContact,
-        InlineQueryResultGame,
-        InlineQueryResultDocument,
-        InlineQueryResultGif,
-        InlineQueryResultLocation,
-        InlineQueryResultMpeg4Gif,
-        InlineQueryResultPhoto,
-        InlineQueryResultVenue,
-        InlineQueryResultVideo,
-        InlineQueryResultVoice,
-    ],
-    Field(discriminator="type"),
-]
+InlineQueryResult = (
+    InlineQueryResultCachedAudio
+    | InlineQueryResultCachedDocument
+    | InlineQueryResultCachedGif
+    | InlineQueryResultCachedMpeg4Gif
+    | InlineQueryResultCachedPhoto
+    | InlineQueryResultCachedSticker
+    | InlineQueryResultCachedVideo
+    | InlineQueryResultCachedVoice
+    | InlineQueryResultArticle
+    | InlineQueryResultAudio
+    | InlineQueryResultContact
+    | InlineQueryResultGame
+    | InlineQueryResultDocument
+    | InlineQueryResultGif
+    | InlineQueryResultLocation
+    | InlineQueryResultMpeg4Gif
+    | InlineQueryResultPhoto
+    | InlineQueryResultVenue
+    | InlineQueryResultVideo
+    | InlineQueryResultVoice
+)
 
 
-InputMessageContent = Annotated[
-    Union[
-        InputTextMessageContent,
-        InputLocationMessageContent,
-        InputVenueMessageContent,
-        InputContactMessageContent,
-        InputInvoiceMessageContent,
-    ],
-    Field(discriminator="latitude"),
-]
+InputMessageContent = (
+    InputTextMessageContent
+    | InputLocationMessageContent
+    | InputVenueMessageContent
+    | InputContactMessageContent
+    | InputInvoiceMessageContent
+)
 
 
-PassportElementError = Annotated[
-    Union[
-        PassportElementErrorDataField,
-        PassportElementErrorFrontSide,
-        PassportElementErrorReverseSide,
-        PassportElementErrorSelfie,
-        PassportElementErrorFile,
-        PassportElementErrorFiles,
-        PassportElementErrorTranslationFile,
-        PassportElementErrorTranslationFiles,
-        PassportElementErrorUnspecified,
-    ],
-    Field(discriminator="source"),
-]
-
-
-for v in locals().copy().values():
-    if inspect.isclass(v) and issubclass(v, BaseModel):
-        v.update_forward_refs()
-
-__all__ = (
-    "Update",
-    "WebhookInfo",
-    "User",
-    "Chat",
-    "Message",
-    "MessageId",
-    "MessageEntity",
-    "PhotoSize",
-    "Animation",
-    "Audio",
-    "Document",
-    "Video",
-    "VideoNote",
-    "Voice",
-    "Contact",
-    "Dice",
-    "PollOption",
-    "PollAnswer",
-    "Poll",
-    "Location",
-    "Venue",
-    "WebAppData",
-    "ProximityAlertTriggered",
-    "MessageAutoDeleteTimerChanged",
-    "ForumTopicCreated",
-    "ForumTopicClosed",
-    "ForumTopicEdited",
-    "ForumTopicReopened",
-    "GeneralForumTopicHidden",
-    "GeneralForumTopicUnhidden",
-    "UserShared",
-    "ChatShared",
-    "WriteAccessAllowed",
-    "VideoChatScheduled",
-    "VideoChatStarted",
-    "VideoChatEnded",
-    "VideoChatParticipantsInvited",
-    "UserProfilePhotos",
-    "File",
-    "WebAppInfo",
-    "ReplyKeyboardMarkup",
-    "KeyboardButton",
-    "KeyboardButtonRequestUser",
-    "KeyboardButtonRequestChat",
-    "KeyboardButtonPollType",
-    "ReplyKeyboardRemove",
-    "InlineKeyboardMarkup",
-    "InlineKeyboardButton",
-    "LoginUrl",
-    "CallbackQuery",
-    "ForceReply",
-    "ChatPhoto",
-    "ChatInviteLink",
-    "ChatAdministratorRights",
-    "ChatMember",
-    "ChatMemberOwner",
-    "ChatMemberAdministrator",
-    "ChatMemberMember",
-    "ChatMemberRestricted",
-    "ChatMemberLeft",
-    "ChatMemberBanned",
-    "ChatMemberUpdated",
-    "ChatJoinRequest",
-    "ChatPermissions",
-    "ChatLocation",
-    "ForumTopic",
-    "BotCommand",
-    "BotCommandScope",
-    "BotCommandScopeDefault",
-    "BotCommandScopeAllPrivateChats",
-    "BotCommandScopeAllGroupChats",
-    "BotCommandScopeAllChatAdministrators",
-    "BotCommandScopeChat",
-    "BotCommandScopeChatAdministrators",
-    "BotCommandScopeChatMember",
-    "BotDescription",
-    "BotShortDescription",
-    "MenuButton",
-    "MenuButtonCommands",
-    "MenuButtonWebApp",
-    "MenuButtonDefault",
-    "ResponseParameters",
-    "InputMedia",
-    "InputMediaPhoto",
-    "InputMediaVideo",
-    "InputMediaAnimation",
-    "InputMediaAudio",
-    "InputMediaDocument",
-    "InputFile",
-    "Sticker",
-    "StickerSet",
-    "MaskPosition",
-    "InputSticker",
-    "InlineQuery",
-    "InlineQueryResult",
-    "InlineQueryResultArticle",
-    "InlineQueryResultPhoto",
-    "InlineQueryResultGif",
-    "InlineQueryResultMpeg4Gif",
-    "InlineQueryResultVideo",
-    "InlineQueryResultAudio",
-    "InlineQueryResultVoice",
-    "InlineQueryResultDocument",
-    "InlineQueryResultLocation",
-    "InlineQueryResultVenue",
-    "InlineQueryResultContact",
-    "InlineQueryResultGame",
-    "InlineQueryResultCachedPhoto",
-    "InlineQueryResultCachedGif",
-    "InlineQueryResultCachedMpeg4Gif",
-    "InlineQueryResultCachedSticker",
-    "InlineQueryResultCachedDocument",
-    "InlineQueryResultCachedVideo",
-    "InlineQueryResultCachedVoice",
-    "InlineQueryResultCachedAudio",
-    "InputMessageContent",
-    "InputTextMessageContent",
-    "InputLocationMessageContent",
-    "InputVenueMessageContent",
-    "InputContactMessageContent",
-    "InputInvoiceMessageContent",
-    "ChosenInlineResult",
-    "SentWebAppMessage",
-    "LabeledPrice",
-    "Invoice",
-    "ShippingAddress",
-    "OrderInfo",
-    "ShippingOption",
-    "SuccessfulPayment",
-    "ShippingQuery",
-    "PreCheckoutQuery",
-    "PassportData",
-    "PassportFile",
-    "EncryptedPassportElement",
-    "EncryptedCredentials",
-    "PassportElementError",
-    "PassportElementErrorDataField",
-    "PassportElementErrorFrontSide",
-    "PassportElementErrorReverseSide",
-    "PassportElementErrorSelfie",
-    "PassportElementErrorFile",
-    "PassportElementErrorFiles",
-    "PassportElementErrorTranslationFile",
-    "PassportElementErrorTranslationFiles",
-    "PassportElementErrorUnspecified",
-    "Game",
-    "CallbackGame",
-    "GameHighScore",
+PassportElementError = (
+    PassportElementErrorDataField
+    | PassportElementErrorFrontSide
+    | PassportElementErrorReverseSide
+    | PassportElementErrorSelfie
+    | PassportElementErrorFile
+    | PassportElementErrorFiles
+    | PassportElementErrorTranslationFile
+    | PassportElementErrorTranslationFiles
+    | PassportElementErrorUnspecified
 )

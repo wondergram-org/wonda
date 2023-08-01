@@ -1,8 +1,8 @@
-from wonda import BotBlueprint
+from wonda import Blueprint
 from wonda.bot.rules import Text
 
 # Make a blueprint of a bot.
-bp = BotBlueprint()
+bp = Blueprint()
 
 
 @bp.on.message(Text(["bye", "cheers"], ignore_case=True))

@@ -1,39 +1,29 @@
-from enum import Enum
 from typing import Any
 
 from aiohttp import FormData
-from pydantic import BaseModel
 
-from wonda.api.utils.file_util import File
+from wonda.api.utils.file_util import InputFile
 from wonda.api.validators.abc import ABCRequestValidator
-from wonda.modules import json
+from wonda.types.helper import Model, json
 
 
-def translate(v: Any, rec: bool = False) -> Any:
-    if isinstance(v, BaseModel):
-        return (
-            v.json(exclude_none=True, encoder=json.dumps)
-            if not rec
-            else v.dict(exclude_none=True)
-        )
+def translate(v: Any) -> Any:
+    if isinstance(v, Model):
+        return json.encode(v).decode()
     elif isinstance(v, dict):
-        return {k: translate(v, rec=True) for k, v in v.items() if v is not None}
+        return {n: translate(p) for n, p in v.items() if v is not None}
     elif isinstance(v, list):
-        return json.dumps([translate(i, rec=True) for i in v])
-    elif isinstance(v, File):
-        return v.content
-    elif isinstance(v, Enum):
-        return v.value
-    elif isinstance(v, int):
-        return str(v)
+        return [translate(i) for i in v]
+    elif isinstance(v, InputFile):
+        return (v.name, v.content)
     elif v is None:
         pass
     return v
 
 
-class TranslateFriendlyTypesRequestValidator(ABCRequestValidator):
+class TranslateTypesValidator(ABCRequestValidator):
     async def validate(self, request: dict) -> FormData:
         return FormData({k: translate(v) for k, v in request.items() if v is not None})
 
 
-__all__ = ("TranslateFriendlyTypesRequestValidator",)
+__all__ = ("TranslateTypesValidator",)

@@ -60,6 +60,6 @@ async def mention_handler(msg: Message) -> None:
     )
 
 
-# Run loop > loop.run_forever() > with tasks created in loop_wrapper before.
-# The main polling task for bot is bot.run_polling()
+# Run the bot. This function uses `.run_polling()` under the hood to start receiving updates.
+# It will also run any tasks you may've added in `loop_wrapper`.
 bot.run_forever()

@@ -1,19 +1,19 @@
 from abc import ABC, abstractmethod
 
-from wonda.tools.storage.types import NO_KEY, TTL, Key, Value
+from wonda.tools.storage.types import Ex, Key, Value
 
 
 class ABCBaseStorage(ABC):
     @abstractmethod
-    def get(self, key: Key, default: Value = NO_KEY) -> Value:
+    async def get(self, key: Key, default: Value = ...) -> Value:
         pass
 
     @abstractmethod
-    def delete(self, key: Key) -> None:
+    async def delete(self, key: Key) -> None:
         pass
 
     @abstractmethod
-    def contains(self, key: Key) -> bool:
+    async def contains(self, key: Key) -> bool:
         pass
 
 
@@ -23,7 +23,7 @@ class ABCStorage(ABCBaseStorage):
         pass
 
 
-class ABCExpiringStorage(ABCStorage):
+class ABCExpiringStorage(ABCBaseStorage):
     @abstractmethod
-    async def put(self, key: Key, value: Value, ttl: TTL) -> None:
+    async def put(self, key: Key, value: Value, ex: Ex) -> None:
         pass

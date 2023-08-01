@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from wonda.modules import logger
 
@@ -12,7 +12,7 @@ class ABCStateDispenser(ABC):
     storage: "ABCStorage"
 
     @abstractmethod
-    async def get(self, chat_id: int) -> Optional["StateRepr"]:
+    async def get(self, chat_id: int) -> "StateRepr | None":
         pass
 
     @abstractmethod
@@ -23,9 +23,9 @@ class ABCStateDispenser(ABC):
     async def finish(self, chat_id: int) -> None:
         pass
 
-    async def cast(self, chat_id: Optional[int]) -> Optional["StateRepr"]:
+    async def cast(self, chat_id: int | None = None) -> "StateRepr | None":
         if chat_id is None:
             return None
-
-        logger.debug(f"State cast for identifier {chat_id}")
+        
+        await logger.debug("State cast", id=chat_id)
         return await self.get(chat_id)

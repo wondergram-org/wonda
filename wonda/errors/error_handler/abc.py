@@ -1,16 +1,16 @@
 from abc import ABC, abstractmethod
-from typing import Any, Awaitable, Callable, Dict, Optional, Type
+from typing import Any, Awaitable, Callable
 
 AsyncFunc = Callable[..., Awaitable[Any]]
 
 
 class ABCErrorHandler(ABC):
-    error_handlers: Dict[Type[BaseException], AsyncFunc]
-    undefined_error_handler: Optional[AsyncFunc]
+    error_handlers: dict[type[BaseException], AsyncFunc]
+    undefined_error_handler: AsyncFunc | None
 
     @abstractmethod
     def register_error_handler(
-        self, *error_types: Type[BaseException]
+        self, *error_types: type[BaseException]
     ) -> Callable[[AsyncFunc], AsyncFunc]:
         pass
 

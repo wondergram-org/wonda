@@ -1,28 +1,21 @@
-from typing import Dict, NoReturn, Optional, Union
+from time import time
 
-from wonda.tools.storage.abc import ABCStorage
-from wonda.tools.storage.types import NO_KEY, Key, Value
+from wonda.tools.storage.abc import ABCExpiringStorage, ABCStorage
+from wonda.tools.storage.types import Ex, Key, Value
 
 
 class MemoryStorage(ABCStorage):
     def __init__(self) -> None:
-        self.data: Dict[Key, Value] = {}
+        self.data: dict[Key, Value] = {}
 
-    async def get(self, key: Key, default: Value = NO_KEY) -> Union[Value, NoReturn]:
+    async def get(self, key: Key, default: Value = ...) -> Value | None:
         if await self.contains(key):
             return self.data[key]
 
-        if default is NO_KEY:
+        if default is ...:
             raise KeyError("There is no such key")
 
         return default
-
-    async def delete(self, key: Key) -> Optional[NoReturn]:
-        if not await self.contains(key):
-            raise KeyError("Storage doesn't contain this key")
-
-        del self.data[key]
-        return None
 
     async def put(self, key: Key, value: Value) -> None:
         self.data[key] = value
@@ -30,3 +23,46 @@ class MemoryStorage(ABCStorage):
 
     async def contains(self, key: Key) -> bool:
         return key in self.data
+
+    async def delete(self, key: Key) -> None:
+        if not await self.contains(key):
+            raise KeyError("Storage does not contain this key")
+
+        del self.data[key]
+        return None
+
+
+class MemoryExpiringStorage(ABCExpiringStorage):
+    def __init__(self) -> None:
+        self.data: dict[Key, tuple[Value, Ex]] = {}
+
+    async def get(self, key: Key, default: Value = ...) -> Value | None:
+        if await self.contains(key):
+            return self.data[key][0]
+
+        if default is ...:
+            raise KeyError("There is no such key")
+
+        return default
+
+    async def put(self, key: Key, value: Value, ex: Ex = Ex("inf")) -> None:
+        self.data[key] = value, ex + time()
+        return None
+
+    async def contains(self, key: Key) -> bool:
+        if key not in self.data:
+            return False
+
+        _, expires_at = self.data[key]
+
+        if expires_at < time():
+            del self.data[key]
+
+        return key in self.data
+
+    async def delete(self, key: Key) -> None:
+        if not await self.contains(key):
+            raise KeyError("Storage does not contain this key")
+
+        del self.data[key]
+        return None

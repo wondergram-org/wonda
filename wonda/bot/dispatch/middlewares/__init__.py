@@ -1,1 +1,3 @@
-from .base import BaseMiddleware, MiddlewareError
+from .abc import ABCMiddleware
+
+DEFAULT_MIDDLEWARES: list[ABCMiddleware] = []

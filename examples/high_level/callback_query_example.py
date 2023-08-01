@@ -1,14 +1,14 @@
 from wonda import Bot, Token
 from wonda.bot.rules import Command, Text
-from wonda.bot.updates import BotUpdateType, CallbackQuery, Message
-from wonda.tools.keyboard import Callback, InlineKeyboard
+from wonda.bot.updates import CallbackQuery, Message
+from wonda.tools.keyboard import Callback, InlineKeyboardBuilder
 
 # Make a bot with a token from an environment variable.
 bot = Bot(Token.from_env())
 
 # Create an inline keyboard with a button that will be used to trigger a callback.
 INLINE_KEYBOARD = (
-    InlineKeyboard()
+    InlineKeyboardBuilder()
     .add(Callback("🍎 Apple", "apple"))
     .add(Callback("🍊 Orange", "orange"))
     .row()
@@ -17,7 +17,7 @@ INLINE_KEYBOARD = (
 )
 
 
-@bot.on.message(Command("start"))
+@bot.on.message(Command("fruits"))
 async def start_handler(msg: Message) -> None:
     # This is a handler that sends a simple inline keyboard
     # containing three buttons with their respective callback data.
@@ -27,18 +27,16 @@ async def start_handler(msg: Message) -> None:
     )
 
 
-@bot.on.raw_update(
-    BotUpdateType.CALLBACK_QUERY, CallbackQuery, Text(["apple", "orange"])
-)
+@bot.on.callback_query(Text(["apple", "orange"]))
 async def fruit_handler(upd: CallbackQuery) -> None:
-    # Answer a callback query <.answer()> method. To display
-    # an alert, pass `show_alert` param.
+    # Answer a callback query using <.answer()> method.
+    # To display an alert, pass `show_alert` param.
     await upd.answer(
         "You chose a fruit! Fruits are healthy and delicious 🍋", show_alert=True
     )
 
 
-@bot.on.raw_update(BotUpdateType.CALLBACK_QUERY, CallbackQuery, Text("stop"))
+@bot.on.callback_query(Text("stop"))
 async def shoe_handler(upd: CallbackQuery) -> None:
     await upd.ctx_api.edit_message_text(
         "That's ok. Some choices are just too hard to make.",
@@ -47,6 +45,6 @@ async def shoe_handler(upd: CallbackQuery) -> None:
     )
 
 
-# Run loop > loop.run_forever() > with tasks created in loop_wrapper before.
-# The main polling task for bot is bot.run_polling()
+# Run the bot. This function uses `.run_polling()` under the hood to start receiving updates.
+# It will also run any tasks you may've added in `loop_wrapper`.
 bot.run_forever()

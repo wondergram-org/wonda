@@ -6,11 +6,12 @@ loop_wrapper = LoopWrapper()
 # It can help you to run startup and shutdown tasks, auto-reload your code
 # and set up timers and intervals.
 #
-# A LW is created automatically when you initialize a bot and is accessible
+# A loop wrapper is created automatically when you initialize a bot and is accessible
 # through `bot.loop_wrapper`. For some reason, it's also possible
 # to create it manually.
 
 bot = Bot(Token.from_env())
+
 
 # To set up a timer, use the `@lw.timer()` decorator.
 # It accepts a human-readable time intervals as arguments.
@@ -24,7 +25,7 @@ async def timer_handler() -> None:
 # You can also use `@lw.interval()` decorator to set up an interval coroutine.
 # It will work the same way as a timer, but will be called repeatedly
 # every time the interval is over until the bot is stopped.
-@loop_wrapper.interval(10)
+@loop_wrapper.interval(days=1)
 async def interval_handler() -> None:
     print("I'm here to stay!")
 
@@ -55,8 +56,8 @@ async def close_connection() -> None:
 loop_wrapper.on_startup.append(setup_db())
 loop_wrapper.on_shutdown.append(close_connection())
 
-# Run loop > loop.run_forever() > with tasks created in loop_wrapper before.
-# The main polling task for bot is bot.run_polling(), which is automatically
+# Run the bot. This function uses `.run_polling()` under the hood to start receiving updates.
+# It will also run any tasks you may've added in `loop_wrapper`., which is automatically
 # added when this method is called.
 bot.loop_wrapper = loop_wrapper
 bot.run_forever()

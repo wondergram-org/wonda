@@ -1,69 +1,41 @@
-from typing import AsyncIterator, List, Optional
+from typing import AsyncIterator
 
 from wonda.api import ABCAPI
 from wonda.bot.polling.abc import ABCPolling
 from wonda.errors import ABCErrorHandler, ErrorHandler, TelegramAPIError
 from wonda.modules import logger
+from wonda.types.objects import Update
 
 
 class BotPolling(ABCPolling):
     def __init__(
         self,
-        api: Optional[ABCAPI] = None,
-        error_handler: Optional[ABCErrorHandler] = None,
+        api: ABCAPI | None = None,
+        error_handler: ABCErrorHandler | None = None,
     ):
         self.api = api
-        self._error_handler = error_handler or ErrorHandler()
-        self._stop = False
+        self.error_handler = error_handler or ErrorHandler()
 
+        self.stop = False
         self.offset = 0
-        self.allowed_updates = []
 
-    async def get_updates(self) -> Optional[List[dict]]:
-        raw_updates = []
+    async def get_updates(self) -> list["Update"]:
+        updates = []
 
         try:
-            raw_updates = await self.api.request(
-                "getUpdates",
-                {"offset": self.offset, "allowed_updates": self.allowed_updates},
-            )
+            updates = await self.api.get_updates(offset=self.offset)
         except TelegramAPIError[401, 404] as e:
-            logger.critical(e)
-            self.stop()
+            await logger.critical(e)
+            self.stop = True
 
-        return raw_updates
+        return updates
 
-    async def listen(self) -> AsyncIterator[dict]:
-        while not self._stop:
+    async def listen(self) -> AsyncIterator["Update"]:
+        while not self.stop:
             try:
                 updates = await self.get_updates()
                 for update in updates:
-                    self.offset = update["update_id"] + 1
+                    self.offset = update.update_id + 1
                     yield update
             except BaseException as e:
-                await self._error_handler.handle(e)
-
-    def stop(self) -> None:
-        self._stop = True
-
-    def construct(
-        self, api: "ABCAPI", error_handler: Optional["ABCErrorHandler"] = None
-    ) -> "BotPolling":
-        self._api = api
-        if error_handler is not None:
-            self._error_handler = error_handler
-        return self
-
-    @property
-    def api(self) -> "ABCAPI":
-        if self._api is None:
-            self.stop()
-            raise NotImplementedError(
-                "You must construct polling with API "
-                "before trying to access the API property of BotPolling"
-            )
-        return self._api
-
-    @api.setter
-    def api(self, new_api: "ABCAPI"):
-        self._api = new_api
+                await self.error_handler.handle(e)

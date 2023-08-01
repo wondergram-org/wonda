@@ -1,87 +1,38 @@
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Dict, List, Union
-
-if TYPE_CHECKING:
-    from wonda.types.objects import InlineKeyboardMarkup, ReplyKeyboardMarkup
-
-    AnyMarkup = Union[ReplyKeyboardMarkup, InlineKeyboardMarkup]
+from typing import Any, Self
 
 
-class Button:
+class ABCKeyboardBuilder(ABC):
     """
-    A text-only keyboard button interface. All 
-    other button types should inherit this class.
+    A keyboard builder interface.
     """
 
-    def __init__(self, text: str) -> None:
-        self.text = text
-
-    def get_data(self) -> dict:
-        """
-        Returns the button data.
-        """
-        return {k: v for k, v in self.__dict__.items() if v is not None}
-
-
-class ABCBuilder(ABC):
-    """
-    An abstract keyboard builder interface.
-    """
-
-    buttons: List[List[Button]]
-
-    def add(self, button: Button) -> "ABCBuilder":
+    @abstractmethod
+    def add(self, button: "ABCButton") -> Self:
         """
         Adds a button to the keyboard.
         """
-        if not len(self.buttons):
-            self.row()
-
-        self.last_row.append(button)
-        return self
+        pass
 
     @abstractmethod
-    def build(self) -> "AnyMarkup":
+    def row(self) -> Self:
         """
-        Builds the keyboard into whatever markup object.
+        Adds a row to the keyboard. Panics if the last row was empty.
         """
         pass
 
-    @classmethod
-    def empty(cls) -> str:
+    @abstractmethod
+    def build(self) -> Any:
         """
-        Returns an empty keyboard.
+        Builds the keyboard.
         """
-        return cls().build()
+        pass
 
-    @property
-    def keyboard(self) -> List[List[Dict[str, Any]]]:
-        """
-        Convenience property to get the keyboard data.
-        """
-        return [[button.get_data() for button in row] for row in self.buttons]
 
-    @property
-    def last_row(self) -> List[Button]:
+class ABCButton(ABC):
+    @abstractmethod
+    def dict(self) -> Any:
         """
-        Convenience property to get the last button row.
+        Returns the button data.
         """
-        return self.buttons[-1]
-
-    def merge(self, builder: "ABCBuilder") -> "ABCBuilder":
-        self.buttons.extend(builder.buttons)
-        return self
-
-    def row(self) -> "ABCBuilder":
-        """
-        Adds a row to the keyboard.
-        Panics if the last row was empty.
-        """
-        if len(self.buttons) and not len(self.last_row):
-            raise ValueError("Last row is empty")
-
-        self.buttons.append([])
-        return self
-
-    def __repr__(self) -> str:
-        return self.build().json()
+        pass

@@ -6,7 +6,7 @@ api = API(Token.from_env())
 
 async def main() -> None:
     try:
-        await api.send_message(1, "Hi bestie!")
+        await api.send_message("Hi bestie!", 1)
     except TelegramAPIError[400]:
         print("Oops, bad request.")
     except TelegramAPIError[401, 404]:

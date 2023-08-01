@@ -1,19 +1,24 @@
 from asyncio import sleep
-from typing import TYPE_CHECKING, Any, Callable, Coroutine
+from typing import Any, Callable, Coroutine
 
-if TYPE_CHECKING:
-    Handler = Callable[..., Coroutine[Any, Any, Any]]
+_ = Any
 
 
 class DelayedTask:
-    def __init__(self, seconds: int, handler: "Handler", do_break: bool = False):
+    def __init__(
+        self,
+        seconds: int,
+        func: Callable[..., Coroutine[_, _, _]],
+        do_break: bool = False,
+    ) -> None:
+        self.func = func
         self.seconds = seconds
-        self.handler = handler
         self.do_break = do_break
 
-    async def __call__(self, *args, **kwargs):
+    async def __call__(self, *args, **kwargs) -> None:
         while True:
             await sleep(self.seconds)
-            await self.handler(*args, **kwargs)
+            await self.func(*args, **kwargs)
+
             if self.do_break:
                 break

@@ -1,2 +1,2 @@
 from .abc import ABCRouter
-from .bot import BotRouter
+from .default import DefaultRouter
