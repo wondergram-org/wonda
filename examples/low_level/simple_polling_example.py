@@ -1,9 +1,9 @@
 from asyncio import run
 
-from wonda import API, DefaultPolling, Token
+from wonda import API, DefaultPoller, Token
 from wonda.modules import logger
 
-polling = DefaultPolling(API(Token.from_env()))
+polling = DefaultPoller(API(Token.from_env()))
 
 
 async def main():

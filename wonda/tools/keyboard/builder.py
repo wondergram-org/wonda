@@ -1,4 +1,4 @@
-from typing import Any, Generic, TypeVar
+from typing import Any
 
 from wonda.tools.keyboard.abc import ABCButton, ABCKeyboardBuilder
 from wonda.types.objects import (
@@ -10,25 +10,27 @@ from wonda.types.objects import (
 )
 
 _ = Any
-T = TypeVar("T")
 
 
-class BaseKeyboardBuilder(ABCKeyboardBuilder, Generic[T]):
+class BaseKeyboardBuilder(ABCKeyboardBuilder):
     """
     A basic keyboard builder which implements independent logic for
     `.add()` and `.row()` methods
     """
 
+    button_type: _
+
     def __init__(self) -> None:
         self.rows: list[list[ABCButton]] = [[]]
 
     @property
-    def keyboard(self) -> list[list[Any]]:
+    def keyboard(self) -> list[list[_]]:
         """
         Keyboard markup to be sent.
         """
-        type = self.__orig_bases__[0].__args__[0]  # type: ignore
-        return [[type(**button.dict()) for button in row] for row in self.rows]
+        return [
+            [self.button_type(**button.dict()) for button in row] for row in self.rows
+        ]
 
     @property
     def last_row(self) -> list[ABCButton]:
@@ -55,20 +57,24 @@ class BaseKeyboardBuilder(ABCKeyboardBuilder, Generic[T]):
         raise NotImplementedError("`.build()` method implemenation is builder specific")
 
 
-class InlineKeyboardBuilder(BaseKeyboardBuilder[InlineKeyboardButton]):
+class InlineKeyboardBuilder(BaseKeyboardBuilder):
     """
     A builder for an inline keyboard. No options are available
     for this type of keyboard.
     """
 
+    button_type = InlineKeyboardButton
+
     def build(self) -> InlineKeyboardMarkup:
         return InlineKeyboardMarkup(self.keyboard)
 
 
-class ReplyKeyboardBuilder(BaseKeyboardBuilder[KeyboardButton]):
+class ReplyKeyboardBuilder(BaseKeyboardBuilder):
     """
     A builder for a keyboard with custom reply options.
     """
+
+    button_type = KeyboardButton
 
     def __init__(
         self,
