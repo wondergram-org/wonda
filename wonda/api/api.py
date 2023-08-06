@@ -25,7 +25,7 @@ class API(ABCAPI, APIMethods):
             ABCResponseValidator
         ] = DEFAULT_RESPONSE_VALIDATORS
 
-    async def request(self, method: str, params: dict = {}) -> bytes | None:
+    async def request(self, method: str, params: dict = {}) -> bytes:
         await logger.debug("Calling", method=method, params=params)
 
         data = await self.validate_request(params or {})
@@ -33,5 +33,5 @@ class API(ABCAPI, APIMethods):
             self.api_url + method, data=data
         )
 
-        await logger.debug("Received", response=response)
+        await logger.debug("Received", response=response.decode())
         return await self.validate_response(response)

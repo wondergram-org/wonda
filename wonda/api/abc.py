@@ -32,7 +32,7 @@ class ABCAPI(ABC):
         return self.API_URL + f"file/bot{self.token}/"
 
     @abstractmethod
-    async def request(self, method: str, params: dict = {}) -> bytes | None:
+    async def request(self, method: str, params: dict = {}) -> bytes:
         """
         Opens a request session and makes a single API call
         """
@@ -53,13 +53,13 @@ class ABCAPI(ABC):
         If necessary, modifies and transforms it.
         """
         for v in self.request_validators:
-            params = await v.validate(params)
+            params = await v(self.http_client).validate(params)
         return params
 
-    async def validate_response(self, response: bytes) -> bytes | None:
+    async def validate_response(self, response: bytes) -> bytes:
         """
         Verifies and adapts the response.
         """
         for v in self.response_validators:
-            response = await v.validate(response)
+            response = await v(self).validate(response)
         return response
