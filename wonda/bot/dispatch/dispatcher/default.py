@@ -28,7 +28,8 @@ class DefaultDispatcher(ABCDispatcher):
         self.poll = PollView()
 
     def load(self, dispatcher: "ABCDispatcher") -> None:
-        pass
+        raise NotImplemented("Not yet implemented")
+
 
     def views(self) -> dict[str, "ABCView"]:
-        return {k: v for k, v in vars(self).items() if isinstance(v, ABCView)}
+        return {k: v for k, v in self.__dict__.items() if isinstance(v, ABCView)}
