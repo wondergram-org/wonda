@@ -60,11 +60,9 @@ class OrRule(ABCRule[T]):
         for rule in self.rules:
             ctx_copy = ctx.copy()
 
-            if not await rule.check(update, ctx):
-                return False
-
-            ctx |= ctx_copy
-            return True
+            if await rule.check(update, ctx):
+                ctx |= ctx_copy
+                return True
         return False
 
     def __repr__(self):

@@ -16,7 +16,7 @@ class Command(ABCRule[Message]):
     contains one of those commands.
     """
 
-    me: "User | None" = None
+    me: User | None = None
 
     def __init__(self, texts: str | list[str], prefixes: str | list[str] = "/") -> None:
         self.texts = texts if isinstance(texts, list) else [texts]
