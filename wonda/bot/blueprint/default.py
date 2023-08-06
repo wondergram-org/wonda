@@ -1,26 +1,21 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from wonda.bot.blueprint.abc import ABCBlueprint
 from wonda.bot.dispatch.dispatcher.abc import ABCDispatcher
 from wonda.bot.dispatch.dispatcher.default import DefaultDispatcher
-
-if TYPE_CHECKING:
-    from wonda.api import ABCAPI, API
-    from wonda.bot import ABCStateDispenser, Bot
 
 
 class DefaultBlueprint(ABCBlueprint):
     def __init__(self, dispatcher: "ABCDispatcher | None" = None) -> None:
         self.dispatcher = dispatcher or DefaultDispatcher()
 
-    @classmethod
-    def load_into(cls, framework: "Bot") -> "DefaultBlueprint":
-        framework.dispatcher.load(cls.dispatcher)
+    def load_into(self, framework: Any) -> "DefaultBlueprint":
+        framework.dispatcher.load(self.dispatcher)
 
-        cls.state_dispenser = framework.state_dispenser
-        cls.api = framework.api
-        return cls
+        self.state_dispenser = framework.state_dispenser
+        self.api = framework.api
+        return self
 
     @property
     def on(self) -> DefaultDispatcher:
-        return self.dispatcher
+        return self.dispatcher  # type: ignore
