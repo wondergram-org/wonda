@@ -1,12 +1,10 @@
 import ssl
 
 import certifi
-from aiohttp import ClientResponse, ClientSession, ClientTimeout, FormData, TCPConnector
+from aiohttp import ClientSession, ClientTimeout, FormData, TCPConnector
 
 from wonda.modules import JSONModule, json
 from wonda.net.abc import ABCNetworkClient
-
-Data = dict | FormData
 
 
 class DefaultNetworkClient(ABCNetworkClient):
@@ -18,7 +16,7 @@ class DefaultNetworkClient(ABCNetworkClient):
     ) -> None:
         self.json_processing_module = json_processing_module or json
         self.session = session or ClientSession(
-            timeout=ClientTimeout(0),
+            timeout=timeout or ClientTimeout(0),
             connector=TCPConnector(
                 ssl=ssl.create_default_context(cafile=certifi.where())
             ),
@@ -26,7 +24,7 @@ class DefaultNetworkClient(ABCNetworkClient):
         )
 
     async def request_bytes(
-        self, url: str, method: str = "get", data: Data | None = None, **kw
+        self, url: str, method: str = "get", data: dict | None = None, **kw
     ) -> bytes:
         async with self.session.request(
             url=url, method=method, data=data, **kw
@@ -34,13 +32,13 @@ class DefaultNetworkClient(ABCNetworkClient):
             return await response.content.read()
 
     async def request_json(
-        self, url: str, method: str = "get", data: Data | None = None, **kw
+        self, url: str, method: str = "get", data: dict | None = None, **kw
     ) -> dict:
         response = await self.request_bytes(url, method, data, **kw)
         return self.json_processing_module.loads(response)
 
     async def request_text(
-        self, url: str, method: str = "get", data: Data | None = None, **kw
+        self, url: str, method: str = "get", data: dict | None = None, **kw
     ) -> str:
         response = await self.request_bytes(url, method, data, **kw)
         return response.decode()
@@ -48,6 +46,17 @@ class DefaultNetworkClient(ABCNetworkClient):
     async def close(self) -> None:
         if self.session and not self.session.closed:
             await self.session.close()
+
+    @staticmethod
+    def construct_form(data: dict) -> FormData:
+        form = FormData()
+
+        for k, v in data.items():
+            params = {}
+            if isinstance(v, tuple):
+                params["filename"], v = v[0], v[1]
+            form.add_field(k, v, **params)
+        return form
 
     def __del__(self):
         if self.session and not self.session.closed:

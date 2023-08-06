@@ -3,21 +3,26 @@ from typing import Any
 
 
 class ABCNetworkClient(ABC):
+    @staticmethod
+    @abstractmethod
+    def construct_form(self, data: dict) -> Any:
+        pass
+
     @abstractmethod
     async def request_text(
-        self, url: str, method: str = "get", data: dict | None = None, **kwargs
+        self, url: str, method: str = "get", data: dict | None = None, **kw
     ) -> str:
         pass
 
     @abstractmethod
     async def request_json(
-        self, url: str, method: str = "get", data: dict | None = None, **kwargs
+        self, url: str, method: str = "get", data: dict | None = None, **kw
     ) -> dict:
         pass
 
     @abstractmethod
     async def request_bytes(
-        self, url: str, method: str = "get", data: dict | None = None, **kwargs
+        self, url: str, method: str = "get", data: dict | None = None, **kw
     ) -> bytes:
         pass
 
