@@ -1,7 +1,11 @@
-from wonda.api import API
+from wonda.api import ABCAPI, API
 from wonda.bot.states import StateRepr
 
 
 class BaseUpdate:
-    ctx_api: API
-    state_repr: StateRepr | None
+    unprep_ctx_api: ABCAPI | None = None
+    state_repr: StateRepr | None = None
+
+    @property
+    def ctx_api(self) -> API:
+        return self.unprep_ctx_api  # type: ignore

@@ -2,30 +2,19 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from wonda.bot.dispatch.handler.func import FuncHandler
+from wonda.bot.dispatch.handler.abc import ABCHandler
 from wonda.bot.dispatch.middlewares.abc import ABCMiddleware
 from wonda.bot.rules.abc import ABCRule
 from wonda.bot.updates.base import BaseUpdate
 
 if TYPE_CHECKING:
-    from wonda.api import ABCAPI, API
-    from wonda.bot.dispatch.handler.abc import ABCHandler
+    from wonda.api import ABCAPI
     from wonda.bot.states.dispenser.abc import ABCStateDispenser
     from wonda.types.objects import Update
 
 
 _ = Any
 T = TypeVar("T", bound=BaseUpdate)
-
-
-def get_update_type(update: "Update") -> str:
-    for k in update.__struct_fields__:
-        v = getattr(update, k, None)
-
-        # Handle None values and `update_id` field
-        if v is not None and not isinstance(v, int):
-            return k
-
-    return ""
 
 
 class ABCView(ABC, Generic[T]):
@@ -40,17 +29,37 @@ class ABCView(ABC, Generic[T]):
         cls.matches = [matches] if isinstance(matches, str) else matches
 
     def __call__(self, *rules: "ABCRule", blocking: bool = True):
-        """ """
+        """
+        Shortcut to register a handler in this view.
+        """
         assert all(
             isinstance(rule, ABCRule) for rule in rules
         ), "All rules must be subclasses of ABCRule"
 
         def decorator(func) -> None:
-            self.handlers.append(
+            self.register_handler(
                 FuncHandler(func, [*self.auto_rules, *rules], blocking=blocking)
             )
 
         return decorator
+    
+    def register_handler(self, handler: ABCHandler) -> None: 
+        """
+        Registers a handler.
+        """
+        if not isinstance(handler, ABCHandler):
+            raise TypeError("Argument is not an instance of ABCHandler")
+        
+        self.handlers.append(handler)
+    
+    def register_middleware(self, middleware: ABCMiddleware) -> None:
+        """
+        Registers a middleware.
+        """
+        if not isinstance(middleware, ABCMiddleware):
+            raise TypeError("Argument is not an instance of ABCMiddleware")
+        
+        self.middlewares.append(middleware)
 
     @abstractmethod
     def get_state_key(self, update: T) -> int | None:
@@ -60,7 +69,7 @@ class ABCView(ABC, Generic[T]):
         """
         Checks if the update is of the type this view supports.
         """
-        return get_update_type(update) in self.matches
+        return self.get_update_type(update) in self.matches
 
     async def handle(
         self, update: "Update", ctx_api: "ABCAPI", state_dispenser: "ABCStateDispenser"
@@ -69,9 +78,12 @@ class ABCView(ABC, Generic[T]):
         Handles the update, casting it into suitable model and saturating it with
         useful properties like contextual API and FSM representation.
         """
+        type = self.get_update_type(update)
 
-        upd = self.get_update_model(update)
-        upd.ctx_api, upd.state_repr = ctx_api, await state_dispenser.cast(  # type: ignore
+        upd = self.get_update_model()(
+            **update.dict()[type].dict()
+        )
+        upd.unprep_ctx_api, upd.state_repr = ctx_api, await state_dispenser.cast(
             self.get_state_key(upd)
         )
 
@@ -94,17 +106,15 @@ class ABCView(ABC, Generic[T]):
         for middleware in self.middlewares:
             await middleware.post(upd, ctx, responses)
 
-    def get_update_model(self, update: "Update") -> T:
-        upd = getattr(update, get_update_type(update))
-        return self.__orig_bases__[0].__args__[0](**upd.dict())  # type: ignore
+    def get_update_type(self, update: "Update") -> str:
+        for k in update.__struct_fields__:
+            v = getattr(update, k, None)
 
-    def register_middleware(self, middleware: ABCMiddleware):
-        """
-        Registers a middleware. You can use this as a decorator.
-        """
-        try:
-            if not isinstance(middleware, ABCMiddleware):
-                raise ValueError("Argument is not an instance of ABCMiddleware")
-        except TypeError:
-            raise ValueError("Argument is not a class")
-        self.middlewares.append(middleware)
+            # Handle None values and `update_id` field
+            if v is not None and not isinstance(v, int):
+                return k
+
+        return ""
+
+    def get_update_model(self) -> T:
+        return self.__orig_bases__[0].__args__[0]
