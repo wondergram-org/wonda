@@ -12,7 +12,7 @@ from .blueprints import bps
 for bp in bps:
     # Register a blueprint via <.load_into()> method. This will load the blueprint's dispatcher
     # into the dispatcher of the given framework and then return blueprint constructed with
-    # framework's API and polling.
+    # framework's API and dispatcher.
     bp.load_into(bot)
 
 

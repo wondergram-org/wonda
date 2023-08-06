@@ -21,9 +21,9 @@ class HasPhoto(ABCRule[Message]):
     # If any of these rules are satisfied,
     Command("start") | Text(["hi", "hello"]),
     # both of these are satisfied too
-    IsPrivate() & From("wndrgrm"),
+    IsPrivate() & HasPhoto(),
     # and this rule is not
-    ~HasPhoto(),
+    ~From("durov"),
 )
 async def advanced_handler(msg: Message) -> None:
     # ..then the message will be handled successfully.
