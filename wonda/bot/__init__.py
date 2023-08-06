@@ -4,7 +4,7 @@ from .abc import ABCFramework
 from .blueprint import ABCBlueprint, DefaultBlueprint
 from .bot import Bot
 from .dispatch import ABCHandler, ABCMiddleware, ABCRouter, ABCView, DefaultRouter
-from .polling import ABCPolling, BotPolling
+from .polling import ABCPoller, DefaultPoller
 from .rules import *
 from .states import (
     ABCStateDispenser,
@@ -16,6 +16,6 @@ from .states import (
 from .updates import *
 
 Blueprint = DefaultBlueprint
-Polling = BotPolling
+Poller = DefaultPoller
 Router = DefaultRouter
 StateDispenser = DefaultStateDispenser
