@@ -1,11 +1,12 @@
 from msgspec import Struct, json
 
+rename = lambda n: n.rstrip("_") if n.endswith("_") else None
 
-class Model(
-    Struct,
-    omit_defaults=True,
-    rename=lambda n: n.rstrip("_") if n.endswith("_") else None,
-):
+
+class Model(Struct, rename=rename, omit_defaults=True):
+    def json(self, encoding: str = "utf-8", errors: str = "strict") -> str:
+        return json.encode(self).decode(encoding, errors)
+
     def dict(self) -> dict:
         return {k: getattr(self, k) for k in self.__struct_fields__}
 
