@@ -8,7 +8,7 @@ from wonda.bot.dispatch import (
     DefaultDispatcher,
     DefaultRouter,
 )
-from wonda.bot.polling import ABCPolling, BotPolling
+from wonda.bot.polling import ABCPoller, DefaultPoller
 from wonda.bot.states import ABCStateDispenser, DefaultStateDispenser
 from wonda.errors import ABCErrorHandler, ErrorHandler
 from wonda.modules import logger
@@ -20,9 +20,9 @@ class Bot(ABCFramework):
         self,
         token: Token | None = None,
         api: API | None = None,
-        dispatcher: DefaultDispatcher | None = None,
+        dispatcher: ABCDispatcher | None = None,
         router: ABCRouter | None = None,
-        polling: ABCPolling | None = None,
+        polling: ABCPoller | None = None,
         state_dispenser: ABCStateDispenser | None = None,
         error_handler: ABCErrorHandler | None = None,
         loop: AbstractEventLoop | None = None,
@@ -32,7 +32,7 @@ class Bot(ABCFramework):
         self.loop_wrapper = loop_wrapper or LoopWrapper()
 
         self.api = api or API(token or Token(""))
-        self.polling = polling or BotPolling(self.api, self.error_handler)
+        self.poller = polling or DefaultPoller(self.api, self.error_handler)
 
         self.dispatcher = dispatcher or DefaultDispatcher()
         self.state_dispenser = state_dispenser or DefaultStateDispenser()
@@ -41,25 +41,13 @@ class Bot(ABCFramework):
         )
         self.loop = loop or get_event_loop()
 
-    async def run_polling(
-        self,
-        offset: int = 0,
-        allowed_updates: list[str] = [],
-        *,
-        drop_updates: bool = False,
-    ) -> None:
+    async def run_polling(self, drop_updates: bool = False) -> None:
         if drop_updates is True:
-            await self.api.delete_webhook(drop_updates)
+            await self.api.request("deleteWebhook", {"drop_pending_updates": True})
 
-        await logger.info("Starting polling")
-
-        async for update in self.polling.listen():  # type: ignore
+        async for update in self.poller.poll():
             await self.router.route(update, self.api)
 
-    def run_forever(self, **kwargs) -> None:
-        self.loop_wrapper.add_task(self.run_polling(**kwargs))
-        self.loop_wrapper.run_forever(self.loop)  # type: ignore
-
-    @property
-    def on(self) -> DefaultDispatcher:
-        return self.dispatcher
+    def run_forever(self, drop_updates: bool = False) -> None:
+        self.loop_wrapper.add_task(self.run_polling(drop_updates=drop_updates))
+        self.loop_wrapper.run_forever(self.loop)
