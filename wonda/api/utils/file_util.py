@@ -9,7 +9,7 @@ class File:
 
     @classmethod
     def from_bytes(cls, source: bytes, name: str | None = None) -> InputFile:
-        return InputFile(name or f"{hash(source)}.bin", source)
+        return InputFile(name or f"untitled.bin", source)
 
     @classmethod
     def from_path(cls, source: str | Path, name: str | None = None) -> InputFile:
