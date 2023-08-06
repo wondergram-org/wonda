@@ -14,7 +14,7 @@ class ABCAPI(ABC):
 
     response_validators: list["ABCResponseValidator"]
     request_validators: list["ABCRequestValidator"]
-    http_client: "ABCNetworkClient"
+    network_client: "ABCNetworkClient"
     token: "Token"
 
     @property
@@ -53,7 +53,7 @@ class ABCAPI(ABC):
         If necessary, modifies and transforms it.
         """
         for v in self.request_validators:
-            params = await v(self.http_client).validate(params)
+            params = await v(self.network_client).validate(params)
         return params
 
     async def validate_response(self, response: bytes) -> bytes:

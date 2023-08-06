@@ -21,7 +21,9 @@ async def upload_handler(msg: Message) -> None:
     await msg.ctx_api.send_chat_action(chat_id=msg.chat.id, action="upload_photo")
 
     # Download a sample image from Lorem Picsum using the HTTP client.
-    content = await msg.ctx_api.http_client.request_bytes("https://picsum.photos/300")
+    content = await msg.ctx_api.network_client.request_bytes(
+        "https://picsum.photos/300"
+    )
 
     # Just like that, another photo is uploaded to Telegram.
     photo = File.from_bytes(content, "random.jpg")

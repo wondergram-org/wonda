@@ -19,7 +19,7 @@ class API(ABCAPI, APIMethods):
         super().__init__(self)
 
         self.token = token
-        self.http_client = http_client or DefaultNetworkClient()
+        self.network_client = http_client or DefaultNetworkClient()
         self.request_validators: list[ABCRequestValidator] = DEFAULT_REQUEST_VALIDATORS
         self.response_validators: list[
             ABCResponseValidator
@@ -29,7 +29,7 @@ class API(ABCAPI, APIMethods):
         await logger.debug("Calling", method=method, params=params)
 
         data = await self.validate_request(params or {})
-        response = await self.http_client.request_bytes(
+        response = await self.network_client.request_bytes(
             self.api_url + method, data=data
         )
 
