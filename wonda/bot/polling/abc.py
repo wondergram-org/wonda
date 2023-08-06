@@ -7,13 +7,13 @@ if TYPE_CHECKING:
     from wonda.types.objects import Update
 
 
-class ABCPolling(ABC):
+class ABCPoller(ABC):
     api: "ABCAPI"
     error_handler: "ABCErrorHandler"
 
     @abstractmethod
-    async def listen(self) -> AsyncIterator["Update"]:
+    def poll(self) -> AsyncIterator["Update"]:
         """
-        Receives and yields update objects
+        Polls server for updates and yields them
         """
         pass
