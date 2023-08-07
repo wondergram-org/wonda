@@ -1,4 +1,4 @@
-from wonda.api import ABCAPI, API
+from wonda.api import ABCAPI
 from wonda.bot.dispatch.router import ABCRouter
 from wonda.bot.dispatch.view.abc import ABCView
 from wonda.bot.states.dispenser.abc import ABCStateDispenser

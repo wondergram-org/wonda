@@ -16,4 +16,3 @@ class ABCPoller(ABC):
         """
         Polls server for updates and yields them
         """
-        pass

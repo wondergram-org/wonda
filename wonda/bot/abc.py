@@ -16,4 +16,4 @@ class ABCFramework(ABC):
 
     @property
     def on(self) -> DefaultDispatcher:
-        return self.dispatcher
+        return self.dispatcher  # type: ignore

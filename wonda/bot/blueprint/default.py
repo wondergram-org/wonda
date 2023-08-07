@@ -1,8 +1,7 @@
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from wonda.bot.blueprint.abc import ABCBlueprint
-from wonda.bot.dispatch.dispatcher.abc import ABCDispatcher
-from wonda.bot.dispatch.dispatcher.default import DefaultDispatcher
+from wonda.bot.dispatch.dispatcher import ABCDispatcher, DefaultDispatcher
 
 
 class DefaultBlueprint(ABCBlueprint):

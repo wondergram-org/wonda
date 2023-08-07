@@ -1,6 +1,6 @@
 from asyncio import AbstractEventLoop, get_event_loop
 
-from wonda.api import ABCAPI, API, Token
+from wonda.api import API, Token
 from wonda.bot.abc import ABCFramework
 from wonda.bot.dispatch import (
     ABCDispatcher,
@@ -11,7 +11,6 @@ from wonda.bot.dispatch import (
 from wonda.bot.polling import ABCPoller, DefaultPoller
 from wonda.bot.states import ABCStateDispenser, DefaultStateDispenser
 from wonda.errors import ABCErrorHandler, ErrorHandler
-from wonda.modules import logger
 from wonda.tools import LoopWrapper
 
 

@@ -36,7 +36,6 @@ class ABCAPI(ABC):
         """
         Opens a request session and makes a single API call
         """
-        pass
 
     async def request_many(
         self, requests: typing.Iterable[APIRequest]  # type: ignore

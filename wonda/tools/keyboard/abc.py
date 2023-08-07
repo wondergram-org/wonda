@@ -12,21 +12,18 @@ class ABCKeyboardBuilder(ABC):
         """
         Adds a button to the keyboard.
         """
-        pass
 
     @abstractmethod
     def row(self) -> "ABCKeyboardBuilder":
         """
         Adds a row to the keyboard. Panics if the last row was empty.
         """
-        pass
 
     @abstractmethod
     def build(self) -> Any:
         """
         Builds the keyboard.
         """
-        pass
 
 
 class ABCButton(ABC):
@@ -35,4 +32,3 @@ class ABCButton(ABC):
         """
         Returns the button data.
         """
-        pass
