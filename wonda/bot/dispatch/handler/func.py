@@ -15,13 +15,11 @@ class FuncHandler(ABCHandler):
         func: Callable,
         rules: list[ABCRule],
         *,
-        dataclass: _ | None = None,
         blocking: bool = True,
     ):
         self.blocking = blocking
         self.rules = rules
         self.func = func
-        self.ctx = {}
 
     async def filter(self, update: "BaseUpdate", ctx: dict) -> bool:
         for rule in self.rules:
@@ -30,7 +28,7 @@ class FuncHandler(ABCHandler):
                 return False
             elif result is True:
                 continue
-            ctx.update(result)
+            ctx |= result
         return True
 
     async def handle(self, update: "BaseUpdate", ctx: dict) -> _:
@@ -42,4 +40,4 @@ class FuncHandler(ABCHandler):
         return await self.func(update, **accepts)
 
     def __repr__(self):
-        return f"<FuncHandler {self.handler.__name__} blocking={self.blocking} rules={self.rules}>"
+        return f"<FuncHandler {self.func.__name__} blocking={self.blocking} rules={self.rules}>"

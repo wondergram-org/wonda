@@ -28,8 +28,15 @@ class DefaultDispatcher(ABCDispatcher):
         self.poll = PollView()
 
     def load(self, dispatcher: "ABCDispatcher") -> None:
-        raise NotImplemented("Not yet implemented")
+        for v in self.views():
+            view: "ABCView" = getattr(self, v, None)
+            assert view, f"View {v!r} is undefined"
 
+            external_view: "ABCView" = getattr(dispatcher, v, None)
+            assert (
+                external_view
+            ), f"External dispatcher should have {v!r} view available"
+            view.load(external_view)
 
     def views(self) -> dict[str, "ABCView"]:
         return {k: v for k, v in self.__dict__.items() if isinstance(v, ABCView)}

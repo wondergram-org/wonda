@@ -43,6 +43,11 @@ class ABCView(ABC, Generic[T]):
 
         return decorator
     
+    def load(self, view: "ABCView") -> None:
+        self.middlewares.extend(view.middlewares)
+        self.auto_rules.append(view.auto_rules)
+        self.handlers.extend(view.handlers)
+    
     def register_handler(self, handler: ABCHandler) -> None: 
         """
         Registers a handler.
