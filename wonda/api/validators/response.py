@@ -1,11 +1,7 @@
-from typing import Any
-
 from msgspec import Raw, Struct, json
 
 from wonda.api.validators.abc import ABCResponseValidator
 from wonda.errors import TelegramAPIError
-
-_ = Any
 
 
 class Response(Struct):
@@ -16,7 +12,7 @@ class Response(Struct):
 
 
 class TelegramAPIErrorResponseValidator(ABCResponseValidator):
-    async def validate(self, result: bytes) -> bytes | None:
+    async def validate(self, result: bytes) -> bytes:
         response = json.decode(result, type=Response)
 
         if response.ok:

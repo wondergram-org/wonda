@@ -1,14 +1,25 @@
-from msgspec import Struct, json
+from msgspec import Struct, json, to_builtins
 
+omit_defaults = True
 rename = lambda n: n.rstrip("_") if n.endswith("_") else None
 
 
-class Model(Struct, rename=rename, omit_defaults=True):
-    def json(self, encoding: str = "utf-8", errors: str = "strict") -> str:
-        return json.encode(self).decode(encoding, errors)
-
+class Model(Struct, rename=rename, omit_defaults=omit_defaults):
     def dict(self) -> dict:
         return {k: getattr(self, k) for k in self.__struct_fields__}
+
+
+def to_json(v):
+    return bytes.decode(json.encode(v))
+
+
+def translate(v):
+    v = to_builtins(v, builtin_types=(bytes,))
+
+    if type(v) in (dict, list):
+        return to_json(v)
+
+    return v
 
 
 def get_params(loc: dict):

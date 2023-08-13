@@ -50,10 +50,11 @@ class DefaultNetworkClient(ABCNetworkClient):
     @staticmethod
     def construct_form(data: dict) -> FormData:
         form = FormData()
-
         for k, v in data.items():
             params = {}
-            if isinstance(v, tuple):
+            if isinstance(v, int):
+                v = str(v)
+            elif isinstance(v, tuple):
                 params["filename"], v = v[0], v[1]
             form.add_field(k, v, **params)
         return form

@@ -19,7 +19,6 @@ class DefaultPoller(ABCPoller):
 
         self.offset: int = 0
         self.allowed_updates: list[str] = []
-        
 
     async def get_updates(self) -> list[Update]:
         try:
@@ -35,12 +34,13 @@ class DefaultPoller(ABCPoller):
 
     async def poll(self) -> AsyncIterator[Update]:
         await logger.debug(
-            "Polling", offset=self.offset, allowed_updates=self.allowed_updates
+            "Starting", offset=self.offset, allowed_updates=self.allowed_updates
         )
 
         while not self.stop:
             try:
                 updates = await self.get_updates()
+
                 for update in updates:
                     self.offset = update.update_id + 1
                     yield update
