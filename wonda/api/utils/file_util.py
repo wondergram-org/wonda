@@ -17,4 +17,3 @@ class File:
 
         with source.open("rb") as f:
             return InputFile(name or source.name, f.read())
-

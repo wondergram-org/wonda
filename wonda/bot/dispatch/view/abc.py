@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
-from wonda.bot.dispatch.handler.func import FuncHandler
 from wonda.bot.dispatch.handler.abc import ABCHandler
+from wonda.bot.dispatch.handler.func import FuncHandler
 from wonda.bot.dispatch.middlewares.abc import ABCMiddleware
 from wonda.bot.rules.abc import ABCRule
 from wonda.bot.updates.base import BaseUpdate
@@ -42,28 +42,28 @@ class ABCView(ABC, Generic[T]):
             )
 
         return decorator
-    
+
     def load(self, view: "ABCView") -> None:
         self.middlewares.extend(view.middlewares)
-        self.auto_rules.append(view.auto_rules)
+        self.auto_rules.extend(view.auto_rules)
         self.handlers.extend(view.handlers)
-    
-    def register_handler(self, handler: ABCHandler) -> None: 
+
+    def register_handler(self, handler: ABCHandler) -> None:
         """
         Registers a handler.
         """
         if not isinstance(handler, ABCHandler):
             raise TypeError("Argument is not an instance of ABCHandler")
-        
+
         self.handlers.append(handler)
-    
+
     def register_middleware(self, middleware: ABCMiddleware) -> None:
         """
         Registers a middleware.
         """
         if not isinstance(middleware, ABCMiddleware):
             raise TypeError("Argument is not an instance of ABCMiddleware")
-        
+
         self.middlewares.append(middleware)
 
     @abstractmethod
@@ -86,7 +86,7 @@ class ABCView(ABC, Generic[T]):
         type = self.get_update_type(update)
 
         upd = self.get_update_model()(
-            **update.dict()[type].dict()
+            **update.dict()[type].dict(),
         )
         upd.unprep_ctx_api, upd.state_repr = ctx_api, await state_dispenser.cast(
             self.get_state_key(upd)
@@ -121,5 +121,5 @@ class ABCView(ABC, Generic[T]):
 
         return ""
 
-    def get_update_model(self) -> T:
-        return self.__orig_bases__[0].__args__[0]
+    def get_update_model(self) -> type[T]:
+        return self.__orig_bases__[0].__args__[0]  # type: ignore

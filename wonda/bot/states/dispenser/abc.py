@@ -26,6 +26,6 @@ class ABCStateDispenser(ABC):
     async def cast(self, chat_id: int | None = None) -> "StateRepr | None":
         if chat_id is None:
             return None
-        
+
         await logger.debug("State cast", id=chat_id)
         return await self.get(chat_id)

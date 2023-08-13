@@ -18,7 +18,6 @@ json: JSONModule = choice_in_order(
     ["ujson", "hyperjson", "orjson"], do_import=True, default="json"
 )
 
-
 try:
     from uvloop import install
 
