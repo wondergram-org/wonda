@@ -1,11 +1,11 @@
 from enum import Enum
-from typing import Any
 
-from pydantic import BaseModel, validator
+from msgspec import Struct
 
 
 class BaseStateGroup(str, Enum):
-    def _generate_next_value_(name, *_) -> str:
+    @staticmethod
+    def _generate_next_value_(name: str, *_) -> str:
         # Implement the logic to generate
         # the next value via `enum.auto`
         return name.lower()
@@ -15,17 +15,14 @@ def get_state_repr(state: BaseStateGroup) -> str:
     return f"{state.__class__.__name__}:{state.value}"
 
 
-class StateRepr(BaseModel):
-    chat_id: int
+class StateRepr(Struct):
     state: str
+    chat_id: int
     payload: dict = {}
 
-    @validator("state", pre=True)
-    def validate_state(cls, v: Any) -> str:
-        if isinstance(v, BaseStateGroup):
-            return get_state_repr(v)
-        elif isinstance(v, str):
-            return v
-        raise ValueError(
-            f"State value must be `string` or `BaseStateGroup`, got `{type(v)}`"
+    def __post_init__(self) -> None:
+        self.state = (
+            self.state
+            if not isinstance(self.state, BaseStateGroup)
+            else get_state_repr(self.state)
         )

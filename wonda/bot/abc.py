@@ -1,20 +1,19 @@
 from abc import ABC, abstractmethod
-from asyncio import AbstractEventLoop
-from typing import NoReturn
 
 from wonda.api import ABCAPI
-from wonda.bot.polling import ABCPolling
+from wonda.bot.dispatch.dispatcher import ABCDispatcher, DefaultDispatcher
+from wonda.bot.polling import ABCPoller
 
 
 class ABCFramework(ABC):
-    api: ABCAPI
-    polling: ABCPolling
-    loop: AbstractEventLoop
+    api: "ABCAPI"
+    dispatcher: "ABCDispatcher"
+    poller: "ABCPoller"
 
     @abstractmethod
-    async def run_polling(self) -> NoReturn:  # type: ignore
+    def run_forever(self) -> None:
         pass
 
-    @abstractmethod
-    def run_forever(self) -> NoReturn:  # type: ignore
-        pass
+    @property
+    def on(self) -> DefaultDispatcher:
+        return self.dispatcher  # type: ignore

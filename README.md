@@ -1,71 +1,68 @@
-# Wonda ✨
+# Wonda 🫧
 
-[//]: # (Examples)
+[//]: # (Features)
 [examples]: examples/high_level
-[text formatting]: examples/high_level/formatting_example.py
-[middleware]: examples/high_level/setup_middleware.py
-[file uploading]: examples/high_level/file_upload_example.py
-[blueprints]: examples/high_level/load_blueprints.py
-[FSM]: examples/high_level/use_state_dispenser.py
+[format text]: examples/high_level/formatting_example.py
+[upload files]: examples/high_level/file_upload_example.py
+[an advanced state system]: examples/high_level/use_state_dispenser.py
 
 [//]: # (Badges)
 ![Version](https://img.shields.io/pypi/v/wonda?label=version&style=flat-square)
 ![Package downloads](https://img.shields.io/pypi/dw/wonda?label=downloads&style=flat-square)
 ![Supported Python versions](https://img.shields.io/pypi/pyversions/wonda?label=supported%20python%20versions&style=flat-square)
 
-## Why
+Wonda is a Telegram bot framework. It supports latest versions and features of the API. Incredibly fast and extraordinarily customizable, it gives you power to build the bot you always wanted.
 
-Wonda can help you build bots using simple tools with exceptional performance. All batteries are included: there are [text formatting], [file uploading], [blueprints], [middleware] and [FSM].
+## Install
 
-## Flavors
-
-### Regular
-
-To install regular version of Wonda, enter this command in your terminal:
-
-```shell script
-pip install -U wonda
+```bash
+pip install wonda
 ```
 
-If you decide to go beta, use the same command with `--pre` option or update from dev branch .zip [archive](https://github.com/wondergram-org/wonda/archive/refs/heads/dev.zip).
+A stable version of Wonda can be installed using this command. Add `--pre` to the command to install a pre-release version.
 
-### Performance
+## Features
 
-Wonda is built with customizations in mind, so you can squeeze out the most speed from it. To do so, install it with some extras:
-
-```shell script
-pip install --force wonda[power-ups]
-```
-
-To see the full list of extra packages, refer to our [project file](pyproject.toml).
-
-## Guide
-
-It's easy to build a bot with Wonda — it's ready in *six* lines of code. Extending it is no problem too.
+Ever wanted to build a bot? You can do that in only 6 lines of code.
 
 ```python
-from wonda import Bot
+from wonda import Bot, Message
 
 bot = Bot("your-token")
 
 
 @bot.on.message()
-async def handler(_) -> str:
-    return "Hello world!"
+async def handler(m: Message) -> None:
+    await m.answer("Hello world!")
 
 bot.run_forever()
 ```
 
-With Wonda, it's possible to achieve this much with so little code. To get started, check out our [examples].
+You can already [format text], [upload files], and make use of [an advanced state system] to craft complex interactions. And more features are expected to come! Check out the [examples].
 
-## Contributing
+## Customization
 
-Wonda is a work in progress and a lot of stuff is expected to change! It's the right time for your input.
+### Speed up event loop
 
-If you want to report a bug or suggest a feature, [create an issue](https://github.com/wondergram-org/wonda/issues/new/choose). To ask a question, please use [discussions](https://github.com/wondergram-org/wonda/discussions). Big thanks!
+```bash
+pip install uvloop
+```
 
-## License
+Wonda supports uvloop, an event loop implementation which makes I/O [2-4x quicker](https://github.com/magicstack/uvloop#performance).
 
-This project is MIT licensed. Based upon hard work of maintainers and contributors of [VKBottle](https://github.com/vkbottle/vkbottle).
+### Replace default JSON module
 
-Copyright © timoniq (2019-2021), feeeek (2022), geo-madness (2022-2023)
+``` bash
+pip install orjson
+```
+
+Swap out the module that is used under the hood to manipulate JSON and increase speed up to [5 times](https://github.com/ijl/orjson#performance).
+
+## Contrubuting
+
+The framework is not yet ready for production. If you like what you see, help us develop this amazing project! [Create an issue](https://github.com/wondergram-org/wonda/issues/new/choose) or [make a pull request](https://github.com/wondergram-org/wonda/compare).
+
+## Copyright
+
+- timoniq (2019-2021)
+- geo-madness (2022-2023)

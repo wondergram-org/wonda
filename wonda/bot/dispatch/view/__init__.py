@@ -1,5 +1,4 @@
 from .abc import ABCView
-from .message import MessageView
-from .raw import RawUpdateView
+from .impl import MessageView
 
 __all__ = ("ABCView", "MessageView", "RawUpdateView")

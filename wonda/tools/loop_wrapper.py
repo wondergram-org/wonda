@@ -1,62 +1,43 @@
-import asyncio
-from asyncio import AbstractEventLoop, get_event_loop
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Coroutine,
-    List,
-    NoReturn,
-    Optional,
-    Union,
-)
+from asyncio import AbstractEventLoop, get_event_loop, iscoroutine, iscoroutinefunction
+from typing import Any, Callable, Coroutine
 
-from wonda.modules import logger
-from wonda.tools.auto_reload import watch_to_reload
 from wonda.tools.delayed_task import DelayedTask
 
-if TYPE_CHECKING:
-    Task = Coroutine[Any, Any, Any]
+_ = Any
+Task = Coroutine[_, _, _]
 
 
 class LoopWrapper:
     def __init__(
         self,
         *,
-        on_startup: Optional[List["Task"]] = None,
-        on_shutdown: Optional[List["Task"]] = None,
-        auto_reload: Optional[bool] = None,
-        auto_reload_dir: Optional[str] = None,
-        tasks: Optional[List["Task"]] = None,
-    ):
-        self.on_startup = on_startup or []
-        self.on_shutdown = on_shutdown or []
-        self.auto_reload = auto_reload or False
-        self.auto_reload_dir = auto_reload_dir or "."
-        self.tasks = tasks or []
+        tasks: list["Task"] = [],
+        on_startup: list["Task"] = [],
+        on_shutdown: list["Task"] = []
+    ) -> None:
+        self.tasks = tasks
+        self.on_startup = on_startup
+        self.on_shutdown = on_shutdown
 
-    def run_forever(self, loop: Optional[AbstractEventLoop] = None) -> NoReturn:  # type: ignore
+    def run_forever(self, loop: AbstractEventLoop | None = None) -> None:
         """
         Runs startup tasks and makes the loop running forever
         """
 
         if not len(self.tasks):
-            logger.warning("Running loop without tasks")
+            print("Running loop without tasks")
 
         loop = loop or get_event_loop()
 
         try:
             [loop.run_until_complete(startup_task) for startup_task in self.on_startup]
 
-            if self.auto_reload:
-                loop.create_task(watch_to_reload(self.auto_reload_dir))
-
             for task in self.tasks:
                 loop.create_task(task)
 
             loop.run_forever()
         except KeyboardInterrupt:
-            logger.info("Keyboard interrupt")
+            print("Keyboard interrupt")
         finally:
             [
                 loop.run_until_complete(shutdown_task)
@@ -65,29 +46,23 @@ class LoopWrapper:
             if loop.is_running():
                 loop.close()
 
-    def add_task(self, task: Union["Task", Callable[..., "Task"]]):
-        """Adds tasks to be ran in run_forever
-        :param task: coroutine / coroutine function with zero arguments
+    def add_task(self, task: "Task" | Callable[..., "Task"]) -> None:
+        """
+        Add a task which will be run on `.run_forever()`
         """
 
-        if asyncio.iscoroutinefunction(task) or isinstance(task, DelayedTask):  # type: ignore
-            self.tasks.append(task())  # type: ignore
-        elif asyncio.iscoroutine(task):  # type: ignore
-            self.tasks.append(task)  # type: ignore
+        if iscoroutinefunction(task) or isinstance(task, DelayedTask):
+            self.tasks.append(task())
+        elif iscoroutine(task):
+            self.tasks.append(task)
         else:
-            raise TypeError("Task should be coroutine or coroutine function")
+            raise TypeError("Task should be a coroutine or coroutine function")
 
     def interval(
         self, seconds: int = 0, minutes: int = 0, hours: int = 0, days: int = 0
-    ) -> Callable[[Callable], Callable]:
+    ):
         """
-        A tiny template to wrap repeated tasks with decorator
-
-        >>> lw = LoopWrapper()
-        >>> @lw.interval(seconds=5)
-        >>> async def repeated_function():
-        >>>     print("This will be logged every five seconds")
-        >>> lw.run_forever()
+        Repeat a task with an interval until the program stops
         """
 
         seconds += minutes * 60
@@ -100,18 +75,11 @@ class LoopWrapper:
 
         return decorator
 
-    def timer(
-        self, seconds: int = 0, minutes: int = 0, hours: int = 0, days: int = 0
-    ) -> Callable[[Callable], Callable]:
+    def timer(self, seconds: int = 0, minutes: int = 0, hours: int = 0, days: int = 0):
         """
-        A tiny template to wrap tasks with timer
+        Run a task one time N seconds from now
+        """
 
-        >>> lw = LoopWrapper()
-        >>> @lw.timer(seconds=5)
-        >>> async def delayed_function():
-        >>>     print("This will after 5 seconds")
-        >>> lw.run_forever()
-        """
         seconds += minutes * 60
         seconds += hours * 60 * 60
         seconds += days * 24 * 60 * 60

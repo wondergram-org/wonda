@@ -1,4 +1,4 @@
-from .base import BaseBotUpdate
+from .base import BaseUpdate
 from .types import *
 
 Message = MessageUpdate
@@ -7,14 +7,13 @@ InlineQuery = InlineQueryUpdate
 ChatJoinRequest = ChatJoinRequestUpdate
 ChatMember = ChatMemberUpdate
 ChosenInlineResult = ChosenInlineResultUpdate
-MyChatMember = MyChatMemberUpdate
 PreCheckoutQuery = PreCheckoutQueryUpdate
 ShippingQuery = ShippingQueryUpdate
 PollAnswer = PollAnswerUpdate
 Poll = PollUpdate
 
 __all__ = (
-    "BaseBotUpdate",
+    "BaseUpdate",
     "BotUpdateType",
     "Message",
     "CallbackQuery",
@@ -22,7 +21,6 @@ __all__ = (
     "ChatJoinRequest",
     "ChatMember",
     "ChosenInlineResult",
-    "MyChatMember",
     "PreCheckoutQuery",
     "ShippingQuery",
     "PollAnswer",

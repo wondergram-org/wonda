@@ -1,2 +1,2 @@
-from .abc import ABCPolling
-from .bot import BotPolling
+from .abc import ABCPoller
+from .default import DefaultPoller

@@ -1,1935 +1,1887 @@
-from typing import *
-
-from pydantic import parse_obj_as
+import typing
 
 from .objects import *
 
-if TYPE_CHECKING:
-    from wonda.api import ABCAPI, API
-    from wonda.api import File as InputFile
+if typing.TYPE_CHECKING:
+    from wonda.api.abc import ABCAPI
 
 
 class APIMethods:
-    def __init__(self, api: Union["ABCAPI", "API"]) -> None:
+    def __init__(self, api: "ABCAPI") -> None:
         self.api = api
-
-    @staticmethod
-    def get_params(loc: dict) -> dict:
-        n = {
-            k: v
-            for k, v in loc.items()
-            if k not in ("self", "kwargs") and v is not None
-        }
-        n.update(loc["kwargs"])
-        return n
 
     async def get_updates(
         self,
-        timeout: Optional[int] = None,
-        offset: Optional[int] = None,
-        limit: Optional[int] = None,
-        allowed_updates: Optional[List[str]] = None,
+        timeout: int | None = None,
+        offset: int | None = None,
+        limit: int | None = None,
+        allowed_updates: list[str] | None = None,
         **kwargs
-    ) -> List[Update]:
+    ) -> list[Update]:
         """
-        Use this method to receive incoming updates using long polling (wiki). Returns an
-        Array of Update objects.
+        Use this method to receive incoming updates using long polling (wiki).
+        Returns an Array of Update objects.
         """
-        response = await self.api.request("getUpdates", self.get_params(locals()))
-        return parse_obj_as(List[Update], response)
+        response = await self.api.request("getUpdates", get_params(locals()))
+        return json.decode(response, type=list[Update])
 
     async def set_webhook(
         self,
         url: str,
-        secret_token: Optional[str] = None,
-        max_connections: Optional[int] = None,
-        ip_address: Optional[str] = None,
-        drop_pending_updates: Optional[bool] = None,
-        certificate: Optional[InputFile] = None,
-        allowed_updates: Optional[List[str]] = None,
+        secret_token: str | None = None,
+        max_connections: int | None = None,
+        ip_address: str | None = None,
+        drop_pending_updates: bool | None = None,
+        certificate: InputFile | None = None,
+        allowed_updates: list[str] | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to specify a URL and receive incoming updates via an outgoing
-        webhook. Whenever there is an update for the bot, we will send an HTTPS POST request
-        to the specified URL, containing a JSON-serialized Update. In case of an
-        unsuccessful request, we will give up after a reasonable amount of attempts. Returns
-        True on success. If you'd like to make sure that the webhook was set by you, you can
-        specify secret data in the parameter secret_token. If specified, the request will
-        contain a header “X-Telegram-Bot-Api-Secret-Token” with the secret token as content.
+        Use this method to specify a URL and receive incoming updates via an
+        outgoing webhook. Whenever there is an update for the bot, we will
+        send an HTTPS POST request to the specified URL, containing a JSON-
+        serialized Update. In case of an unsuccessful request, we will give up
+        after a reasonable amount of attempts. Returns True on success. If
+        you'd like to make sure that the webhook was set by you, you can
+        specify secret data in the parameter secret_token. If specified, the
+        request will contain a header “X-Telegram-Bot-Api-Secret-Token” with
+        the secret token as content.
         """
-        response = await self.api.request("setWebhook", self.get_params(locals()))
-        return response
+        response = await self.api.request("setWebhook", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def delete_webhook(
-        self, drop_pending_updates: Optional[bool] = None, **kwargs
+        self, drop_pending_updates: bool | None = None, **kwargs
     ) -> bool:
         """
-        Use this method to remove webhook integration if you decide to switch back to
-        getUpdates. Returns True on success.
+        Use this method to remove webhook integration if you decide to switch
+        back to getUpdates. Returns True on success.
         """
-        response = await self.api.request("deleteWebhook", self.get_params(locals()))
-        return response
+        response = await self.api.request("deleteWebhook", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def get_webhook_info(self, **kwargs) -> WebhookInfo:
         """
-        Use this method to get current webhook status. Requires no parameters. On success,
-        returns a WebhookInfo object. If the bot is using getUpdates, will return an object
-        with the url field empty.
+        Use this method to get current webhook status. Requires no parameters.
+        On success, returns a WebhookInfo object. If the bot is using
+        getUpdates, will return an object with the url field empty.
         """
-        response = await self.api.request("getWebhookInfo", self.get_params(locals()))
-        return WebhookInfo(**response)
+        response = await self.api.request("getWebhookInfo", get_params(locals()))
+        return json.decode(response, type=WebhookInfo)
 
     async def get_me(self, **kwargs) -> User:
         """
-        A simple method for testing your bot's authentication token. Requires no parameters.
-        Returns basic information about the bot in form of a User object.
+        A simple method for testing your bot's authentication token. Requires
+        no parameters. Returns basic information about the bot in form of a
+        User object.
         """
-        response = await self.api.request("getMe", self.get_params(locals()))
-        return User(**response)
+        response = await self.api.request("getMe", get_params(locals()))
+        return json.decode(response, type=User)
 
     async def log_out(self, **kwargs) -> bool:
         """
-        Use this method to log out from the cloud Bot API server before launching the bot
-        locally. You must log out the bot before running it locally, otherwise there is no
-        guarantee that the bot will receive updates. After a successful call, you can
-        immediately log in on a local server, but will not be able to log in back to the
-        cloud Bot API server for 10 minutes. Returns True on success. Requires no
+        Use this method to log out from the cloud Bot API server before
+        launching the bot locally. You must log out the bot before running it
+        locally, otherwise there is no guarantee that the bot will receive
+        updates. After a successful call, you can immediately log in on a
+        local server, but will not be able to log in back to the cloud Bot API
+        server for 10 minutes. Returns True on success. Requires no
         parameters.
         """
-        response = await self.api.request("logOut", self.get_params(locals()))
-        return response
+        response = await self.api.request("logOut", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def close(self, **kwargs) -> bool:
         """
-        Use this method to close the bot instance before moving it from one local server to
-        another. You need to delete the webhook before calling this method to ensure that
-        the bot isn't launched again after server restart. The method will return error 429
-        in the first 10 minutes after the bot is launched. Returns True on success. Requires
-        no parameters.
+        Use this method to close the bot instance before moving it from one
+        local server to another. You need to delete the webhook before calling
+        this method to ensure that the bot isn't launched again after server
+        restart. The method will return error 429 in the first 10 minutes
+        after the bot is launched. Returns True on success. Requires no
+        parameters.
         """
-        response = await self.api.request("close", self.get_params(locals()))
-        return response
+        response = await self.api.request("close", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def send_message(
         self,
         text: str,
-        chat_id: Union[int, str],
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[
-            Union[
-                InlineKeyboardMarkup,
-                ReplyKeyboardMarkup,
-                ReplyKeyboardRemove,
-                ForceReply,
-            ]
-        ] = None,
-        protect_content: Optional[bool] = None,
-        parse_mode: Optional[str] = None,
-        message_thread_id: Optional[int] = None,
-        entities: Optional[List[MessageEntity]] = None,
-        disable_web_page_preview: Optional[bool] = None,
-        disable_notification: Optional[bool] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        chat_id: int | str,
+        reply_to_message_id: int | None = None,
+        reply_markup: InlineKeyboardMarkup
+        | ReplyKeyboardMarkup
+        | ReplyKeyboardRemove
+        | ForceReply
+        | None = None,
+        protect_content: bool | None = None,
+        parse_mode: str | None = None,
+        message_thread_id: int | None = None,
+        entities: list[MessageEntity] | None = None,
+        disable_web_page_preview: bool | None = None,
+        disable_notification: bool | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
     ) -> Message:
         """
-        Use this method to send text messages. On success, the sent Message is returned.
+        Use this method to send text messages. On success, the sent Message is
+        returned.
         """
-        response = await self.api.request("sendMessage", self.get_params(locals()))
-        return Message(**response)
+        response = await self.api.request("sendMessage", get_params(locals()))
+        return json.decode(response, type=Message)
 
     async def forward_message(
         self,
         message_id: int,
-        from_chat_id: Union[int, str],
-        chat_id: Union[int, str],
-        protect_content: Optional[bool] = None,
-        message_thread_id: Optional[int] = None,
-        disable_notification: Optional[bool] = None,
+        from_chat_id: int | str,
+        chat_id: int | str,
+        protect_content: bool | None = None,
+        message_thread_id: int | None = None,
+        disable_notification: bool | None = None,
         **kwargs
     ) -> Message:
         """
-        Use this method to forward messages of any kind. Service messages can't be
-        forwarded. On success, the sent Message is returned.
+        Use this method to forward messages of any kind. Service messages
+        can't be forwarded. On success, the sent Message is returned.
         """
-        response = await self.api.request("forwardMessage", self.get_params(locals()))
-        return Message(**response)
+        response = await self.api.request("forwardMessage", get_params(locals()))
+        return json.decode(response, type=Message)
 
     async def copy_message(
         self,
         message_id: int,
-        from_chat_id: Union[int, str],
-        chat_id: Union[int, str],
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[
-            Union[
-                InlineKeyboardMarkup,
-                ReplyKeyboardMarkup,
-                ReplyKeyboardRemove,
-                ForceReply,
-            ]
-        ] = None,
-        protect_content: Optional[bool] = None,
-        parse_mode: Optional[str] = None,
-        message_thread_id: Optional[int] = None,
-        disable_notification: Optional[bool] = None,
-        caption_entities: Optional[List[MessageEntity]] = None,
-        caption: Optional[str] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        from_chat_id: int | str,
+        chat_id: int | str,
+        reply_to_message_id: int | None = None,
+        reply_markup: InlineKeyboardMarkup
+        | ReplyKeyboardMarkup
+        | ReplyKeyboardRemove
+        | ForceReply
+        | None = None,
+        protect_content: bool | None = None,
+        parse_mode: str | None = None,
+        message_thread_id: int | None = None,
+        disable_notification: bool | None = None,
+        caption_entities: list[MessageEntity] | None = None,
+        caption: str | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
     ) -> MessageId:
         """
-        Use this method to copy messages of any kind. Service messages and invoice messages
-        can't be copied. A quiz poll can be copied only if the value of the field
-        correct_option_id is known to the bot. The method is analogous to the method
-        forwardMessage, but the copied message doesn't have a link to the original message.
-        Returns the MessageId of the sent message on success.
+        Use this method to copy messages of any kind. Service messages and
+        invoice messages can't be copied. A quiz poll can be copied only if
+        the value of the field correct_option_id is known to the bot. The
+        method is analogous to the method forwardMessage, but the copied
+        message doesn't have a link to the original message. Returns the
+        MessageId of the sent message on success.
         """
-        response = await self.api.request("copyMessage", self.get_params(locals()))
-        return MessageId(**response)
+        response = await self.api.request("copyMessage", get_params(locals()))
+        return json.decode(response, type=MessageId)
 
     async def send_photo(
         self,
-        photo: Union[InputFile, str],
-        chat_id: Union[int, str],
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[
-            Union[
-                InlineKeyboardMarkup,
-                ReplyKeyboardMarkup,
-                ReplyKeyboardRemove,
-                ForceReply,
-            ]
-        ] = None,
-        protect_content: Optional[bool] = None,
-        parse_mode: Optional[str] = None,
-        message_thread_id: Optional[int] = None,
-        has_spoiler: Optional[bool] = None,
-        disable_notification: Optional[bool] = None,
-        caption_entities: Optional[List[MessageEntity]] = None,
-        caption: Optional[str] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        photo: InputFile | str,
+        chat_id: int | str,
+        reply_to_message_id: int | None = None,
+        reply_markup: InlineKeyboardMarkup
+        | ReplyKeyboardMarkup
+        | ReplyKeyboardRemove
+        | ForceReply
+        | None = None,
+        protect_content: bool | None = None,
+        parse_mode: str | None = None,
+        message_thread_id: int | None = None,
+        has_spoiler: bool | None = None,
+        disable_notification: bool | None = None,
+        caption_entities: list[MessageEntity] | None = None,
+        caption: str | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
     ) -> Message:
         """
-        Use this method to send photos. On success, the sent Message is returned.
+        Use this method to send photos. On success, the sent Message is
+        returned.
         """
-        response = await self.api.request("sendPhoto", self.get_params(locals()))
-        return Message(**response)
+        response = await self.api.request("sendPhoto", get_params(locals()))
+        return json.decode(response, type=Message)
 
     async def send_audio(
         self,
-        chat_id: Union[int, str],
-        audio: Union[InputFile, str],
-        title: Optional[str] = None,
-        thumbnail: Optional[Union[InputFile, str]] = None,
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[
-            Union[
-                InlineKeyboardMarkup,
-                ReplyKeyboardMarkup,
-                ReplyKeyboardRemove,
-                ForceReply,
-            ]
-        ] = None,
-        protect_content: Optional[bool] = None,
-        performer: Optional[str] = None,
-        parse_mode: Optional[str] = None,
-        message_thread_id: Optional[int] = None,
-        duration: Optional[int] = None,
-        disable_notification: Optional[bool] = None,
-        caption_entities: Optional[List[MessageEntity]] = None,
-        caption: Optional[str] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        chat_id: int | str,
+        audio: InputFile | str,
+        title: str | None = None,
+        thumbnail: InputFile | str | None = None,
+        reply_to_message_id: int | None = None,
+        reply_markup: InlineKeyboardMarkup
+        | ReplyKeyboardMarkup
+        | ReplyKeyboardRemove
+        | ForceReply
+        | None = None,
+        protect_content: bool | None = None,
+        performer: str | None = None,
+        parse_mode: str | None = None,
+        message_thread_id: int | None = None,
+        duration: int | None = None,
+        disable_notification: bool | None = None,
+        caption_entities: list[MessageEntity] | None = None,
+        caption: str | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
     ) -> Message:
         """
-        Use this method to send audio files, if you want Telegram clients to display them in
-        the music player. Your audio must be in the .MP3 or .M4A format. On success, the
-        sent Message is returned. Bots can currently send audio files of up to 50 MB in
-        size, this limit may be changed in the future. For sending voice messages, use the
-        sendVoice method instead.
+        Use this method to send audio files, if you want Telegram clients to
+        display them in the music player. Your audio must be in the .MP3 or
+        .M4A format. On success, the sent Message is returned. Bots can
+        currently send audio files of up to 50 MB in size, this limit may be
+        changed in the future. For sending voice messages, use the sendVoice
+        method instead.
         """
-        response = await self.api.request("sendAudio", self.get_params(locals()))
-        return Message(**response)
+        response = await self.api.request("sendAudio", get_params(locals()))
+        return json.decode(response, type=Message)
 
     async def send_document(
         self,
-        document: Union[InputFile, str],
-        chat_id: Union[int, str],
-        thumbnail: Optional[Union[InputFile, str]] = None,
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[
-            Union[
-                InlineKeyboardMarkup,
-                ReplyKeyboardMarkup,
-                ReplyKeyboardRemove,
-                ForceReply,
-            ]
-        ] = None,
-        protect_content: Optional[bool] = None,
-        parse_mode: Optional[str] = None,
-        message_thread_id: Optional[int] = None,
-        disable_notification: Optional[bool] = None,
-        disable_content_type_detection: Optional[bool] = None,
-        caption_entities: Optional[List[MessageEntity]] = None,
-        caption: Optional[str] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        document: InputFile | str,
+        chat_id: int | str,
+        thumbnail: InputFile | str | None = None,
+        reply_to_message_id: int | None = None,
+        reply_markup: InlineKeyboardMarkup
+        | ReplyKeyboardMarkup
+        | ReplyKeyboardRemove
+        | ForceReply
+        | None = None,
+        protect_content: bool | None = None,
+        parse_mode: str | None = None,
+        message_thread_id: int | None = None,
+        disable_notification: bool | None = None,
+        disable_content_type_detection: bool | None = None,
+        caption_entities: list[MessageEntity] | None = None,
+        caption: str | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
     ) -> Message:
         """
-        Use this method to send general files. On success, the sent Message is returned.
-        Bots can currently send files of any type of up to 50 MB in size, this limit may be
-        changed in the future.
+        Use this method to send general files. On success, the sent Message is
+        returned. Bots can currently send files of any type of up to 50 MB in
+        size, this limit may be changed in the future.
         """
-        response = await self.api.request("sendDocument", self.get_params(locals()))
-        return Message(**response)
+        response = await self.api.request("sendDocument", get_params(locals()))
+        return json.decode(response, type=Message)
 
     async def send_video(
         self,
-        video: Union[InputFile, str],
-        chat_id: Union[int, str],
-        width: Optional[int] = None,
-        thumbnail: Optional[Union[InputFile, str]] = None,
-        supports_streaming: Optional[bool] = None,
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[
-            Union[
-                InlineKeyboardMarkup,
-                ReplyKeyboardMarkup,
-                ReplyKeyboardRemove,
-                ForceReply,
-            ]
-        ] = None,
-        protect_content: Optional[bool] = None,
-        parse_mode: Optional[str] = None,
-        message_thread_id: Optional[int] = None,
-        height: Optional[int] = None,
-        has_spoiler: Optional[bool] = None,
-        duration: Optional[int] = None,
-        disable_notification: Optional[bool] = None,
-        caption_entities: Optional[List[MessageEntity]] = None,
-        caption: Optional[str] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        video: InputFile | str,
+        chat_id: int | str,
+        width: int | None = None,
+        thumbnail: InputFile | str | None = None,
+        supports_streaming: bool | None = None,
+        reply_to_message_id: int | None = None,
+        reply_markup: InlineKeyboardMarkup
+        | ReplyKeyboardMarkup
+        | ReplyKeyboardRemove
+        | ForceReply
+        | None = None,
+        protect_content: bool | None = None,
+        parse_mode: str | None = None,
+        message_thread_id: int | None = None,
+        height: int | None = None,
+        has_spoiler: bool | None = None,
+        duration: int | None = None,
+        disable_notification: bool | None = None,
+        caption_entities: list[MessageEntity] | None = None,
+        caption: str | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
     ) -> Message:
         """
-        Use this method to send video files, Telegram clients support MPEG4 videos (other
-        formats may be sent as Document). On success, the sent Message is returned. Bots can
-        currently send video files of up to 50 MB in size, this limit may be changed in the
-        future.
+        Use this method to send video files, Telegram clients support MPEG4
+        videos (other formats may be sent as Document). On success, the sent
+        Message is returned. Bots can currently send video files of up to 50
+        MB in size, this limit may be changed in the future.
         """
-        response = await self.api.request("sendVideo", self.get_params(locals()))
-        return Message(**response)
+        response = await self.api.request("sendVideo", get_params(locals()))
+        return json.decode(response, type=Message)
 
     async def send_animation(
         self,
-        chat_id: Union[int, str],
-        animation: Union[InputFile, str],
-        width: Optional[int] = None,
-        thumbnail: Optional[Union[InputFile, str]] = None,
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[
-            Union[
-                InlineKeyboardMarkup,
-                ReplyKeyboardMarkup,
-                ReplyKeyboardRemove,
-                ForceReply,
-            ]
-        ] = None,
-        protect_content: Optional[bool] = None,
-        parse_mode: Optional[str] = None,
-        message_thread_id: Optional[int] = None,
-        height: Optional[int] = None,
-        has_spoiler: Optional[bool] = None,
-        duration: Optional[int] = None,
-        disable_notification: Optional[bool] = None,
-        caption_entities: Optional[List[MessageEntity]] = None,
-        caption: Optional[str] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        chat_id: int | str,
+        animation: InputFile | str,
+        width: int | None = None,
+        thumbnail: InputFile | str | None = None,
+        reply_to_message_id: int | None = None,
+        reply_markup: InlineKeyboardMarkup
+        | ReplyKeyboardMarkup
+        | ReplyKeyboardRemove
+        | ForceReply
+        | None = None,
+        protect_content: bool | None = None,
+        parse_mode: str | None = None,
+        message_thread_id: int | None = None,
+        height: int | None = None,
+        has_spoiler: bool | None = None,
+        duration: int | None = None,
+        disable_notification: bool | None = None,
+        caption_entities: list[MessageEntity] | None = None,
+        caption: str | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
     ) -> Message:
         """
-        Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without
-        sound). On success, the sent Message is returned. Bots can currently send animation
-        files of up to 50 MB in size, this limit may be changed in the future.
+        Use this method to send animation files (GIF or H.264/MPEG-4 AVC video
+        without sound). On success, the sent Message is returned. Bots can
+        currently send animation files of up to 50 MB in size, this limit may
+        be changed in the future.
         """
-        response = await self.api.request("sendAnimation", self.get_params(locals()))
-        return Message(**response)
+        response = await self.api.request("sendAnimation", get_params(locals()))
+        return json.decode(response, type=Message)
 
     async def send_voice(
         self,
-        voice: Union[InputFile, str],
-        chat_id: Union[int, str],
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[
-            Union[
-                InlineKeyboardMarkup,
-                ReplyKeyboardMarkup,
-                ReplyKeyboardRemove,
-                ForceReply,
-            ]
-        ] = None,
-        protect_content: Optional[bool] = None,
-        parse_mode: Optional[str] = None,
-        message_thread_id: Optional[int] = None,
-        duration: Optional[int] = None,
-        disable_notification: Optional[bool] = None,
-        caption_entities: Optional[List[MessageEntity]] = None,
-        caption: Optional[str] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        voice: InputFile | str,
+        chat_id: int | str,
+        reply_to_message_id: int | None = None,
+        reply_markup: InlineKeyboardMarkup
+        | ReplyKeyboardMarkup
+        | ReplyKeyboardRemove
+        | ForceReply
+        | None = None,
+        protect_content: bool | None = None,
+        parse_mode: str | None = None,
+        message_thread_id: int | None = None,
+        duration: int | None = None,
+        disable_notification: bool | None = None,
+        caption_entities: list[MessageEntity] | None = None,
+        caption: str | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
     ) -> Message:
         """
-        Use this method to send audio files, if you want Telegram clients to display the
-        file as a playable voice message. For this to work, your audio must be in an .OGG
-        file encoded with OPUS (other formats may be sent as Audio or Document). On success,
-        the sent Message is returned. Bots can currently send voice messages of up to 50 MB
-        in size, this limit may be changed in the future.
+        Use this method to send audio files, if you want Telegram clients to
+        display the file as a playable voice message. For this to work, your
+        audio must be in an .OGG file encoded with OPUS (other formats may be
+        sent as Audio or Document). On success, the sent Message is returned.
+        Bots can currently send voice messages of up to 50 MB in size, this
+        limit may be changed in the future.
         """
-        response = await self.api.request("sendVoice", self.get_params(locals()))
-        return Message(**response)
+        response = await self.api.request("sendVoice", get_params(locals()))
+        return json.decode(response, type=Message)
 
     async def send_video_note(
         self,
-        video_note: Union[InputFile, str],
-        chat_id: Union[int, str],
-        thumbnail: Optional[Union[InputFile, str]] = None,
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[
-            Union[
-                InlineKeyboardMarkup,
-                ReplyKeyboardMarkup,
-                ReplyKeyboardRemove,
-                ForceReply,
-            ]
-        ] = None,
-        protect_content: Optional[bool] = None,
-        message_thread_id: Optional[int] = None,
-        length: Optional[int] = None,
-        duration: Optional[int] = None,
-        disable_notification: Optional[bool] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        video_note: InputFile | str,
+        chat_id: int | str,
+        thumbnail: InputFile | str | None = None,
+        reply_to_message_id: int | None = None,
+        reply_markup: InlineKeyboardMarkup
+        | ReplyKeyboardMarkup
+        | ReplyKeyboardRemove
+        | ForceReply
+        | None = None,
+        protect_content: bool | None = None,
+        message_thread_id: int | None = None,
+        length: int | None = None,
+        duration: int | None = None,
+        disable_notification: bool | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
     ) -> Message:
         """
-        As of v.4.0, Telegram clients support rounded square MPEG4 videos of up to 1 minute
-        long. Use this method to send video messages. On success, the sent Message is
-        returned.
+        As of v.4.0, Telegram clients support rounded square MPEG4 videos of
+        up to 1 minute long. Use this method to send video messages. On
+        success, the sent Message is returned.
         """
-        response = await self.api.request("sendVideoNote", self.get_params(locals()))
-        return Message(**response)
+        response = await self.api.request("sendVideoNote", get_params(locals()))
+        return json.decode(response, type=Message)
 
     async def send_media_group(
         self,
-        media: List[
-            Union[InputMediaAudio, InputMediaDocument, InputMediaPhoto, InputMediaVideo]
+        media: list[
+            InputMediaAudio | InputMediaDocument | InputMediaPhoto | InputMediaVideo
         ],
-        chat_id: Union[int, str],
-        reply_to_message_id: Optional[int] = None,
-        protect_content: Optional[bool] = None,
-        message_thread_id: Optional[int] = None,
-        disable_notification: Optional[bool] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        chat_id: int | str,
+        reply_to_message_id: int | None = None,
+        protect_content: bool | None = None,
+        message_thread_id: int | None = None,
+        disable_notification: bool | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
-    ) -> List[Message]:
+    ) -> list[Message]:
         """
-        Use this method to send a group of photos, videos, documents or audios as an album.
-        Documents and audio files can be only grouped in an album with messages of the same
-        type. On success, an array of Messages that were sent is returned.
+        Use this method to send a group of photos, videos, documents or audios
+        as an album. Documents and audio files can be only grouped in an album
+        with messages of the same type. On success, an array of Messages that
+        were sent is returned.
         """
-        response = await self.api.request("sendMediaGroup", self.get_params(locals()))
-        return parse_obj_as(List[Message], response)
+        response = await self.api.request("sendMediaGroup", get_params(locals()))
+        return json.decode(response, type=list[Message])
 
     async def send_location(
         self,
         longitude: float,
         latitude: float,
-        chat_id: Union[int, str],
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[
-            Union[
-                InlineKeyboardMarkup,
-                ReplyKeyboardMarkup,
-                ReplyKeyboardRemove,
-                ForceReply,
-            ]
-        ] = None,
-        proximity_alert_radius: Optional[int] = None,
-        protect_content: Optional[bool] = None,
-        message_thread_id: Optional[int] = None,
-        live_period: Optional[int] = None,
-        horizontal_accuracy: Optional[float] = None,
-        heading: Optional[int] = None,
-        disable_notification: Optional[bool] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        chat_id: int | str,
+        reply_to_message_id: int | None = None,
+        reply_markup: InlineKeyboardMarkup
+        | ReplyKeyboardMarkup
+        | ReplyKeyboardRemove
+        | ForceReply
+        | None = None,
+        proximity_alert_radius: int | None = None,
+        protect_content: bool | None = None,
+        message_thread_id: int | None = None,
+        live_period: int | None = None,
+        horizontal_accuracy: float | None = None,
+        heading: int | None = None,
+        disable_notification: bool | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
     ) -> Message:
         """
-        Use this method to send point on the map. On success, the sent Message is returned.
+        Use this method to send point on the map. On success, the sent Message
+        is returned.
         """
-        response = await self.api.request("sendLocation", self.get_params(locals()))
-        return Message(**response)
+        response = await self.api.request("sendLocation", get_params(locals()))
+        return json.decode(response, type=Message)
 
     async def send_venue(
         self,
         title: str,
         longitude: float,
         latitude: float,
-        chat_id: Union[int, str],
+        chat_id: int | str,
         address: str,
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[
-            Union[
-                InlineKeyboardMarkup,
-                ReplyKeyboardMarkup,
-                ReplyKeyboardRemove,
-                ForceReply,
-            ]
-        ] = None,
-        protect_content: Optional[bool] = None,
-        message_thread_id: Optional[int] = None,
-        google_place_type: Optional[str] = None,
-        google_place_id: Optional[str] = None,
-        foursquare_type: Optional[str] = None,
-        foursquare_id: Optional[str] = None,
-        disable_notification: Optional[bool] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        reply_to_message_id: int | None = None,
+        reply_markup: InlineKeyboardMarkup
+        | ReplyKeyboardMarkup
+        | ReplyKeyboardRemove
+        | ForceReply
+        | None = None,
+        protect_content: bool | None = None,
+        message_thread_id: int | None = None,
+        google_place_type: str | None = None,
+        google_place_id: str | None = None,
+        foursquare_type: str | None = None,
+        foursquare_id: str | None = None,
+        disable_notification: bool | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
     ) -> Message:
         """
-        Use this method to send information about a venue. On success, the sent Message is
-        returned.
+        Use this method to send information about a venue. On success, the
+        sent Message is returned.
         """
-        response = await self.api.request("sendVenue", self.get_params(locals()))
-        return Message(**response)
+        response = await self.api.request("sendVenue", get_params(locals()))
+        return json.decode(response, type=Message)
 
     async def send_contact(
         self,
         phone_number: str,
         first_name: str,
-        chat_id: Union[int, str],
-        vcard: Optional[str] = None,
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[
-            Union[
-                InlineKeyboardMarkup,
-                ReplyKeyboardMarkup,
-                ReplyKeyboardRemove,
-                ForceReply,
-            ]
-        ] = None,
-        protect_content: Optional[bool] = None,
-        message_thread_id: Optional[int] = None,
-        last_name: Optional[str] = None,
-        disable_notification: Optional[bool] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        chat_id: int | str,
+        vcard: str | None = None,
+        reply_to_message_id: int | None = None,
+        reply_markup: InlineKeyboardMarkup
+        | ReplyKeyboardMarkup
+        | ReplyKeyboardRemove
+        | ForceReply
+        | None = None,
+        protect_content: bool | None = None,
+        message_thread_id: int | None = None,
+        last_name: str | None = None,
+        disable_notification: bool | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
     ) -> Message:
         """
-        Use this method to send phone contacts. On success, the sent Message is returned.
+        Use this method to send phone contacts. On success, the sent Message
+        is returned.
         """
-        response = await self.api.request("sendContact", self.get_params(locals()))
-        return Message(**response)
+        response = await self.api.request("sendContact", get_params(locals()))
+        return json.decode(response, type=Message)
 
     async def send_poll(
         self,
         question: str,
-        options: List[str],
-        chat_id: Union[int, str],
-        type: Optional[str] = None,
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[
-            Union[
-                InlineKeyboardMarkup,
-                ReplyKeyboardMarkup,
-                ReplyKeyboardRemove,
-                ForceReply,
-            ]
-        ] = None,
-        protect_content: Optional[bool] = None,
-        open_period: Optional[int] = None,
-        message_thread_id: Optional[int] = None,
-        is_closed: Optional[bool] = None,
-        is_anonymous: Optional[bool] = None,
-        explanation_parse_mode: Optional[str] = None,
-        explanation_entities: Optional[List[MessageEntity]] = None,
-        explanation: Optional[str] = None,
-        disable_notification: Optional[bool] = None,
-        correct_option_id: Optional[int] = None,
-        close_date: Optional[int] = None,
-        allows_multiple_answers: Optional[bool] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        options: list[str],
+        chat_id: int | str,
+        type: str | None = None,
+        reply_to_message_id: int | None = None,
+        reply_markup: InlineKeyboardMarkup
+        | ReplyKeyboardMarkup
+        | ReplyKeyboardRemove
+        | ForceReply
+        | None = None,
+        protect_content: bool | None = None,
+        open_period: int | None = None,
+        message_thread_id: int | None = None,
+        is_closed: bool | None = None,
+        is_anonymous: bool | None = None,
+        explanation_parse_mode: str | None = None,
+        explanation_entities: list[MessageEntity] | None = None,
+        explanation: str | None = None,
+        disable_notification: bool | None = None,
+        correct_option_id: int | None = None,
+        close_date: int | None = None,
+        allows_multiple_answers: bool | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
     ) -> Message:
         """
-        Use this method to send a native poll. On success, the sent Message is returned.
+        Use this method to send a native poll. On success, the sent Message is
+        returned.
         """
-        response = await self.api.request("sendPoll", self.get_params(locals()))
-        return Message(**response)
+        response = await self.api.request("sendPoll", get_params(locals()))
+        return json.decode(response, type=Message)
 
     async def send_dice(
         self,
-        chat_id: Union[int, str],
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[
-            Union[
-                InlineKeyboardMarkup,
-                ReplyKeyboardMarkup,
-                ReplyKeyboardRemove,
-                ForceReply,
-            ]
-        ] = None,
-        protect_content: Optional[bool] = None,
-        message_thread_id: Optional[int] = None,
-        emoji: Optional[str] = None,
-        disable_notification: Optional[bool] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        chat_id: int | str,
+        reply_to_message_id: int | None = None,
+        reply_markup: InlineKeyboardMarkup
+        | ReplyKeyboardMarkup
+        | ReplyKeyboardRemove
+        | ForceReply
+        | None = None,
+        protect_content: bool | None = None,
+        message_thread_id: int | None = None,
+        emoji: str | None = None,
+        disable_notification: bool | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
     ) -> Message:
         """
-        Use this method to send an animated emoji that will display a random value. On
-        success, the sent Message is returned.
+        Use this method to send an animated emoji that will display a random
+        value. On success, the sent Message is returned.
         """
-        response = await self.api.request("sendDice", self.get_params(locals()))
-        return Message(**response)
+        response = await self.api.request("sendDice", get_params(locals()))
+        return json.decode(response, type=Message)
 
     async def send_chat_action(
         self,
-        chat_id: Union[int, str],
+        chat_id: int | str,
         action: str,
-        message_thread_id: Optional[int] = None,
+        message_thread_id: int | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method when you need to tell the user that something is happening on the
-        bot's side. The status is set for 5 seconds or less (when a message arrives from
-        your bot, Telegram clients clear its typing status). Returns True on success.
-        Example: The ImageBot needs some time to process a request and upload the image.
-        Instead of sending a text message along the lines of “Retrieving image, please
-        wait…”, the bot may use sendChatAction with action = upload_photo. The user will see
-        a “sending photo” status for the bot. We only recommend using this method when a
-        response from the bot will take a noticeable amount of time to arrive.
+        Use this method when you need to tell the user that something is
+        happening on the bot's side. The status is set for 5 seconds or less
+        (when a message arrives from your bot, Telegram clients clear its
+        typing status). Returns True on success. Example: The ImageBot needs
+        some time to process a request and upload the image. Instead of
+        sending a text message along the lines of “Retrieving image, please
+        wait…”, the bot may use sendChatAction with action = upload_photo. The
+        user will see a “sending photo” status for the bot. We only recommend
+        using this method when a response from the bot will take a noticeable
+        amount of time to arrive.
         """
-        response = await self.api.request("sendChatAction", self.get_params(locals()))
-        return response
+        response = await self.api.request("sendChatAction", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def get_user_profile_photos(
         self,
         user_id: int,
-        offset: Optional[int] = None,
-        limit: Optional[int] = None,
+        offset: int | None = None,
+        limit: int | None = None,
         **kwargs
     ) -> UserProfilePhotos:
         """
-        Use this method to get a list of profile pictures for a user. Returns a
-        UserProfilePhotos object.
+        Use this method to get a list of profile pictures for a user. Returns
+        a UserProfilePhotos object.
         """
-        response = await self.api.request(
-            "getUserProfilePhotos", self.get_params(locals())
-        )
-        return UserProfilePhotos(**response)
+        response = await self.api.request("getUserProfilePhotos", get_params(locals()))
+        return json.decode(response, type=UserProfilePhotos)
 
     async def get_file(self, file_id: str, **kwargs) -> File:
         """
-        Use this method to get basic information about a file and prepare it for
-        downloading. For the moment, bots can download files of up to 20MB in size. On
-        success, a File object is returned. The file can then be downloaded via the link
-        https://api.telegram.org/file/bot<token>/<file_path>, where <file_path> is taken
-        from the response. It is guaranteed that the link will be valid for at least 1 hour.
-        When the link expires, a new one can be requested by calling getFile again.
+        Use this method to get basic information about a file and prepare it
+        for downloading. For the moment, bots can download files of up to 20MB
+        in size. On success, a File object is returned. The file can then be
+        downloaded via the link
+        https://api.telegram.org/file/bot<token>/<file_path>, where
+        <file_path> is taken from the response. It is guaranteed that the link
+        will be valid for at least 1 hour. When the link expires, a new one
+        can be requested by calling getFile again.
         """
-        response = await self.api.request("getFile", self.get_params(locals()))
-        return File(**response)
+        response = await self.api.request("getFile", get_params(locals()))
+        return json.decode(response, type=File)
 
     async def ban_chat_member(
         self,
         user_id: int,
-        chat_id: Union[int, str],
-        until_date: Optional[int] = None,
-        revoke_messages: Optional[bool] = None,
+        chat_id: int | str,
+        until_date: int | None = None,
+        revoke_messages: bool | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to ban a user in a group, a supergroup or a channel. In the case of
-        supergroups and channels, the user will not be able to return to the chat on their
-        own using invite links, etc., unless unbanned first. The bot must be an
-        administrator in the chat for this to work and must have the appropriate
-        administrator rights. Returns True on success.
+        Use this method to ban a user in a group, a supergroup or a channel.
+        In the case of supergroups and channels, the user will not be able to
+        return to the chat on their own using invite links, etc., unless
+        unbanned first. The bot must be an administrator in the chat for this
+        to work and must have the appropriate administrator rights. Returns
+        True on success.
         """
-        response = await self.api.request("banChatMember", self.get_params(locals()))
-        return response
+        response = await self.api.request("banChatMember", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def unban_chat_member(
         self,
         user_id: int,
-        chat_id: Union[int, str],
-        only_if_banned: Optional[bool] = None,
+        chat_id: int | str,
+        only_if_banned: bool | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to unban a previously banned user in a supergroup or channel. The
-        user will not return to the group or channel automatically, but will be able to join
-        via link, etc. The bot must be an administrator for this to work. By default, this
-        method guarantees that after the call the user is not a member of the chat, but will
-        be able to join it. So if the user is a member of the chat they will also be removed
-        from the chat. If you don't want this, use the parameter only_if_banned. Returns
-        True on success.
+        Use this method to unban a previously banned user in a supergroup or
+        channel. The user will not return to the group or channel
+        automatically, but will be able to join via link, etc. The bot must be
+        an administrator for this to work. By default, this method guarantees
+        that after the call the user is not a member of the chat, but will be
+        able to join it. So if the user is a member of the chat they will also
+        be removed from the chat. If you don't want this, use the parameter
+        only_if_banned. Returns True on success.
         """
-        response = await self.api.request("unbanChatMember", self.get_params(locals()))
-        return response
+        response = await self.api.request("unbanChatMember", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def restrict_chat_member(
         self,
         user_id: int,
         permissions: ChatPermissions,
-        chat_id: Union[int, str],
-        use_independent_chat_permissions: Optional[bool] = None,
-        until_date: Optional[int] = None,
+        chat_id: int | str,
+        use_independent_chat_permissions: bool | None = None,
+        until_date: int | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to restrict a user in a supergroup. The bot must be an administrator
-        in the supergroup for this to work and must have the appropriate administrator
-        rights. Pass True for all permissions to lift restrictions from a user. Returns True
-        on success.
+        Use this method to restrict a user in a supergroup. The bot must be an
+        administrator in the supergroup for this to work and must have the
+        appropriate administrator rights. Pass True for all permissions to
+        lift restrictions from a user. Returns True on success.
         """
-        response = await self.api.request(
-            "restrictChatMember", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("restrictChatMember", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def promote_chat_member(
         self,
         user_id: int,
-        chat_id: Union[int, str],
-        is_anonymous: Optional[bool] = None,
-        can_restrict_members: Optional[bool] = None,
-        can_promote_members: Optional[bool] = None,
-        can_post_messages: Optional[bool] = None,
-        can_pin_messages: Optional[bool] = None,
-        can_manage_video_chats: Optional[bool] = None,
-        can_manage_topics: Optional[bool] = None,
-        can_manage_chat: Optional[bool] = None,
-        can_invite_users: Optional[bool] = None,
-        can_edit_messages: Optional[bool] = None,
-        can_delete_messages: Optional[bool] = None,
-        can_change_info: Optional[bool] = None,
+        chat_id: int | str,
+        is_anonymous: bool | None = None,
+        can_restrict_members: bool | None = None,
+        can_promote_members: bool | None = None,
+        can_post_messages: bool | None = None,
+        can_pin_messages: bool | None = None,
+        can_manage_video_chats: bool | None = None,
+        can_manage_topics: bool | None = None,
+        can_manage_chat: bool | None = None,
+        can_invite_users: bool | None = None,
+        can_edit_messages: bool | None = None,
+        can_delete_messages: bool | None = None,
+        can_change_info: bool | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to promote or demote a user in a supergroup or a channel. The bot
-        must be an administrator in the chat for this to work and must have the appropriate
-        administrator rights. Pass False for all boolean parameters to demote a user.
-        Returns True on success.
+        Use this method to promote or demote a user in a supergroup or a
+        channel. The bot must be an administrator in the chat for this to work
+        and must have the appropriate administrator rights. Pass False for all
+        boolean parameters to demote a user. Returns True on success.
         """
-        response = await self.api.request(
-            "promoteChatMember", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("promoteChatMember", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def set_chat_administrator_custom_title(
-        self, user_id: int, custom_title: str, chat_id: Union[int, str], **kwargs
+        self, user_id: int, custom_title: str, chat_id: int | str, **kwargs
     ) -> bool:
         """
-        Use this method to set a custom title for an administrator in a supergroup promoted
-        by the bot. Returns True on success.
+        Use this method to set a custom title for an administrator in a
+        supergroup promoted by the bot. Returns True on success.
         """
         response = await self.api.request(
-            "setChatAdministratorCustomTitle", self.get_params(locals())
+            "setChatAdministratorCustomTitle", get_params(locals())
         )
-        return response
+        return json.decode(response, type=bool)
 
     async def ban_chat_sender_chat(
-        self, sender_chat_id: int, chat_id: Union[int, str], **kwargs
+        self, sender_chat_id: int, chat_id: int | str, **kwargs
     ) -> bool:
         """
-        Use this method to ban a channel chat in a supergroup or a channel. Until the chat
-        is unbanned, the owner of the banned chat won't be able to send messages on behalf
-        of any of their channels. The bot must be an administrator in the supergroup or
-        channel for this to work and must have the appropriate administrator rights. Returns
-        True on success.
+        Use this method to ban a channel chat in a supergroup or a channel.
+        Until the chat is unbanned, the owner of the banned chat won't be able
+        to send messages on behalf of any of their channels. The bot must be
+        an administrator in the supergroup or channel for this to work and
+        must have the appropriate administrator rights. Returns True on
+        success.
         """
-        response = await self.api.request(
-            "banChatSenderChat", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("banChatSenderChat", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def unban_chat_sender_chat(
-        self, sender_chat_id: int, chat_id: Union[int, str], **kwargs
+        self, sender_chat_id: int, chat_id: int | str, **kwargs
     ) -> bool:
         """
-        Use this method to unban a previously banned channel chat in a supergroup or
-        channel. The bot must be an administrator for this to work and must have the
-        appropriate administrator rights. Returns True on success.
+        Use this method to unban a previously banned channel chat in a
+        supergroup or channel. The bot must be an administrator for this to
+        work and must have the appropriate administrator rights. Returns True
+        on success.
         """
-        response = await self.api.request(
-            "unbanChatSenderChat", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("unbanChatSenderChat", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def set_chat_permissions(
         self,
         permissions: ChatPermissions,
-        chat_id: Union[int, str],
-        use_independent_chat_permissions: Optional[bool] = None,
+        chat_id: int | str,
+        use_independent_chat_permissions: bool | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to set default chat permissions for all members. The bot must be an
-        administrator in the group or a supergroup for this to work and must have the
-        can_restrict_members administrator rights. Returns True on success.
+        Use this method to set default chat permissions for all members. The
+        bot must be an administrator in the group or a supergroup for this to
+        work and must have the can_restrict_members administrator rights.
+        Returns True on success.
         """
-        response = await self.api.request(
-            "setChatPermissions", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("setChatPermissions", get_params(locals()))
+        return json.decode(response, type=bool)
 
-    async def export_chat_invite_link(self, chat_id: Union[int, str], **kwargs) -> str:
+    async def export_chat_invite_link(self, chat_id: int | str, **kwargs) -> str:
         """
-        Use this method to generate a new primary invite link for a chat; any previously
-        generated primary link is revoked. The bot must be an administrator in the chat for
-        this to work and must have the appropriate administrator rights. Returns the new
-        invite link as String on success.
+        Use this method to generate a new primary invite link for a chat; any
+        previously generated primary link is revoked. The bot must be an
+        administrator in the chat for this to work and must have the
+        appropriate administrator rights. Returns the new invite link as
+        String on success.
         """
-        response = await self.api.request(
-            "exportChatInviteLink", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("exportChatInviteLink", get_params(locals()))
+        return json.decode(response, type=str)
 
     async def create_chat_invite_link(
         self,
-        chat_id: Union[int, str],
-        name: Optional[str] = None,
-        member_limit: Optional[int] = None,
-        expire_date: Optional[int] = None,
-        creates_join_request: Optional[bool] = None,
+        chat_id: int | str,
+        name: str | None = None,
+        member_limit: int | None = None,
+        expire_date: int | None = None,
+        creates_join_request: bool | None = None,
         **kwargs
     ) -> ChatInviteLink:
         """
-        Use this method to create an additional invite link for a chat. The bot must be an
-        administrator in the chat for this to work and must have the appropriate
-        administrator rights. The link can be revoked using the method revokeChatInviteLink.
-        Returns the new invite link as ChatInviteLink object.
+        Use this method to create an additional invite link for a chat. The
+        bot must be an administrator in the chat for this to work and must
+        have the appropriate administrator rights. The link can be revoked
+        using the method revokeChatInviteLink. Returns the new invite link as
+        ChatInviteLink object.
         """
-        response = await self.api.request(
-            "createChatInviteLink", self.get_params(locals())
-        )
-        return ChatInviteLink(**response)
+        response = await self.api.request("createChatInviteLink", get_params(locals()))
+        return json.decode(response, type=ChatInviteLink)
 
     async def edit_chat_invite_link(
         self,
         invite_link: str,
-        chat_id: Union[int, str],
-        name: Optional[str] = None,
-        member_limit: Optional[int] = None,
-        expire_date: Optional[int] = None,
-        creates_join_request: Optional[bool] = None,
+        chat_id: int | str,
+        name: str | None = None,
+        member_limit: int | None = None,
+        expire_date: int | None = None,
+        creates_join_request: bool | None = None,
         **kwargs
     ) -> ChatInviteLink:
         """
-        Use this method to edit a non-primary invite link created by the bot. The bot must
-        be an administrator in the chat for this to work and must have the appropriate
-        administrator rights. Returns the edited invite link as a ChatInviteLink object.
+        Use this method to edit a non-primary invite link created by the bot.
+        The bot must be an administrator in the chat for this to work and must
+        have the appropriate administrator rights. Returns the edited invite
+        link as a ChatInviteLink object.
         """
-        response = await self.api.request(
-            "editChatInviteLink", self.get_params(locals())
-        )
-        return ChatInviteLink(**response)
+        response = await self.api.request("editChatInviteLink", get_params(locals()))
+        return json.decode(response, type=ChatInviteLink)
 
     async def revoke_chat_invite_link(
-        self, invite_link: str, chat_id: Union[int, str], **kwargs
+        self, invite_link: str, chat_id: int | str, **kwargs
     ) -> ChatInviteLink:
         """
-        Use this method to revoke an invite link created by the bot. If the primary link is
-        revoked, a new link is automatically generated. The bot must be an administrator in
-        the chat for this to work and must have the appropriate administrator rights.
-        Returns the revoked invite link as ChatInviteLink object.
+        Use this method to revoke an invite link created by the bot. If the
+        primary link is revoked, a new link is automatically generated. The
+        bot must be an administrator in the chat for this to work and must
+        have the appropriate administrator rights. Returns the revoked invite
+        link as ChatInviteLink object.
         """
-        response = await self.api.request(
-            "revokeChatInviteLink", self.get_params(locals())
-        )
-        return ChatInviteLink(**response)
+        response = await self.api.request("revokeChatInviteLink", get_params(locals()))
+        return json.decode(response, type=ChatInviteLink)
 
     async def approve_chat_join_request(
-        self, user_id: int, chat_id: Union[int, str], **kwargs
+        self, user_id: int, chat_id: int | str, **kwargs
     ) -> bool:
         """
-        Use this method to approve a chat join request. The bot must be an administrator in
-        the chat for this to work and must have the can_invite_users administrator right.
-        Returns True on success.
+        Use this method to approve a chat join request. The bot must be an
+        administrator in the chat for this to work and must have the
+        can_invite_users administrator right. Returns True on success.
         """
         response = await self.api.request(
-            "approveChatJoinRequest", self.get_params(locals())
+            "approveChatJoinRequest", get_params(locals())
         )
-        return response
+        return json.decode(response, type=bool)
 
     async def decline_chat_join_request(
-        self, user_id: int, chat_id: Union[int, str], **kwargs
+        self, user_id: int, chat_id: int | str, **kwargs
     ) -> bool:
         """
-        Use this method to decline a chat join request. The bot must be an administrator in
-        the chat for this to work and must have the can_invite_users administrator right.
-        Returns True on success.
+        Use this method to decline a chat join request. The bot must be an
+        administrator in the chat for this to work and must have the
+        can_invite_users administrator right. Returns True on success.
         """
         response = await self.api.request(
-            "declineChatJoinRequest", self.get_params(locals())
+            "declineChatJoinRequest", get_params(locals())
         )
-        return response
+        return json.decode(response, type=bool)
 
     async def set_chat_photo(
-        self, photo: InputFile, chat_id: Union[int, str], **kwargs
+        self, photo: InputFile, chat_id: int | str, **kwargs
     ) -> bool:
         """
-        Use this method to set a new profile photo for the chat. Photos can't be changed for
-        private chats. The bot must be an administrator in the chat for this to work and
-        must have the appropriate administrator rights. Returns True on success.
+        Use this method to set a new profile photo for the chat. Photos can't
+        be changed for private chats. The bot must be an administrator in the
+        chat for this to work and must have the appropriate administrator
+        rights. Returns True on success.
         """
-        response = await self.api.request("setChatPhoto", self.get_params(locals()))
-        return response
+        response = await self.api.request("setChatPhoto", get_params(locals()))
+        return json.decode(response, type=bool)
 
-    async def delete_chat_photo(self, chat_id: Union[int, str], **kwargs) -> bool:
+    async def delete_chat_photo(self, chat_id: int | str, **kwargs) -> bool:
         """
-        Use this method to delete a chat photo. Photos can't be changed for private chats.
-        The bot must be an administrator in the chat for this to work and must have the
-        appropriate administrator rights. Returns True on success.
+        Use this method to delete a chat photo. Photos can't be changed for
+        private chats. The bot must be an administrator in the chat for this
+        to work and must have the appropriate administrator rights. Returns
+        True on success.
         """
-        response = await self.api.request("deleteChatPhoto", self.get_params(locals()))
-        return response
+        response = await self.api.request("deleteChatPhoto", get_params(locals()))
+        return json.decode(response, type=bool)
 
-    async def set_chat_title(
-        self, title: str, chat_id: Union[int, str], **kwargs
-    ) -> bool:
+    async def set_chat_title(self, title: str, chat_id: int | str, **kwargs) -> bool:
         """
-        Use this method to change the title of a chat. Titles can't be changed for private
-        chats. The bot must be an administrator in the chat for this to work and must have
-        the appropriate administrator rights. Returns True on success.
+        Use this method to change the title of a chat. Titles can't be changed
+        for private chats. The bot must be an administrator in the chat for
+        this to work and must have the appropriate administrator rights.
+        Returns True on success.
         """
-        response = await self.api.request("setChatTitle", self.get_params(locals()))
-        return response
+        response = await self.api.request("setChatTitle", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def set_chat_description(
-        self, chat_id: Union[int, str], description: Optional[str] = None, **kwargs
+        self, chat_id: int | str, description: str | None = None, **kwargs
     ) -> bool:
         """
-        Use this method to change the description of a group, a supergroup or a channel. The
-        bot must be an administrator in the chat for this to work and must have the
-        appropriate administrator rights. Returns True on success.
+        Use this method to change the description of a group, a supergroup or
+        a channel. The bot must be an administrator in the chat for this to
+        work and must have the appropriate administrator rights. Returns True
+        on success.
         """
-        response = await self.api.request(
-            "setChatDescription", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("setChatDescription", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def pin_chat_message(
         self,
         message_id: int,
-        chat_id: Union[int, str],
-        disable_notification: Optional[bool] = None,
+        chat_id: int | str,
+        disable_notification: bool | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to add a message to the list of pinned messages in a chat. If the
-        chat is not a private chat, the bot must be an administrator in the chat for this to
-        work and must have the 'can_pin_messages' administrator right in a supergroup or
-        'can_edit_messages' administrator right in a channel. Returns True on success.
-        """
-        response = await self.api.request("pinChatMessage", self.get_params(locals()))
-        return response
-
-    async def unpin_chat_message(
-        self, chat_id: Union[int, str], message_id: Optional[int] = None, **kwargs
-    ) -> bool:
-        """
-        Use this method to remove a message from the list of pinned messages in a chat. If
-        the chat is not a private chat, the bot must be an administrator in the chat for
-        this to work and must have the 'can_pin_messages' administrator right in a
-        supergroup or 'can_edit_messages' administrator right in a channel. Returns True on
+        Use this method to add a message to the list of pinned messages in a
+        chat. If the chat is not a private chat, the bot must be an
+        administrator in the chat for this to work and must have the
+        'can_pin_messages' administrator right in a supergroup or
+        'can_edit_messages' administrator right in a channel. Returns True on
         success.
         """
-        response = await self.api.request("unpinChatMessage", self.get_params(locals()))
-        return response
+        response = await self.api.request("pinChatMessage", get_params(locals()))
+        return json.decode(response, type=bool)
 
-    async def unpin_all_chat_messages(self, chat_id: Union[int, str], **kwargs) -> bool:
-        """
-        Use this method to clear the list of pinned messages in a chat. If the chat is not a
-        private chat, the bot must be an administrator in the chat for this to work and must
-        have the 'can_pin_messages' administrator right in a supergroup or
-        'can_edit_messages' administrator right in a channel. Returns True on success.
-        """
-        response = await self.api.request(
-            "unpinAllChatMessages", self.get_params(locals())
-        )
-        return response
-
-    async def leave_chat(self, chat_id: Union[int, str], **kwargs) -> bool:
-        """
-        Use this method for your bot to leave a group, supergroup or channel. Returns True
-        on success.
-        """
-        response = await self.api.request("leaveChat", self.get_params(locals()))
-        return response
-
-    async def get_chat(self, chat_id: Union[int, str], **kwargs) -> Chat:
-        """
-        Use this method to get up to date information about the chat (current name of the
-        user for one-on-one conversations, current username of a user, group or channel,
-        etc.). Returns a Chat object on success.
-        """
-        response = await self.api.request("getChat", self.get_params(locals()))
-        return Chat(**response)
-
-    async def get_chat_administrators(
-        self, chat_id: Union[int, str], **kwargs
-    ) -> List[ChatMember]:
-        """
-        Use this method to get a list of administrators in a chat, which aren't bots.
-        Returns an Array of ChatMember objects.
-        """
-        response = await self.api.request(
-            "getChatAdministrators", self.get_params(locals())
-        )
-        return parse_obj_as(List[ChatMember], response)
-
-    async def get_chat_member_count(self, chat_id: Union[int, str], **kwargs) -> int:
-        """
-        Use this method to get the number of members in a chat. Returns Int on success.
-        """
-        response = await self.api.request(
-            "getChatMemberCount", self.get_params(locals())
-        )
-        return response
-
-    async def get_chat_member(
-        self, user_id: int, chat_id: Union[int, str], **kwargs
-    ) -> ChatMember:
-        """
-        Use this method to get information about a member of a chat. The method is only
-        guaranteed to work for other users if the bot is an administrator in the chat.
-        Returns a ChatMember object on success.
-        """
-        response = await self.api.request("getChatMember", self.get_params(locals()))
-        return parse_obj_as(ChatMember, response)
-
-    async def set_chat_sticker_set(
-        self, sticker_set_name: str, chat_id: Union[int, str], **kwargs
+    async def unpin_chat_message(
+        self, chat_id: int | str, message_id: int | None = None, **kwargs
     ) -> bool:
         """
-        Use this method to set a new group sticker set for a supergroup. The bot must be an
-        administrator in the chat for this to work and must have the appropriate
-        administrator rights. Use the field can_set_sticker_set optionally returned in
-        getChat requests to check if the bot can use this method. Returns True on success.
+        Use this method to remove a message from the list of pinned messages
+        in a chat. If the chat is not a private chat, the bot must be an
+        administrator in the chat for this to work and must have the
+        'can_pin_messages' administrator right in a supergroup or
+        'can_edit_messages' administrator right in a channel. Returns True on
+        success.
         """
-        response = await self.api.request(
-            "setChatStickerSet", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("unpinChatMessage", get_params(locals()))
+        return json.decode(response, type=bool)
 
-    async def delete_chat_sticker_set(self, chat_id: Union[int, str], **kwargs) -> bool:
+    async def unpin_all_chat_messages(self, chat_id: int | str, **kwargs) -> bool:
         """
-        Use this method to delete a group sticker set from a supergroup. The bot must be an
-        administrator in the chat for this to work and must have the appropriate
-        administrator rights. Use the field can_set_sticker_set optionally returned in
-        getChat requests to check if the bot can use this method. Returns True on success.
+        Use this method to clear the list of pinned messages in a chat. If the
+        chat is not a private chat, the bot must be an administrator in the
+        chat for this to work and must have the 'can_pin_messages'
+        administrator right in a supergroup or 'can_edit_messages'
+        administrator right in a channel. Returns True on success.
         """
-        response = await self.api.request(
-            "deleteChatStickerSet", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("unpinAllChatMessages", get_params(locals()))
+        return json.decode(response, type=bool)
 
-    async def get_forum_topic_icon_stickers(self, **kwargs) -> List[Sticker]:
+    async def leave_chat(self, chat_id: int | str, **kwargs) -> bool:
         """
-        Use this method to get custom emoji stickers, which can be used as a forum topic
-        icon by any user. Requires no parameters. Returns an Array of Sticker objects.
+        Use this method for your bot to leave a group, supergroup or channel.
+        Returns True on success.
+        """
+        response = await self.api.request("leaveChat", get_params(locals()))
+        return json.decode(response, type=bool)
+
+    async def get_chat(self, chat_id: int | str, **kwargs) -> Chat:
+        """
+        Use this method to get up to date information about the chat (current
+        name of the user for one-on-one conversations, current username of a
+        user, group or channel, etc.). Returns a Chat object on success.
+        """
+        response = await self.api.request("getChat", get_params(locals()))
+        return json.decode(response, type=Chat)
+
+    async def get_chat_administrators(
+        self, chat_id: int | str, **kwargs
+    ) -> list[ChatMember]:
+        """
+        Use this method to get a list of administrators in a chat, which
+        aren't bots. Returns an Array of ChatMember objects.
+        """
+        response = await self.api.request("getChatAdministrators", get_params(locals()))
+        return json.decode(response, type=list[ChatMember])
+
+    async def get_chat_member_count(self, chat_id: int | str, **kwargs) -> int:
+        """
+        Use this method to get the number of members in a chat. Returns Int on
+        success.
+        """
+        response = await self.api.request("getChatMemberCount", get_params(locals()))
+        return json.decode(response, type=int)
+
+    async def get_chat_member(
+        self, user_id: int, chat_id: int | str, **kwargs
+    ) -> ChatMember:
+        """
+        Use this method to get information about a member of a chat. The
+        method is only guaranteed to work for other users if the bot is an
+        administrator in the chat. Returns a ChatMember object on success.
+        """
+        response = await self.api.request("getChatMember", get_params(locals()))
+        return json.decode(
+            response,
+            type=ChatMemberOwner
+            | ChatMemberAdministrator
+            | ChatMemberMember
+            | ChatMemberRestricted
+            | ChatMemberLeft
+            | ChatMemberBanned,
+        )
+
+    async def set_chat_sticker_set(
+        self, sticker_set_name: str, chat_id: int | str, **kwargs
+    ) -> bool:
+        """
+        Use this method to set a new group sticker set for a supergroup. The
+        bot must be an administrator in the chat for this to work and must
+        have the appropriate administrator rights. Use the field
+        can_set_sticker_set optionally returned in getChat requests to check
+        if the bot can use this method. Returns True on success.
+        """
+        response = await self.api.request("setChatStickerSet", get_params(locals()))
+        return json.decode(response, type=bool)
+
+    async def delete_chat_sticker_set(self, chat_id: int | str, **kwargs) -> bool:
+        """
+        Use this method to delete a group sticker set from a supergroup. The
+        bot must be an administrator in the chat for this to work and must
+        have the appropriate administrator rights. Use the field
+        can_set_sticker_set optionally returned in getChat requests to check
+        if the bot can use this method. Returns True on success.
+        """
+        response = await self.api.request("deleteChatStickerSet", get_params(locals()))
+        return json.decode(response, type=bool)
+
+    async def get_forum_topic_icon_stickers(self, **kwargs) -> list[Sticker]:
+        """
+        Use this method to get custom emoji stickers, which can be used as a
+        forum topic icon by any user. Requires no parameters. Returns an Array
+        of Sticker objects.
         """
         response = await self.api.request(
-            "getForumTopicIconStickers", self.get_params(locals())
+            "getForumTopicIconStickers", get_params(locals())
         )
-        return parse_obj_as(List[Sticker], response)
+        return json.decode(response, type=list[Sticker])
 
     async def create_forum_topic(
         self,
         name: str,
-        chat_id: Union[int, str],
-        icon_custom_emoji_id: Optional[str] = None,
-        icon_color: Optional[int] = None,
+        chat_id: int | str,
+        icon_custom_emoji_id: str | None = None,
+        icon_color: int | None = None,
         **kwargs
     ) -> ForumTopic:
         """
-        Use this method to create a topic in a forum supergroup chat. The bot must be an
-        administrator in the chat for this to work and must have the can_manage_topics
-        administrator rights. Returns information about the created topic as a ForumTopic
-        object.
+        Use this method to create a topic in a forum supergroup chat. The bot
+        must be an administrator in the chat for this to work and must have
+        the can_manage_topics administrator rights. Returns information about
+        the created topic as a ForumTopic object.
         """
-        response = await self.api.request("createForumTopic", self.get_params(locals()))
-        return ForumTopic(**response)
+        response = await self.api.request("createForumTopic", get_params(locals()))
+        return json.decode(response, type=ForumTopic)
 
     async def edit_forum_topic(
         self,
         message_thread_id: int,
-        chat_id: Union[int, str],
-        name: Optional[str] = None,
-        icon_custom_emoji_id: Optional[str] = None,
+        chat_id: int | str,
+        name: str | None = None,
+        icon_custom_emoji_id: str | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to edit name and icon of a topic in a forum supergroup chat. The bot
-        must be an administrator in the chat for this to work and must have
-        can_manage_topics administrator rights, unless it is the creator of the topic.
-        Returns True on success.
+        Use this method to edit name and icon of a topic in a forum supergroup
+        chat. The bot must be an administrator in the chat for this to work
+        and must have can_manage_topics administrator rights, unless it is the
+        creator of the topic. Returns True on success.
         """
-        response = await self.api.request("editForumTopic", self.get_params(locals()))
-        return response
+        response = await self.api.request("editForumTopic", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def close_forum_topic(
-        self, message_thread_id: int, chat_id: Union[int, str], **kwargs
+        self, message_thread_id: int, chat_id: int | str, **kwargs
     ) -> bool:
         """
-        Use this method to close an open topic in a forum supergroup chat. The bot must be
-        an administrator in the chat for this to work and must have the can_manage_topics
-        administrator rights, unless it is the creator of the topic. Returns True on
-        success.
+        Use this method to close an open topic in a forum supergroup chat. The
+        bot must be an administrator in the chat for this to work and must
+        have the can_manage_topics administrator rights, unless it is the
+        creator of the topic. Returns True on success.
         """
-        response = await self.api.request("closeForumTopic", self.get_params(locals()))
-        return response
+        response = await self.api.request("closeForumTopic", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def reopen_forum_topic(
-        self, message_thread_id: int, chat_id: Union[int, str], **kwargs
+        self, message_thread_id: int, chat_id: int | str, **kwargs
     ) -> bool:
         """
-        Use this method to reopen a closed topic in a forum supergroup chat. The bot must be
-        an administrator in the chat for this to work and must have the can_manage_topics
-        administrator rights, unless it is the creator of the topic. Returns True on
-        success.
+        Use this method to reopen a closed topic in a forum supergroup chat.
+        The bot must be an administrator in the chat for this to work and must
+        have the can_manage_topics administrator rights, unless it is the
+        creator of the topic. Returns True on success.
         """
-        response = await self.api.request("reopenForumTopic", self.get_params(locals()))
-        return response
+        response = await self.api.request("reopenForumTopic", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def delete_forum_topic(
-        self, message_thread_id: int, chat_id: Union[int, str], **kwargs
+        self, message_thread_id: int, chat_id: int | str, **kwargs
     ) -> bool:
         """
-        Use this method to delete a forum topic along with all its messages in a forum
-        supergroup chat. The bot must be an administrator in the chat for this to work and
-        must have the can_delete_messages administrator rights. Returns True on success.
+        Use this method to delete a forum topic along with all its messages in
+        a forum supergroup chat. The bot must be an administrator in the chat
+        for this to work and must have the can_delete_messages administrator
+        rights. Returns True on success.
         """
-        response = await self.api.request("deleteForumTopic", self.get_params(locals()))
-        return response
+        response = await self.api.request("deleteForumTopic", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def unpin_all_forum_topic_messages(
-        self, message_thread_id: int, chat_id: Union[int, str], **kwargs
+        self, message_thread_id: int, chat_id: int | str, **kwargs
     ) -> bool:
         """
-        Use this method to clear the list of pinned messages in a forum topic. The bot must
-        be an administrator in the chat for this to work and must have the can_pin_messages
-        administrator right in the supergroup. Returns True on success.
+        Use this method to clear the list of pinned messages in a forum topic.
+        The bot must be an administrator in the chat for this to work and must
+        have the can_pin_messages administrator right in the supergroup.
+        Returns True on success.
         """
         response = await self.api.request(
-            "unpinAllForumTopicMessages", self.get_params(locals())
+            "unpinAllForumTopicMessages", get_params(locals())
         )
-        return response
+        return json.decode(response, type=bool)
 
     async def edit_general_forum_topic(
-        self, name: str, chat_id: Union[int, str], **kwargs
+        self, name: str, chat_id: int | str, **kwargs
     ) -> bool:
         """
-        Use this method to edit the name of the 'General' topic in a forum supergroup chat.
-        The bot must be an administrator in the chat for this to work and must have
-        can_manage_topics administrator rights. Returns True on success.
-        """
-        response = await self.api.request(
-            "editGeneralForumTopic", self.get_params(locals())
-        )
-        return response
-
-    async def close_general_forum_topic(
-        self, chat_id: Union[int, str], **kwargs
-    ) -> bool:
-        """
-        Use this method to close an open 'General' topic in a forum supergroup chat. The bot
-        must be an administrator in the chat for this to work and must have the
-        can_manage_topics administrator rights. Returns True on success.
-        """
-        response = await self.api.request(
-            "closeGeneralForumTopic", self.get_params(locals())
-        )
-        return response
-
-    async def reopen_general_forum_topic(
-        self, chat_id: Union[int, str], **kwargs
-    ) -> bool:
-        """
-        Use this method to reopen a closed 'General' topic in a forum supergroup chat. The
-        bot must be an administrator in the chat for this to work and must have the
-        can_manage_topics administrator rights. The topic will be automatically unhidden if
-        it was hidden. Returns True on success.
-        """
-        response = await self.api.request(
-            "reopenGeneralForumTopic", self.get_params(locals())
-        )
-        return response
-
-    async def hide_general_forum_topic(
-        self, chat_id: Union[int, str], **kwargs
-    ) -> bool:
-        """
-        Use this method to hide the 'General' topic in a forum supergroup chat. The bot must
-        be an administrator in the chat for this to work and must have the can_manage_topics
-        administrator rights. The topic will be automatically closed if it was open. Returns
+        Use this method to edit the name of the 'General' topic in a forum
+        supergroup chat. The bot must be an administrator in the chat for this
+        to work and must have can_manage_topics administrator rights. Returns
         True on success.
         """
-        response = await self.api.request(
-            "hideGeneralForumTopic", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("editGeneralForumTopic", get_params(locals()))
+        return json.decode(response, type=bool)
 
-    async def unhide_general_forum_topic(
-        self, chat_id: Union[int, str], **kwargs
-    ) -> bool:
+    async def close_general_forum_topic(self, chat_id: int | str, **kwargs) -> bool:
         """
-        Use this method to unhide the 'General' topic in a forum supergroup chat. The bot
-        must be an administrator in the chat for this to work and must have the
-        can_manage_topics administrator rights. Returns True on success.
+        Use this method to close an open 'General' topic in a forum supergroup
+        chat. The bot must be an administrator in the chat for this to work
+        and must have the can_manage_topics administrator rights. Returns True
+        on success.
         """
         response = await self.api.request(
-            "unhideGeneralForumTopic", self.get_params(locals())
+            "closeGeneralForumTopic", get_params(locals())
         )
-        return response
+        return json.decode(response, type=bool)
+
+    async def reopen_general_forum_topic(self, chat_id: int | str, **kwargs) -> bool:
+        """
+        Use this method to reopen a closed 'General' topic in a forum
+        supergroup chat. The bot must be an administrator in the chat for this
+        to work and must have the can_manage_topics administrator rights. The
+        topic will be automatically unhidden if it was hidden. Returns True on
+        success.
+        """
+        response = await self.api.request(
+            "reopenGeneralForumTopic", get_params(locals())
+        )
+        return json.decode(response, type=bool)
+
+    async def hide_general_forum_topic(self, chat_id: int | str, **kwargs) -> bool:
+        """
+        Use this method to hide the 'General' topic in a forum supergroup
+        chat. The bot must be an administrator in the chat for this to work
+        and must have the can_manage_topics administrator rights. The topic
+        will be automatically closed if it was open. Returns True on success.
+        """
+        response = await self.api.request("hideGeneralForumTopic", get_params(locals()))
+        return json.decode(response, type=bool)
+
+    async def unhide_general_forum_topic(self, chat_id: int | str, **kwargs) -> bool:
+        """
+        Use this method to unhide the 'General' topic in a forum supergroup
+        chat. The bot must be an administrator in the chat for this to work
+        and must have the can_manage_topics administrator rights. Returns True
+        on success.
+        """
+        response = await self.api.request(
+            "unhideGeneralForumTopic", get_params(locals())
+        )
+        return json.decode(response, type=bool)
 
     async def answer_callback_query(
         self,
         callback_query_id: str,
-        url: Optional[str] = None,
-        text: Optional[str] = None,
-        show_alert: Optional[bool] = None,
-        cache_time: Optional[int] = None,
+        url: str | None = None,
+        text: str | None = None,
+        show_alert: bool | None = None,
+        cache_time: int | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to send answers to callback queries sent from inline keyboards. The
-        answer will be displayed to the user as a notification at the top of the chat screen
-        or as an alert. On success, True is returned. Alternatively, the user can be
-        redirected to the specified Game URL. For this option to work, you must first create
-        a game for your bot via @BotFather and accept the terms. Otherwise, you may use
-        links like t.me/your_bot?start=XXXX that open your bot with a parameter.
+        Use this method to send answers to callback queries sent from inline
+        keyboards. The answer will be displayed to the user as a notification
+        at the top of the chat screen or as an alert. On success, True is
+        returned. Alternatively, the user can be redirected to the specified
+        Game URL. For this option to work, you must first create a game for
+        your bot via @BotFather and accept the terms. Otherwise, you may use
+        links like t.me/your_bot?start=XXXX that open your bot with a
+        parameter.
         """
-        response = await self.api.request(
-            "answerCallbackQuery", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("answerCallbackQuery", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def set_my_commands(
         self,
-        commands: List[BotCommand],
-        scope: Optional[BotCommandScope] = None,
-        language_code: Optional[str] = None,
+        commands: list[BotCommand],
+        scope: BotCommandScope | None = None,
+        language_code: str | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to change the list of the bot's commands. See this manual for more
-        details about bot commands. Returns True on success.
+        Use this method to change the list of the bot's commands. See this
+        manual for more details about bot commands. Returns True on success.
         """
-        response = await self.api.request("setMyCommands", self.get_params(locals()))
-        return response
+        response = await self.api.request("setMyCommands", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def delete_my_commands(
         self,
-        scope: Optional[BotCommandScope] = None,
-        language_code: Optional[str] = None,
+        scope: BotCommandScope | None = None,
+        language_code: str | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to delete the list of the bot's commands for the given scope and
-        user language. After deletion, higher level commands will be shown to affected
-        users. Returns True on success.
+        Use this method to delete the list of the bot's commands for the given
+        scope and user language. After deletion, higher level commands will be
+        shown to affected users. Returns True on success.
         """
-        response = await self.api.request("deleteMyCommands", self.get_params(locals()))
-        return response
+        response = await self.api.request("deleteMyCommands", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def get_my_commands(
         self,
-        scope: Optional[BotCommandScope] = None,
-        language_code: Optional[str] = None,
+        scope: BotCommandScope | None = None,
+        language_code: str | None = None,
         **kwargs
-    ) -> List[BotCommand]:
+    ) -> list[BotCommand]:
         """
-        Use this method to get the current list of the bot's commands for the given scope
-        and user language. Returns an Array of BotCommand objects. If commands aren't set,
-        an empty list is returned.
+        Use this method to get the current list of the bot's commands for the
+        given scope and user language. Returns an Array of BotCommand objects.
+        If commands aren't set, an empty list is returned.
         """
-        response = await self.api.request("getMyCommands", self.get_params(locals()))
-        return parse_obj_as(List[BotCommand], response)
+        response = await self.api.request("getMyCommands", get_params(locals()))
+        return json.decode(response, type=list[BotCommand])
 
-    async def set_my_description(
-        self,
-        language_code: Optional[str] = None,
-        description: Optional[str] = None,
-        **kwargs
+    async def set_my_name(
+        self, name: str | None = None, language_code: str | None = None, **kwargs
     ) -> bool:
         """
-        Use this method to change the bot's description, which is shown in the chat with the
-        bot if the chat is empty. Returns True on success.
+        Use this method to change the bot's name. Returns True on success.
         """
-        response = await self.api.request("setMyDescription", self.get_params(locals()))
-        return response
+        response = await self.api.request("setMyName", get_params(locals()))
+        return json.decode(response, type=bool)
+
+    async def get_my_name(self, language_code: str | None = None, **kwargs) -> BotName:
+        """
+        Use this method to get the current bot name for the given user
+        language. Returns BotName on success.
+        """
+        response = await self.api.request("getMyName", get_params(locals()))
+        return json.decode(response, type=BotName)
+
+    async def set_my_description(
+        self, language_code: str | None = None, description: str | None = None, **kwargs
+    ) -> bool:
+        """
+        Use this method to change the bot's description, which is shown in the
+        chat with the bot if the chat is empty. Returns True on success.
+        """
+        response = await self.api.request("setMyDescription", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def get_my_description(
-        self, language_code: Optional[str] = None, **kwargs
+        self, language_code: str | None = None, **kwargs
     ) -> BotDescription:
         """
-        Use this method to get the current bot description for the given user language.
-        Returns BotDescription on success.
+        Use this method to get the current bot description for the given user
+        language. Returns BotDescription on success.
         """
-        response = await self.api.request("getMyDescription", self.get_params(locals()))
-        return BotDescription(**response)
+        response = await self.api.request("getMyDescription", get_params(locals()))
+        return json.decode(response, type=BotDescription)
 
     async def set_my_short_description(
         self,
-        short_description: Optional[str] = None,
-        language_code: Optional[str] = None,
+        short_description: str | None = None,
+        language_code: str | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to change the bot's short description, which is shown on the bot's
-        profile page and is sent together with the link when users share the bot. Returns
-        True on success.
+        Use this method to change the bot's short description, which is shown
+        on the bot's profile page and is sent together with the link when
+        users share the bot. Returns True on success.
         """
-        response = await self.api.request(
-            "setMyShortDescription", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("setMyShortDescription", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def get_my_short_description(
-        self, language_code: Optional[str] = None, **kwargs
+        self, language_code: str | None = None, **kwargs
     ) -> BotShortDescription:
         """
-        Use this method to get the current bot short description for the given user
-        language. Returns BotShortDescription on success.
+        Use this method to get the current bot short description for the given
+        user language. Returns BotShortDescription on success.
         """
-        response = await self.api.request(
-            "getMyShortDescription", self.get_params(locals())
-        )
-        return BotShortDescription(**response)
+        response = await self.api.request("getMyShortDescription", get_params(locals()))
+        return json.decode(response, type=BotShortDescription)
 
     async def set_chat_menu_button(
         self,
-        menu_button: Optional[MenuButton] = None,
-        chat_id: Optional[int] = None,
+        menu_button: MenuButton | None = None,
+        chat_id: int | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to change the bot's menu button in a private chat, or the default
-        menu button. Returns True on success.
+        Use this method to change the bot's menu button in a private chat, or
+        the default menu button. Returns True on success.
         """
-        response = await self.api.request(
-            "setChatMenuButton", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("setChatMenuButton", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def get_chat_menu_button(
-        self, chat_id: Optional[int] = None, **kwargs
+        self, chat_id: int | None = None, **kwargs
     ) -> MenuButton:
         """
-        Use this method to get the current value of the bot's menu button in a private chat,
-        or the default menu button. Returns MenuButton on success.
+        Use this method to get the current value of the bot's menu button in a
+        private chat, or the default menu button. Returns MenuButton on
+        success.
         """
-        response = await self.api.request(
-            "getChatMenuButton", self.get_params(locals())
+        response = await self.api.request("getChatMenuButton", get_params(locals()))
+        return json.decode(
+            response, type=MenuButtonCommands | MenuButtonWebApp | MenuButtonDefault
         )
-        return parse_obj_as(MenuButton, response)
 
     async def set_my_default_administrator_rights(
         self,
-        rights: Optional[ChatAdministratorRights] = None,
-        for_channels: Optional[bool] = None,
+        rights: ChatAdministratorRights | None = None,
+        for_channels: bool | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to change the default administrator rights requested by the bot when
-        it's added as an administrator to groups or channels. These rights will be suggested
-        to users, but they are free to modify the list before adding the bot. Returns True
-        on success.
+        Use this method to change the default administrator rights requested
+        by the bot when it's added as an administrator to groups or channels.
+        These rights will be suggested to users, but they are free to modify
+        the list before adding the bot. Returns True on success.
         """
         response = await self.api.request(
-            "setMyDefaultAdministratorRights", self.get_params(locals())
+            "setMyDefaultAdministratorRights", get_params(locals())
         )
-        return response
+        return json.decode(response, type=bool)
 
     async def get_my_default_administrator_rights(
-        self, for_channels: Optional[bool] = None, **kwargs
+        self, for_channels: bool | None = None, **kwargs
     ) -> ChatAdministratorRights:
         """
-        Use this method to get the current default administrator rights of the bot. Returns
-        ChatAdministratorRights on success.
+        Use this method to get the current default administrator rights of the
+        bot. Returns ChatAdministratorRights on success.
         """
         response = await self.api.request(
-            "getMyDefaultAdministratorRights", self.get_params(locals())
+            "getMyDefaultAdministratorRights", get_params(locals())
         )
-        return ChatAdministratorRights(**response)
+        return json.decode(response, type=ChatAdministratorRights)
 
     async def edit_message_text(
         self,
         text: str,
-        reply_markup: Optional[InlineKeyboardMarkup] = None,
-        parse_mode: Optional[str] = None,
-        message_id: Optional[int] = None,
-        inline_message_id: Optional[str] = None,
-        entities: Optional[List[MessageEntity]] = None,
-        disable_web_page_preview: Optional[bool] = None,
-        chat_id: Optional[Union[int, str]] = None,
+        reply_markup: InlineKeyboardMarkup | None = None,
+        parse_mode: str | None = None,
+        message_id: int | None = None,
+        inline_message_id: str | None = None,
+        entities: list[MessageEntity] | None = None,
+        disable_web_page_preview: bool | None = None,
+        chat_id: int | str | None = None,
         **kwargs
-    ) -> Union[Message, bool]:
+    ) -> Message | bool:
         """
-        Use this method to edit text and game messages. On success, if the edited message is
-        not an inline message, the edited Message is returned, otherwise True is returned.
+        Use this method to edit text and game messages. On success, if the
+        edited message is not an inline message, the edited Message is
+        returned, otherwise True is returned.
         """
-        response = await self.api.request("editMessageText", self.get_params(locals()))
-        return parse_obj_as(Union[Message, bool], response)
+        response = await self.api.request("editMessageText", get_params(locals()))
+        return json.decode(response, type=Message | bool)
 
     async def edit_message_caption(
         self,
-        reply_markup: Optional[InlineKeyboardMarkup] = None,
-        parse_mode: Optional[str] = None,
-        message_id: Optional[int] = None,
-        inline_message_id: Optional[str] = None,
-        chat_id: Optional[Union[int, str]] = None,
-        caption_entities: Optional[List[MessageEntity]] = None,
-        caption: Optional[str] = None,
+        reply_markup: InlineKeyboardMarkup | None = None,
+        parse_mode: str | None = None,
+        message_id: int | None = None,
+        inline_message_id: str | None = None,
+        chat_id: int | str | None = None,
+        caption_entities: list[MessageEntity] | None = None,
+        caption: str | None = None,
         **kwargs
-    ) -> Union[Message, bool]:
+    ) -> Message | bool:
         """
-        Use this method to edit captions of messages. On success, if the edited message is
-        not an inline message, the edited Message is returned, otherwise True is returned.
+        Use this method to edit captions of messages. On success, if the
+        edited message is not an inline message, the edited Message is
+        returned, otherwise True is returned.
         """
-        response = await self.api.request(
-            "editMessageCaption", self.get_params(locals())
-        )
-        return parse_obj_as(Union[Message, bool], response)
+        response = await self.api.request("editMessageCaption", get_params(locals()))
+        return json.decode(response, type=Message | bool)
 
     async def edit_message_media(
         self,
         media: InputMedia,
-        reply_markup: Optional[InlineKeyboardMarkup] = None,
-        message_id: Optional[int] = None,
-        inline_message_id: Optional[str] = None,
-        chat_id: Optional[Union[int, str]] = None,
+        reply_markup: InlineKeyboardMarkup | None = None,
+        message_id: int | None = None,
+        inline_message_id: str | None = None,
+        chat_id: int | str | None = None,
         **kwargs
-    ) -> Union[Message, bool]:
+    ) -> Message | bool:
         """
-        Use this method to edit animation, audio, document, photo, or video messages. If a
-        message is part of a message album, then it can be edited only to an audio for audio
-        albums, only to a document for document albums and to a photo or a video otherwise.
-        When an inline message is edited, a new file can't be uploaded; use a previously
-        uploaded file via its file_id or specify a URL. On success, if the edited message is
-        not an inline message, the edited Message is returned, otherwise True is returned.
+        Use this method to edit animation, audio, document, photo, or video
+        messages. If a message is part of a message album, then it can be
+        edited only to an audio for audio albums, only to a document for
+        document albums and to a photo or a video otherwise. When an inline
+        message is edited, a new file can't be uploaded; use a previously
+        uploaded file via its file_id or specify a URL. On success, if the
+        edited message is not an inline message, the edited Message is
+        returned, otherwise True is returned.
         """
-        response = await self.api.request("editMessageMedia", self.get_params(locals()))
-        return parse_obj_as(Union[Message, bool], response)
+        response = await self.api.request("editMessageMedia", get_params(locals()))
+        return json.decode(response, type=Message | bool)
 
     async def edit_message_live_location(
         self,
         longitude: float,
         latitude: float,
-        reply_markup: Optional[InlineKeyboardMarkup] = None,
-        proximity_alert_radius: Optional[int] = None,
-        message_id: Optional[int] = None,
-        inline_message_id: Optional[str] = None,
-        horizontal_accuracy: Optional[float] = None,
-        heading: Optional[int] = None,
-        chat_id: Optional[Union[int, str]] = None,
+        reply_markup: InlineKeyboardMarkup | None = None,
+        proximity_alert_radius: int | None = None,
+        message_id: int | None = None,
+        inline_message_id: str | None = None,
+        horizontal_accuracy: float | None = None,
+        heading: int | None = None,
+        chat_id: int | str | None = None,
         **kwargs
-    ) -> Union[Message, bool]:
+    ) -> Message | bool:
         """
-        Use this method to edit live location messages. A location can be edited until its
-        live_period expires or editing is explicitly disabled by a call to
-        stopMessageLiveLocation. On success, if the edited message is not an inline message,
-        the edited Message is returned, otherwise True is returned.
-        """
-        response = await self.api.request(
-            "editMessageLiveLocation", self.get_params(locals())
-        )
-        return parse_obj_as(Union[Message, bool], response)
-
-    async def stop_message_live_location(
-        self,
-        reply_markup: Optional[InlineKeyboardMarkup] = None,
-        message_id: Optional[int] = None,
-        inline_message_id: Optional[str] = None,
-        chat_id: Optional[Union[int, str]] = None,
-        **kwargs
-    ) -> Union[Message, bool]:
-        """
-        Use this method to stop updating a live location message before live_period expires.
-        On success, if the message is not an inline message, the edited Message is returned,
+        Use this method to edit live location messages. A location can be
+        edited until its live_period expires or editing is explicitly disabled
+        by a call to stopMessageLiveLocation. On success, if the edited
+        message is not an inline message, the edited Message is returned,
         otherwise True is returned.
         """
         response = await self.api.request(
-            "stopMessageLiveLocation", self.get_params(locals())
+            "editMessageLiveLocation", get_params(locals())
         )
-        return parse_obj_as(Union[Message, bool], response)
+        return json.decode(response, type=Message | bool)
+
+    async def stop_message_live_location(
+        self,
+        reply_markup: InlineKeyboardMarkup | None = None,
+        message_id: int | None = None,
+        inline_message_id: str | None = None,
+        chat_id: int | str | None = None,
+        **kwargs
+    ) -> Message | bool:
+        """
+        Use this method to stop updating a live location message before
+        live_period expires. On success, if the message is not an inline
+        message, the edited Message is returned, otherwise True is returned.
+        """
+        response = await self.api.request(
+            "stopMessageLiveLocation", get_params(locals())
+        )
+        return json.decode(response, type=Message | bool)
 
     async def edit_message_reply_markup(
         self,
-        reply_markup: Optional[InlineKeyboardMarkup] = None,
-        message_id: Optional[int] = None,
-        inline_message_id: Optional[str] = None,
-        chat_id: Optional[Union[int, str]] = None,
+        reply_markup: InlineKeyboardMarkup | None = None,
+        message_id: int | None = None,
+        inline_message_id: str | None = None,
+        chat_id: int | str | None = None,
         **kwargs
-    ) -> Union[Message, bool]:
+    ) -> Message | bool:
         """
-        Use this method to edit only the reply markup of messages. On success, if the edited
-        message is not an inline message, the edited Message is returned, otherwise True is
-        returned.
+        Use this method to edit only the reply markup of messages. On success,
+        if the edited message is not an inline message, the edited Message is
+        returned, otherwise True is returned.
         """
         response = await self.api.request(
-            "editMessageReplyMarkup", self.get_params(locals())
+            "editMessageReplyMarkup", get_params(locals())
         )
-        return parse_obj_as(Union[Message, bool], response)
+        return json.decode(response, type=Message | bool)
 
     async def stop_poll(
         self,
         message_id: int,
-        chat_id: Union[int, str],
-        reply_markup: Optional[InlineKeyboardMarkup] = None,
+        chat_id: int | str,
+        reply_markup: InlineKeyboardMarkup | None = None,
         **kwargs
     ) -> Poll:
         """
-        Use this method to stop a poll which was sent by the bot. On success, the stopped
-        Poll is returned.
+        Use this method to stop a poll which was sent by the bot. On success,
+        the stopped Poll is returned.
         """
-        response = await self.api.request("stopPoll", self.get_params(locals()))
-        return Poll(**response)
+        response = await self.api.request("stopPoll", get_params(locals()))
+        return json.decode(response, type=Poll)
 
     async def delete_message(
-        self, message_id: int, chat_id: Union[int, str], **kwargs
+        self, message_id: int, chat_id: int | str, **kwargs
     ) -> bool:
         """
-        Use this method to delete a message, including service messages, with the following
-        limitations: - A message can only be deleted if it was sent less than 48 hours ago.
-        - Service messages about a supergroup, channel, or forum topic creation can't be
-        deleted. - A dice message in a private chat can only be deleted if it was sent more
-        than 24 hours ago. - Bots can delete outgoing messages in private chats, groups, and
-        supergroups. - Bots can delete incoming messages in private chats. - Bots granted
-        can_post_messages permissions can delete outgoing messages in channels. - If the bot
-        is an administrator of a group, it can delete any message there. - If the bot has
-        can_delete_messages permission in a supergroup or a channel, it can delete any
-        message there. Returns True on success.
+        Use this method to delete a message, including service messages, with
+        the following limitations: - A message can only be deleted if it was
+        sent less than 48 hours ago. - Service messages about a supergroup,
+        channel, or forum topic creation can't be deleted. - A dice message in
+        a private chat can only be deleted if it was sent more than 24 hours
+        ago. - Bots can delete outgoing messages in private chats, groups, and
+        supergroups. - Bots can delete incoming messages in private chats. -
+        Bots granted can_post_messages permissions can delete outgoing
+        messages in channels. - If the bot is an administrator of a group, it
+        can delete any message there. - If the bot has can_delete_messages
+        permission in a supergroup or a channel, it can delete any message
+        there. Returns True on success.
         """
-        response = await self.api.request("deleteMessage", self.get_params(locals()))
-        return response
+        response = await self.api.request("deleteMessage", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def send_sticker(
         self,
-        sticker: Union[InputFile, str],
-        chat_id: Union[int, str],
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[
-            Union[
-                InlineKeyboardMarkup,
-                ReplyKeyboardMarkup,
-                ReplyKeyboardRemove,
-                ForceReply,
-            ]
-        ] = None,
-        protect_content: Optional[bool] = None,
-        message_thread_id: Optional[int] = None,
-        emoji: Optional[str] = None,
-        disable_notification: Optional[bool] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        sticker: InputFile | str,
+        chat_id: int | str,
+        reply_to_message_id: int | None = None,
+        reply_markup: InlineKeyboardMarkup
+        | ReplyKeyboardMarkup
+        | ReplyKeyboardRemove
+        | ForceReply
+        | None = None,
+        protect_content: bool | None = None,
+        message_thread_id: int | None = None,
+        emoji: str | None = None,
+        disable_notification: bool | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
     ) -> Message:
         """
-        Use this method to send static .WEBP, animated .TGS, or video .WEBM stickers. On
-        success, the sent Message is returned.
+        Use this method to send static .WEBP, animated .TGS, or video .WEBM
+        stickers. On success, the sent Message is returned.
         """
-        response = await self.api.request("sendSticker", self.get_params(locals()))
-        return Message(**response)
+        response = await self.api.request("sendSticker", get_params(locals()))
+        return json.decode(response, type=Message)
 
     async def get_sticker_set(self, name: str, **kwargs) -> StickerSet:
         """
-        Use this method to get a sticker set. On success, a StickerSet object is returned.
+        Use this method to get a sticker set. On success, a StickerSet object
+        is returned.
         """
-        response = await self.api.request("getStickerSet", self.get_params(locals()))
-        return StickerSet(**response)
+        response = await self.api.request("getStickerSet", get_params(locals()))
+        return json.decode(response, type=StickerSet)
 
     async def get_custom_emoji_stickers(
-        self, custom_emoji_ids: List[str], **kwargs
-    ) -> List[Sticker]:
+        self, custom_emoji_ids: list[str], **kwargs
+    ) -> list[Sticker]:
         """
-        Use this method to get information about custom emoji stickers by their identifiers.
-        Returns an Array of Sticker objects.
+        Use this method to get information about custom emoji stickers by
+        their identifiers. Returns an Array of Sticker objects.
         """
         response = await self.api.request(
-            "getCustomEmojiStickers", self.get_params(locals())
+            "getCustomEmojiStickers", get_params(locals())
         )
-        return parse_obj_as(List[Sticker], response)
+        return json.decode(response, type=list[Sticker])
 
     async def upload_sticker_file(
         self, user_id: int, sticker_format: str, sticker: InputFile, **kwargs
     ) -> File:
         """
         Use this method to upload a file with a sticker for later use in the
-        createNewStickerSet and addStickerToSet methods (the file can be used multiple
-        times). Returns the uploaded File on success.
+        createNewStickerSet and addStickerToSet methods (the file can be used
+        multiple times). Returns the uploaded File on success.
         """
-        response = await self.api.request(
-            "uploadStickerFile", self.get_params(locals())
-        )
-        return File(**response)
+        response = await self.api.request("uploadStickerFile", get_params(locals()))
+        return json.decode(response, type=File)
 
     async def create_new_sticker_set(
         self,
         user_id: int,
         title: str,
-        stickers: List[InputSticker],
+        stickers: list[InputSticker],
         sticker_format: str,
         name: str,
-        sticker_type: Optional[str] = None,
-        needs_repainting: Optional[bool] = None,
+        sticker_type: str | None = None,
+        needs_repainting: bool | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to create a new sticker set owned by a user. The bot will be able to
-        edit the sticker set thus created. Returns True on success.
+        Use this method to create a new sticker set owned by a user. The bot
+        will be able to edit the sticker set thus created. Returns True on
+        success.
         """
-        response = await self.api.request(
-            "createNewStickerSet", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("createNewStickerSet", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def add_sticker_to_set(
         self, user_id: int, sticker: InputSticker, name: str, **kwargs
     ) -> bool:
         """
-        Use this method to add a new sticker to a set created by the bot. The format of the
-        added sticker must match the format of the other stickers in the set. Emoji sticker
-        sets can have up to 200 stickers. Animated and video sticker sets can have up to 50
-        stickers. Static sticker sets can have up to 120 stickers. Returns True on success.
+        Use this method to add a new sticker to a set created by the bot. The
+        format of the added sticker must match the format of the other
+        stickers in the set. Emoji sticker sets can have up to 200 stickers.
+        Animated and video sticker sets can have up to 50 stickers. Static
+        sticker sets can have up to 120 stickers. Returns True on success.
         """
-        response = await self.api.request("addStickerToSet", self.get_params(locals()))
-        return response
+        response = await self.api.request("addStickerToSet", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def set_sticker_position_in_set(
         self, sticker: str, position: int, **kwargs
     ) -> bool:
         """
-        Use this method to move a sticker in a set created by the bot to a specific
-        position. Returns True on success.
+        Use this method to move a sticker in a set created by the bot to a
+        specific position. Returns True on success.
         """
         response = await self.api.request(
-            "setStickerPositionInSet", self.get_params(locals())
+            "setStickerPositionInSet", get_params(locals())
         )
-        return response
+        return json.decode(response, type=bool)
 
     async def delete_sticker_from_set(self, sticker: str, **kwargs) -> bool:
         """
-        Use this method to delete a sticker from a set created by the bot. Returns True on
-        success.
+        Use this method to delete a sticker from a set created by the bot.
+        Returns True on success.
         """
-        response = await self.api.request(
-            "deleteStickerFromSet", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("deleteStickerFromSet", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def set_sticker_emoji_list(
-        self, sticker: str, emoji_list: List[str], **kwargs
+        self, sticker: str, emoji_list: list[str], **kwargs
     ) -> bool:
         """
-        Use this method to change the list of emoji assigned to a regular or custom emoji
-        sticker. The sticker must belong to a sticker set created by the bot. Returns True
-        on success.
+        Use this method to change the list of emoji assigned to a regular or
+        custom emoji sticker. The sticker must belong to a sticker set created
+        by the bot. Returns True on success.
         """
-        response = await self.api.request(
-            "setStickerEmojiList", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("setStickerEmojiList", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def set_sticker_keywords(
-        self, sticker: str, keywords: Optional[List[str]] = None, **kwargs
+        self, sticker: str, keywords: list[str] | None = None, **kwargs
     ) -> bool:
         """
-        Use this method to change search keywords assigned to a regular or custom emoji
-        sticker. The sticker must belong to a sticker set created by the bot. Returns True
-        on success.
+        Use this method to change search keywords assigned to a regular or
+        custom emoji sticker. The sticker must belong to a sticker set created
+        by the bot. Returns True on success.
         """
-        response = await self.api.request(
-            "setStickerKeywords", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("setStickerKeywords", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def set_sticker_mask_position(
-        self, sticker: str, mask_position: Optional[MaskPosition] = None, **kwargs
+        self, sticker: str, mask_position: MaskPosition | None = None, **kwargs
     ) -> bool:
         """
-        Use this method to change the mask position of a mask sticker. The sticker must
-        belong to a sticker set that was created by the bot. Returns True on success.
+        Use this method to change the mask position of a mask sticker. The
+        sticker must belong to a sticker set that was created by the bot.
+        Returns True on success.
         """
         response = await self.api.request(
-            "setStickerMaskPosition", self.get_params(locals())
+            "setStickerMaskPosition", get_params(locals())
         )
-        return response
+        return json.decode(response, type=bool)
 
     async def set_sticker_set_title(self, title: str, name: str, **kwargs) -> bool:
         """
-        Use this method to set the title of a created sticker set. Returns True on success.
+        Use this method to set the title of a created sticker set. Returns
+        True on success.
         """
-        response = await self.api.request(
-            "setStickerSetTitle", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("setStickerSetTitle", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def set_sticker_set_thumbnail(
         self,
         user_id: int,
         name: str,
-        thumbnail: Optional[Union[InputFile, str]] = None,
+        thumbnail: InputFile | str | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to set the thumbnail of a regular or mask sticker set. The format of
-        the thumbnail file must match the format of the stickers in the set. Returns True on
-        success.
+        Use this method to set the thumbnail of a regular or mask sticker set.
+        The format of the thumbnail file must match the format of the stickers
+        in the set. Returns True on success.
         """
         response = await self.api.request(
-            "setStickerSetThumbnail", self.get_params(locals())
+            "setStickerSetThumbnail", get_params(locals())
         )
-        return response
+        return json.decode(response, type=bool)
 
     async def set_custom_emoji_sticker_set_thumbnail(
-        self, name: str, custom_emoji_id: Optional[str] = None, **kwargs
+        self, name: str, custom_emoji_id: str | None = None, **kwargs
     ) -> bool:
         """
-        Use this method to set the thumbnail of a custom emoji sticker set. Returns True on
-        success.
+        Use this method to set the thumbnail of a custom emoji sticker set.
+        Returns True on success.
         """
         response = await self.api.request(
-            "setCustomEmojiStickerSetThumbnail", self.get_params(locals())
+            "setCustomEmojiStickerSetThumbnail", get_params(locals())
         )
-        return response
+        return json.decode(response, type=bool)
 
     async def delete_sticker_set(self, name: str, **kwargs) -> bool:
         """
-        Use this method to delete a sticker set that was created by the bot. Returns True on
-        success.
+        Use this method to delete a sticker set that was created by the bot.
+        Returns True on success.
         """
-        response = await self.api.request("deleteStickerSet", self.get_params(locals()))
-        return response
+        response = await self.api.request("deleteStickerSet", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def answer_inline_query(
         self,
-        results: List[InlineQueryResult],
+        results: list[InlineQueryResult],
         inline_query_id: str,
-        switch_pm_text: Optional[str] = None,
-        switch_pm_parameter: Optional[str] = None,
-        next_offset: Optional[str] = None,
-        is_personal: Optional[bool] = None,
-        cache_time: Optional[int] = None,
+        next_offset: str | None = None,
+        is_personal: bool | None = None,
+        cache_time: int | None = None,
+        button: InlineQueryResultsButton | None = None,
         **kwargs
     ) -> bool:
         """
-        Use this method to send answers to an inline query. On success, True is returned. No
-        more than 50 results per query are allowed.
+        Use this method to send answers to an inline query. On success, True
+        is returned. No more than 50 results per query are allowed.
         """
-        response = await self.api.request(
-            "answerInlineQuery", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("answerInlineQuery", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def answer_web_app_query(
         self, web_app_query_id: str, result: InlineQueryResult, **kwargs
     ) -> SentWebAppMessage:
         """
-        Use this method to set the result of an interaction with a Web App and send a
-        corresponding message on behalf of the user to the chat from which the query
-        originated. On success, a SentWebAppMessage object is returned.
+        Use this method to set the result of an interaction with a Web App and
+        send a corresponding message on behalf of the user to the chat from
+        which the query originated. On success, a SentWebAppMessage object is
+        returned.
         """
-        response = await self.api.request(
-            "answerWebAppQuery", self.get_params(locals())
-        )
-        return SentWebAppMessage(**response)
+        response = await self.api.request("answerWebAppQuery", get_params(locals()))
+        return json.decode(response, type=SentWebAppMessage)
 
     async def send_invoice(
         self,
         title: str,
         provider_token: str,
-        prices: List[LabeledPrice],
+        prices: list[LabeledPrice],
         payload: str,
         description: str,
         currency: str,
-        chat_id: Union[int, str],
-        suggested_tip_amounts: Optional[List[int]] = None,
-        start_parameter: Optional[str] = None,
-        send_phone_number_to_provider: Optional[bool] = None,
-        send_email_to_provider: Optional[bool] = None,
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[InlineKeyboardMarkup] = None,
-        provider_data: Optional[str] = None,
-        protect_content: Optional[bool] = None,
-        photo_width: Optional[int] = None,
-        photo_url: Optional[str] = None,
-        photo_size: Optional[int] = None,
-        photo_height: Optional[int] = None,
-        need_shipping_address: Optional[bool] = None,
-        need_phone_number: Optional[bool] = None,
-        need_name: Optional[bool] = None,
-        need_email: Optional[bool] = None,
-        message_thread_id: Optional[int] = None,
-        max_tip_amount: Optional[int] = None,
-        is_flexible: Optional[bool] = None,
-        disable_notification: Optional[bool] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        chat_id: int | str,
+        suggested_tip_amounts: list[int] | None = None,
+        start_parameter: str | None = None,
+        send_phone_number_to_provider: bool | None = None,
+        send_email_to_provider: bool | None = None,
+        reply_to_message_id: int | None = None,
+        reply_markup: InlineKeyboardMarkup | None = None,
+        provider_data: str | None = None,
+        protect_content: bool | None = None,
+        photo_width: int | None = None,
+        photo_url: str | None = None,
+        photo_size: int | None = None,
+        photo_height: int | None = None,
+        need_shipping_address: bool | None = None,
+        need_phone_number: bool | None = None,
+        need_name: bool | None = None,
+        need_email: bool | None = None,
+        message_thread_id: int | None = None,
+        max_tip_amount: int | None = None,
+        is_flexible: bool | None = None,
+        disable_notification: bool | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
     ) -> Message:
         """
-        Use this method to send invoices. On success, the sent Message is returned.
+        Use this method to send invoices. On success, the sent Message is
+        returned.
         """
-        response = await self.api.request("sendInvoice", self.get_params(locals()))
-        return Message(**response)
+        response = await self.api.request("sendInvoice", get_params(locals()))
+        return json.decode(response, type=Message)
 
     async def create_invoice_link(
         self,
         title: str,
         provider_token: str,
-        prices: List[LabeledPrice],
+        prices: list[LabeledPrice],
         payload: str,
         description: str,
         currency: str,
-        suggested_tip_amounts: Optional[List[int]] = None,
-        send_phone_number_to_provider: Optional[bool] = None,
-        send_email_to_provider: Optional[bool] = None,
-        provider_data: Optional[str] = None,
-        photo_width: Optional[int] = None,
-        photo_url: Optional[str] = None,
-        photo_size: Optional[int] = None,
-        photo_height: Optional[int] = None,
-        need_shipping_address: Optional[bool] = None,
-        need_phone_number: Optional[bool] = None,
-        need_name: Optional[bool] = None,
-        need_email: Optional[bool] = None,
-        max_tip_amount: Optional[int] = None,
-        is_flexible: Optional[bool] = None,
+        suggested_tip_amounts: list[int] | None = None,
+        send_phone_number_to_provider: bool | None = None,
+        send_email_to_provider: bool | None = None,
+        provider_data: str | None = None,
+        photo_width: int | None = None,
+        photo_url: str | None = None,
+        photo_size: int | None = None,
+        photo_height: int | None = None,
+        need_shipping_address: bool | None = None,
+        need_phone_number: bool | None = None,
+        need_name: bool | None = None,
+        need_email: bool | None = None,
+        max_tip_amount: int | None = None,
+        is_flexible: bool | None = None,
         **kwargs
     ) -> str:
         """
-        Use this method to create a link for an invoice. Returns the created invoice link as
-        String on success.
+        Use this method to create a link for an invoice. Returns the created
+        invoice link as String on success.
         """
-        response = await self.api.request(
-            "createInvoiceLink", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("createInvoiceLink", get_params(locals()))
+        return json.decode(response, type=str)
 
     async def answer_shipping_query(
         self,
         shipping_query_id: str,
         ok: bool,
-        shipping_options: Optional[List[ShippingOption]] = None,
-        error_message: Optional[str] = None,
+        shipping_options: list[ShippingOption] | None = None,
+        error_message: str | None = None,
         **kwargs
     ) -> bool:
         """
-        If you sent an invoice requesting a shipping address and the parameter is_flexible
-        was specified, the Bot API will send an Update with a shipping_query field to the
-        bot. Use this method to reply to shipping queries. On success, True is returned.
+        If you sent an invoice requesting a shipping address and the parameter
+        is_flexible was specified, the Bot API will send an Update with a
+        shipping_query field to the bot. Use this method to reply to shipping
+        queries. On success, True is returned.
         """
-        response = await self.api.request(
-            "answerShippingQuery", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("answerShippingQuery", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def answer_pre_checkout_query(
         self,
         pre_checkout_query_id: str,
         ok: bool,
-        error_message: Optional[str] = None,
+        error_message: str | None = None,
         **kwargs
     ) -> bool:
         """
-        Once the user has confirmed their payment and shipping details, the Bot API sends
-        the final confirmation in the form of an Update with the field pre_checkout_query.
-        Use this method to respond to such pre-checkout queries. On success, True is
-        returned. Note: The Bot API must receive an answer within 10 seconds after the pre-
-        checkout query was sent.
+        Once the user has confirmed their payment and shipping details, the
+        Bot API sends the final confirmation in the form of an Update with the
+        field pre_checkout_query. Use this method to respond to such pre-
+        checkout queries. On success, True is returned. Note: The Bot API must
+        receive an answer within 10 seconds after the pre-checkout query was
+        sent.
         """
         response = await self.api.request(
-            "answerPreCheckoutQuery", self.get_params(locals())
+            "answerPreCheckoutQuery", get_params(locals())
         )
-        return response
+        return json.decode(response, type=bool)
 
     async def set_passport_data_errors(
-        self, user_id: int, errors: List[PassportElementError], **kwargs
+        self, user_id: int, errors: list[PassportElementError], **kwargs
     ) -> bool:
         """
-        Informs a user that some of the Telegram Passport elements they provided contains
-        errors. The user will not be able to re-submit their Passport to you until the
-        errors are fixed (the contents of the field for which you returned the error must
-        change). Returns True on success. Use this if the data submitted by the user doesn't
-        satisfy the standards your service requires for any reason. For example, if a
-        birthday date seems invalid, a submitted document is blurry, a scan shows evidence
-        of tampering, etc. Supply some details in the error message to make sure the user
-        knows how to correct the issues.
+        Informs a user that some of the Telegram Passport elements they
+        provided contains errors. The user will not be able to re-submit their
+        Passport to you until the errors are fixed (the contents of the field
+        for which you returned the error must change). Returns True on
+        success. Use this if the data submitted by the user doesn't satisfy
+        the standards your service requires for any reason. For example, if a
+        birthday date seems invalid, a submitted document is blurry, a scan
+        shows evidence of tampering, etc. Supply some details in the error
+        message to make sure the user knows how to correct the issues.
         """
-        response = await self.api.request(
-            "setPassportDataErrors", self.get_params(locals())
-        )
-        return response
+        response = await self.api.request("setPassportDataErrors", get_params(locals()))
+        return json.decode(response, type=bool)
 
     async def send_game(
         self,
         game_short_name: str,
         chat_id: int,
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[InlineKeyboardMarkup] = None,
-        protect_content: Optional[bool] = None,
-        message_thread_id: Optional[int] = None,
-        disable_notification: Optional[bool] = None,
-        allow_sending_without_reply: Optional[bool] = None,
+        reply_to_message_id: int | None = None,
+        reply_markup: InlineKeyboardMarkup | None = None,
+        protect_content: bool | None = None,
+        message_thread_id: int | None = None,
+        disable_notification: bool | None = None,
+        allow_sending_without_reply: bool | None = None,
         **kwargs
     ) -> Message:
         """
-        Use this method to send a game. On success, the sent Message is returned.
+        Use this method to send a game. On success, the sent Message is
+        returned.
         """
-        response = await self.api.request("sendGame", self.get_params(locals()))
-        return Message(**response)
+        response = await self.api.request("sendGame", get_params(locals()))
+        return json.decode(response, type=Message)
 
     async def set_game_score(
         self,
         user_id: int,
         score: int,
-        message_id: Optional[int] = None,
-        inline_message_id: Optional[str] = None,
-        force: Optional[bool] = None,
-        disable_edit_message: Optional[bool] = None,
-        chat_id: Optional[int] = None,
+        message_id: int | None = None,
+        inline_message_id: str | None = None,
+        force: bool | None = None,
+        disable_edit_message: bool | None = None,
+        chat_id: int | None = None,
         **kwargs
-    ) -> Union[Message, bool]:
+    ) -> Message | bool:
         """
-        Use this method to set the score of the specified user in a game message. On
-        success, if the message is not an inline message, the Message is returned, otherwise
-        True is returned. Returns an error, if the new score is not greater than the user's
-        current score in the chat and force is False.
+        Use this method to set the score of the specified user in a game
+        message. On success, if the message is not an inline message, the
+        Message is returned, otherwise True is returned. Returns an error, if
+        the new score is not greater than the user's current score in the chat
+        and force is False.
         """
-        response = await self.api.request("setGameScore", self.get_params(locals()))
-        return parse_obj_as(Union[Message, bool], response)
+        response = await self.api.request("setGameScore", get_params(locals()))
+        return json.decode(response, type=Message | bool)
 
     async def get_game_high_scores(
         self,
         user_id: int,
-        message_id: Optional[int] = None,
-        inline_message_id: Optional[str] = None,
-        chat_id: Optional[int] = None,
+        message_id: int | None = None,
+        inline_message_id: str | None = None,
+        chat_id: int | None = None,
         **kwargs
-    ) -> List[GameHighScore]:
+    ) -> list[GameHighScore]:
         """
-        Use this method to get data for high score tables. Will return the score of the
-        specified user and several of their neighbors in a game. Returns an Array of
-        GameHighScore objects. This method will currently return scores for the target user,
-        plus two of their closest neighbors on each side. Will also return the top three
-        users if the user and their neighbors are not among them. Please note that this
-        behavior is subject to change.
+        Use this method to get data for high score tables. Will return the
+        score of the specified user and several of their neighbors in a game.
+        Returns an Array of GameHighScore objects. This method will currently
+        return scores for the target user, plus two of their closest neighbors
+        on each side. Will also return the top three users if the user and
+        their neighbors are not among them. Please note that this behavior is
+        subject to change.
         """
-        response = await self.api.request(
-            "getGameHighScores", self.get_params(locals())
-        )
-        return parse_obj_as(List[GameHighScore], response)
+        response = await self.api.request("getGameHighScores", get_params(locals()))
+        return json.decode(response, type=list[GameHighScore])
