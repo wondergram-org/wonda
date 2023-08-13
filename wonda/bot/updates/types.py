@@ -18,6 +18,7 @@ from wonda.types.objects import (
     PreCheckoutQuery,
     ReplyKeyboardMarkup,
     ReplyKeyboardRemove,
+    ShippingOption,
     ShippingQuery,
 )
 
@@ -59,7 +60,7 @@ class MessageUpdate(BaseUpdate, Message):
     ) -> Message:
         params = get_params(locals())
 
-        if "message_thread_id" not in params and self.is_topic_message:
+        if self.is_topic_message and "message_thread_id" not in params:
             params["message_thread_id"] = self.message_thread_id
 
         return await self.ctx_api.send_message(chat_id=self.chat.id, **params)
@@ -83,7 +84,7 @@ class MessageUpdate(BaseUpdate, Message):
     ) -> Message:
         params = get_params(locals())
 
-        if "message_thread_id" not in params and self.is_topic_message:
+        if self.is_topic_message and "message_thread_id" not in params:
             params["message_thread_id"] = self.message_thread_id
 
         return await self.ctx_api.send_message(
@@ -98,7 +99,6 @@ class MessageUpdate(BaseUpdate, Message):
         **kwargs,
     ) -> Message:
         params = get_params(locals())
-
         return await self.ctx_api.forward_message(
             from_chat_id=self.chat.id, message_id=self.message_id, **params
         )
@@ -113,9 +113,8 @@ class CallbackQueryUpdate(BaseUpdate, CallbackQuery):
         cache_time: int | None = None,
         **kwargs,
     ) -> bool:
-        params = get_params(locals())
         return await self.ctx_api.answer_callback_query(
-            callback_query_id=self.id, **params
+            callback_query_id=self.id, **get_params(locals())
         )
 
 
@@ -130,21 +129,42 @@ class InlineQueryUpdate(BaseUpdate, InlineQuery):
         cache_time: int | None = None,
         **kwargs,
     ) -> bool:
-        params = get_params(locals())
-        return await self.ctx_api.answer_inline_query(inline_query_id=self.id, **params)
+        return await self.ctx_api.answer_inline_query(
+            inline_query_id=self.id, **get_params(locals())
+        )
 
 
 class ChatJoinRequestUpdate(BaseUpdate, ChatJoinRequest):
     async def approve(self, **kwargs) -> bool:
-        params = get_params(locals())
         return await self.ctx_api.approve_chat_join_request(
-            chat_id=self.chat.id, user_id=self.from_.id, **params
+            chat_id=self.chat.id, user_id=self.from_.id, **get_params(locals())
         )
 
     async def decline(self, **kwargs) -> bool:
-        params = get_params(locals())
         return await self.ctx_api.decline_chat_join_request(
-            chat_id=self.chat.id, user_id=self.from_.id, **params
+            chat_id=self.chat.id, user_id=self.from_.id, **get_params(locals())
+        )
+
+
+class PreCheckoutQueryUpdate(BaseUpdate, PreCheckoutQuery):
+    async def answer(
+        self, ok: bool, error_message: str | None = None, **kwargs
+    ) -> bool:
+        return await self.ctx_api.answer_pre_checkout_query(
+            pre_checkout_query_id=self.id, **get_params(locals())
+        )
+
+
+class ShippingQueryUpdate(BaseUpdate, ShippingQuery):
+    async def answer(
+        self,
+        ok: bool,
+        shipping_options: list[ShippingOption] | None = None,
+        error_message: str | None = None,
+        **kwargs,
+    ) -> bool:
+        return await self.ctx_api.answer_shipping_query(
+            shipping_query_id=self.id, **get_params(locals())
         )
 
 
@@ -153,14 +173,6 @@ class ChatMemberUpdate(BaseUpdate, ChatMemberUpdated):
 
 
 class ChosenInlineResultUpdate(BaseUpdate, ChosenInlineResult):
-    pass
-
-
-class PreCheckoutQueryUpdate(BaseUpdate, PreCheckoutQuery):
-    pass
-
-
-class ShippingQueryUpdate(BaseUpdate, ShippingQuery):
     pass
 
 
