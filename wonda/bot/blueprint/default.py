@@ -9,10 +9,10 @@ class DefaultBlueprint(ABCBlueprint):
         self.dispatcher = dispatcher or DefaultDispatcher()
 
     def load_into(self, framework: Any) -> "DefaultBlueprint":
-        framework.dispatcher.load(self.dispatcher)
-
         self.state_dispenser = framework.state_dispenser
         self.api = framework.api
+
+        framework.dispatcher.load(self.dispatcher)
         return self
 
     @property

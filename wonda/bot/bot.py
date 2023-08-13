@@ -7,6 +7,7 @@ from wonda.bot.dispatch import (
     ABCRouter,
     DefaultDispatcher,
     DefaultRouter,
+    get_used_update_types,
 )
 from wonda.bot.polling import ABCPoller, DefaultPoller
 from wonda.bot.states import ABCStateDispenser, DefaultStateDispenser
@@ -40,13 +41,17 @@ class Bot(ABCFramework):
         )
         self.loop = loop or get_event_loop()
 
-    async def run_polling(self, drop_updates: bool = False) -> None:
+    async def run_polling(self, *, drop_updates: bool = False) -> None:
         if drop_updates is True:
             await self.api.request("deleteWebhook", {"drop_pending_updates": True})
+
+        self.poller.offset, self.poller.allowed_updates = 0, get_used_update_types(  # type: ignore
+            self.dispatcher
+        )
 
         async for update in self.poller.poll():
             await self.router.route(update, self.api)
 
-    def run_forever(self, drop_updates: bool = False) -> None:
+    def run_forever(self, *, drop_updates: bool = False) -> None:
         self.loop_wrapper.add_task(self.run_polling(drop_updates=drop_updates))
         self.loop_wrapper.run_forever(self.loop)
