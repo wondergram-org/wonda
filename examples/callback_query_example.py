@@ -11,37 +11,40 @@ INLINE_KEYBOARD = (
     InlineKeyboardBuilder()
     .add(Callback("🍎 Apple", "apple"))
     .add(Callback("🍊 Orange", "orange"))
+    .add(Callback("🍌 Banana", "banana"))
     .row()
-    .add(Callback("I don't want to choose", "stop"))
+    .add(Callback("Won't choose", "stop"))
     .build()
 )
 
 
 @bot.on.message(Command("fruits"))
-async def start_handler(msg: Message) -> None:
+async def start_handler(m: Message) -> None:
     # This is a handler that sends a simple inline keyboard
     # containing three buttons with their respective callback data.
-    await msg.answer(
+    await m.answer(
         "Pick any of these fruits on the keyboard!",
         reply_markup=INLINE_KEYBOARD,
     )
 
 
-@bot.on.callback_query(Text(["apple", "orange"]))
-async def fruit_handler(upd: CallbackQuery) -> None:
+@bot.on.callback_query(Text(["apple", "orange", "banana"]))
+async def fruit_handler(cq: CallbackQuery) -> None:
+    fruit = cq.data.capitalize()
+
     # Answer a callback query using <.answer()> method.
     # To display an alert, pass `show_alert` param.
-    await upd.answer(
-        "You chose a fruit! Fruits are healthy and delicious 🍋", show_alert=True
+    await cq.answer(
+        f"You chose a fruit! {fruit}s are healthy and delicious 😌", show_alert=True
     )
 
 
 @bot.on.callback_query(Text("stop"))
-async def shoe_handler(upd: CallbackQuery) -> None:
-    await upd.ctx_api.edit_message_text(
+async def stop_handler(cq: CallbackQuery) -> None:
+    await cq.ctx_api.edit_message_text(
         "That's ok. Some choices are just too hard to make.",
-        message_id=upd.message.message_id,
-        chat_id=upd.message.chat.id,
+        message_id=cq.message.message_id,
+        chat_id=cq.message.chat.id,
     )
 
 

@@ -12,9 +12,9 @@ bot = Bot(Token.from_env())
 
 # Define a custom rule which implements asynchronous check method.
 class HasPhoto(ABCRule[Message]):
-    async def check(self, msg: Message, _) -> bool:
+    async def check(self, m: Message, _) -> bool:
         # Check if the message has a photo.
-        return bool(msg.photo)
+        return bool(m.photo)
 
 
 @bot.on.message(
@@ -25,9 +25,9 @@ class HasPhoto(ABCRule[Message]):
     # and this rule is not
     ~From("durov"),
 )
-async def advanced_handler(msg: Message) -> None:
+async def advanced_handler(m: Message) -> None:
     # ..then the message will be handled successfully.
-    await msg.answer("You've made it here! Congratulations!")
+    await m.answer("You've made it here! Congratulations!")
 
 
 # Run the bot. This function uses `.run_polling()` under the hood to start receiving updates.

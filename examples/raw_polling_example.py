@@ -1,13 +1,15 @@
 from asyncio import run
 
-from wonda import API, DefaultPoller, Token
+from wonda import API, Poller, Token
 from wonda.modules import logger
 
-polling = DefaultPoller(API(Token.from_env()))
+api = API(Token.from_env())
 
 
 async def main():
-    async for update in polling.listen():
+    poller = Poller(api)
+
+    async for update in poller.poll():
         await logger.debug("Handling", update=update)
 
 

@@ -1,6 +1,5 @@
 from wonda import Bot, TelegramAPIError, Token
-from wonda.bot.rules import Fuzzy, IsPrivate, Text
-from wonda.bot.rules.message import WasEdited
+from wonda.bot.rules import FromGroup, Fuzzy, Text, WasEdited
 from wonda.bot.updates import ChatJoinRequest, Message
 
 # Make a bot with a token from an environment variable.
@@ -23,8 +22,8 @@ async def message_handler(m: Message) -> None:
 # A good example of how you can use this mechanic is to kick people that say
 # bad words from the chat. Here we check if the message was not sent in private
 # and that it contained some nasty things.
-@bot.on.message(~IsPrivate(), Fuzzy(["shit", "fuck", "bastard", "asshole"]))
-async def chat_message_handler(m: Message) -> None:
+@bot.on.message(FromGroup(), Fuzzy(["shit", "fuck", "bastard", "asshole"]))
+async def group_message_handler(m: Message) -> None:
     # Fuzzy rule measures the similarity ratio between two string sequences.
     # If the ratio is greater than or equal to set `min_ratio`,
     # following lines will be executed.
@@ -39,8 +38,8 @@ async def chat_message_handler(m: Message) -> None:
 
 
 # Update types like `edited_message` are handled using the same decorator,
-# as they all share the same model. To see whether it was edited
-# or posted in a channel, we can use yet another rule.
+# as they all share the same model. To see if it was edited,
+# for example, we can use yet another rule.
 @bot.on.message(WasEdited())
 async def edited_message_handler(m: Message) -> None:
     # This is a shortcut method to reply to a message from the user.
@@ -49,7 +48,7 @@ async def edited_message_handler(m: Message) -> None:
 
 
 # As was said previously, you can handle many updates besides messages.
-# Most updates even have shortcut methods that ease interfacing with methods 
+# Most updates even have shortcut methods that ease interfacing with methods
 # frequently used for those update types. To show this in action, let's answer
 # a join request to a dog chat in which only good boys are allowed.
 @bot.on.chat_join_request()

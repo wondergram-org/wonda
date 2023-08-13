@@ -27,17 +27,17 @@ BEVERAGE_KEYBOARD = (
 
 
 @bot.on.message(Command(["start", "return"]))
-async def menu_handler(msg: Message) -> None:
-    await msg.answer(
+async def menu_handler(m: Message) -> None:
+    await m.answer(
         "Welcome to our coffee house! What can we make for you today?",
         reply_markup=MENU_KEYBOARD,
     )
-    await bot.state_dispenser.set(msg.chat.id, MenuState.START)
+    await bot.state_dispenser.set(m.chat.id, MenuState.START)
 
 
 @bot.on.message(Text("about us", ignore_case=True) & State(MenuState.START))
-async def about_us_handler(msg: Message) -> None:
-    await msg.answer(
+async def about_us_handler(m: Message) -> None:
+    await m.answer(
         "We only opened a couple years ago, but are already selling "
         "tasty coffee of exceptional quality. People love it here, "
         "and we think you will too."
@@ -45,21 +45,21 @@ async def about_us_handler(msg: Message) -> None:
 
 
 @bot.on.message(Text("buy a drink", ignore_case=True) & State(MenuState.START))
-async def buy_drink_handler(msg: Message) -> None:
-    await msg.answer(
+async def buy_drink_handler(m: Message) -> None:
+    await m.answer(
         "We sure have 'em in stock! Choose a beverage "
         "or just /return to menu if you don't want anything.",
         reply_markup=BEVERAGE_KEYBOARD,
     )
-    await bot.state_dispenser.set(msg.chat.id, MenuState.BUY)
+    await bot.state_dispenser.set(m.chat.id, MenuState.BUY)
 
 
 @bot.on.message(
     Text(["cappuccino", "espresso"], ignore_case=True) & State(MenuState.BUY)
 )
-async def choose_beverage_handler(msg: Message) -> None:
-    await msg.answer(
-        f"Thanks! An order for {msg.text} is now placed. "
+async def choose_beverage_handler(m: Message) -> None:
+    await m.answer(
+        f"Thanks! An order for {m.text} is now placed. "
         "It'll be ready in a couple of minutes. You can /return to menu."
     )
 

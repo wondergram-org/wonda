@@ -1,8 +1,8 @@
 from wonda import Bot, Token
 
 # Make a bot with a token from an environment variable.
-# You should provide API to bot before constructing blueprints,
-# otherwise they won't have it.
+# You should provide API to bot before constructing
+# blueprints, otherwise they won't have it.
 bot = Bot(Token.from_env())
 
 # Load blueprints directly from `blueprints` package.

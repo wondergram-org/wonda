@@ -7,9 +7,9 @@ bot = Bot(Token.from_env())
 
 
 @bot.on.message(Command("markdown"))
-async def markdown_formatting_handler(msg: Message) -> None:
+async def markdown_formatting_handler(m: Message) -> None:
     # Let's use Markdown to format our message.
-    await msg.answer(
+    await m.answer(
         # This text is perfectly valid and escaping it isn't mandatory.
         markdown.underline("This is an example of Markdown formatting:")
         + " "
@@ -26,9 +26,9 @@ async def markdown_formatting_handler(msg: Message) -> None:
 
 
 @bot.on.message(Command("html"))
-async def html_formatting_handler(msg: Message) -> None:
+async def html_formatting_handler(m: Message) -> None:
     # Let's use HTML to format our message.
-    await msg.answer(
+    await m.answer(
         # This text is perfectly valid and escaping it isn't mandatory.
         html.underline("HTML stands for Hyper Text Markup Language.")
         + " "
@@ -47,14 +47,14 @@ async def html_formatting_handler(msg: Message) -> None:
 
 
 @bot.on.message(Command("mention"))
-async def mention_handler(msg: Message) -> None:
-    await msg.answer(
-        markdown.mention("Look who's mentioned in Markdown!", msg.from_.id),
+async def mention_handler(m: Message) -> None:
+    await m.answer(
+        markdown.mention("Look who's mentioned in Markdown!", m.from_.id),
         parse_mode=ParseMode.MARKDOWN,
     )
-    await msg.answer(
+    await m.answer(
         html.mention(
-            "What a shame! You are mentioned again, this time in HTML!", msg.from_.id
+            "What a shame! You're mentioned again, this time in HTML!", m.from_.id
         ),
         parse_mode=ParseMode.HTML,
     )

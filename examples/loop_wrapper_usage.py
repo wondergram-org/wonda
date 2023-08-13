@@ -1,16 +1,17 @@
-from wonda import Bot, LoopWrapper, Token
+from wonda import Bot, LoopWrapper, Message, Token
 
-loop_wrapper = LoopWrapper()
+# Make a bot with a token from an environment variable.
+bot = Bot(Token.from_env())
 
-# LW is a class that helps you to interact with the event loop.
-# It can help you to run startup and shutdown tasks, auto-reload your code
+
+# Loop wrapper is a class that helps you to interact with the event loop.
+# It can help you run startup and shutdown tasks, auto-reload your code
 # and set up timers and intervals.
 #
 # A loop wrapper is created automatically when you initialize a bot and is accessible
 # through `bot.loop_wrapper`. For some reason, it's also possible
 # to create it manually.
-
-bot = Bot(Token.from_env())
+loop_wrapper = LoopWrapper()
 
 
 # To set up a timer, use the `@lw.timer()` decorator.
@@ -33,8 +34,8 @@ async def interval_handler() -> None:
 # A dummy handler to fill up the space
 # and for you to look at. Isn't it beautiful?
 @bot.on.message()
-async def handler(_) -> str:
-    return "Hello world!"
+async def handler(m: Message) -> None:
+    await m.answer("Hello, world!")
 
 
 # To add a startup or a shutdown task, add it to a list of coroutines
@@ -57,7 +58,6 @@ loop_wrapper.on_startup.append(setup_db())
 loop_wrapper.on_shutdown.append(close_connection())
 
 # Run the bot. This function uses `.run_polling()` under the hood to start receiving updates.
-# It will also run any tasks you may've added in `loop_wrapper`., which is automatically
-# added when this method is called.
+# It will also run any tasks you may've added in `loop_wrapper`.
 bot.loop_wrapper = loop_wrapper
 bot.run_forever()
