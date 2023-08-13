@@ -32,9 +32,12 @@ class Has(ABCRule[BaseUpdate]):
         self.attr_names = [attr_names] if isinstance(attr_names, str) else attr_names
 
     async def check(self, upd: BaseUpdate, _) -> bool:
-        return all(
-            bool(reduce(getattr, attr.split("."), upd)) for attr in self.attr_names
-        )
+        try:
+            return all(
+                bool(reduce(getattr, attr.split("."), upd)) for attr in self.attr_names
+            )
+        except AttributeError:
+            return False
 
 
 class State(ABCRule[BaseUpdate]):
