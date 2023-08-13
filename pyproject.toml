@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wonda"
-version = "0.6.0a4"
+version = "0.6.0"
 description = "Asynchronous feature-rich framework for building Telegram bots"
 authors = []
 license = "MIT"
@@ -13,7 +13,7 @@ certifi = "^2023.7.22"
 aiohttp = "^3.8.5"
 structlog = "^23.1.0"
 choicelib = "^0.1.5"
-msgspec = "^0.17.0"
+msgspec = "^0.18.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.6.0"
