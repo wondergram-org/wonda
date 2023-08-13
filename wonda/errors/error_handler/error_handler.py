@@ -45,7 +45,7 @@ class ErrorHandler(ABCErrorHandler):
         if not handler:
             if self.raise_exceptions:
                 raise error
-            await logger.exception(error)
+            await logger.exception("Failed", error=error)
             return
 
         if self.redirect_arguments:

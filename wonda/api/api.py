@@ -3,8 +3,6 @@ from wonda.api.utils import Token
 from wonda.api.validators import (
     DEFAULT_REQUEST_VALIDATORS,
     DEFAULT_RESPONSE_VALIDATORS,
-    ABCRequestValidator,
-    ABCResponseValidator,
 )
 from wonda.modules import logger
 from wonda.net.abc import ABCNetworkClient
@@ -20,15 +18,13 @@ class API(ABCAPI, APIMethods):
 
         self.token = token
         self.network_client = http_client or DefaultNetworkClient()
-        self.request_validators: list[ABCRequestValidator] = DEFAULT_REQUEST_VALIDATORS
-        self.response_validators: list[
-            ABCResponseValidator
-        ] = DEFAULT_RESPONSE_VALIDATORS
+        self.request_validators = DEFAULT_REQUEST_VALIDATORS
+        self.response_validators = DEFAULT_RESPONSE_VALIDATORS
 
     async def request(self, method: str, params: dict = {}) -> bytes:
         await logger.debug("Calling", method=method, params=params)
 
-        data = await self.validate_request(params or {})
+        data = await self.validate_request(params)
         response = await self.network_client.request_bytes(
             self.api_url + method, data=data
         )

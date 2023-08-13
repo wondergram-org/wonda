@@ -4,7 +4,8 @@ from msgspec import Struct
 
 
 class BaseStateGroup(str, Enum):
-    def _generate_next_value_(name, *_) -> str:
+    @staticmethod
+    def _generate_next_value_(name: str, *_) -> str:
         # Implement the logic to generate
         # the next value via `enum.auto`
         return name.lower()
@@ -20,5 +21,8 @@ class StateRepr(Struct):
     payload: dict = {}
 
     def __post_init__(self) -> None:
-        if isinstance(self.state, BaseStateGroup):
-            self.state = get_state_repr(self.state)
+        self.state = (
+            self.state
+            if not isinstance(self.state, BaseStateGroup)
+            else get_state_repr(self.state)
+        )

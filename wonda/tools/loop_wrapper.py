@@ -75,9 +75,7 @@ class LoopWrapper:
 
         return decorator
 
-    def timer(
-        self, seconds: int = 0, minutes: int = 0, hours: int = 0, days: int = 0
-    ):
+    def timer(self, seconds: int = 0, minutes: int = 0, hours: int = 0, days: int = 0):
         """
         Run a task one time N seconds from now
         """

@@ -21,7 +21,5 @@ class ABCResponseValidator(ABC):
         self.ctx_api = ctx_api
 
     @abstractmethod
-    async def validate(
-        self, method: str, data: dict, response: bytes
-    ) -> bytes:
+    async def validate(self, response: bytes) -> bytes:
         pass

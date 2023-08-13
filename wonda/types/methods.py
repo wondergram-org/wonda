@@ -3,11 +3,11 @@ import typing
 from .objects import *
 
 if typing.TYPE_CHECKING:
-    from wonda.api import ABCAPI, API
+    from wonda.api.abc import ABCAPI
 
 
 class APIMethods:
-    def __init__(self, api: "ABCAPI | API") -> None:
+    def __init__(self, api: "ABCAPI") -> None:
         self.api = api
 
     async def get_updates(
@@ -1288,31 +1288,6 @@ class APIMethods:
         response = await self.api.request("setChatMenuButton", get_params(locals()))
         return json.decode(response, type=bool)
 
-    async def get_my_short_description(
-        self, language_code: str | None = None, **kwargs
-    ) -> BotShortDescription:
-        """
-        Use this method to get the current bot short description for the given user
-        language. Returns BotShortDescription on success.
-        """
-        response = await self.api.request(
-            "getMyShortDescription", self.get_params(locals())
-        )
-        return json.decode(response, type=BotShortDescription)
-
-    async def set_chat_menu_button(
-        self,
-        menu_button: MenuButton | None = None,
-        chat_id: int | None = None,
-        **kwargs
-    ) -> bool:
-        """
-        Use this method to change the bot's menu button in a private chat, or
-        the default menu button. Returns True on success.
-        """
-        response = await self.api.request("setChatMenuButton", get_params(locals()))
-        return json.decode(response, type=bool)
-
     async def get_chat_menu_button(
         self, chat_id: int | None = None, **kwargs
     ) -> MenuButton:
@@ -1394,7 +1369,7 @@ class APIMethods:
         response = await self.api.request("editMessageCaption", get_params(locals()))
         return json.decode(response, type=Message | bool)
 
-    async def stop_message_live_location(
+    async def edit_message_media(
         self,
         media: InputMedia,
         reply_markup: InlineKeyboardMarkup | None = None,

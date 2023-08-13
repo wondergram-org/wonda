@@ -12,8 +12,8 @@ class ABCAPI(ABC):
     API_URL = "https://api.telegram.org/"
     APIRequest = APIRequest
 
-    response_validators: list["ABCResponseValidator"]
-    request_validators: list["ABCRequestValidator"]
+    response_validators: list["type[ABCResponseValidator]"]
+    request_validators: list["type[ABCRequestValidator]"]
     network_client: "ABCNetworkClient"
     token: "Token"
 

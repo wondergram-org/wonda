@@ -53,7 +53,7 @@ class BaseKeyboardBuilder(ABCKeyboardBuilder):
         self.rows.append([])
         return self
 
-    def build(self) -> ReplyKeyboardMarkup | InlineKeyboardMarkup:
+    def build(self) -> _:
         raise NotImplementedError("`.build()` method implemenation is builder specific")
 
 

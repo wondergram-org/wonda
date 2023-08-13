@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Any, Generic, TypeVar
 
 from wonda.bot.updates.base import BaseUpdate
@@ -8,10 +8,8 @@ T = TypeVar("T", bound=BaseUpdate)
 
 
 class ABCMiddleware(ABC, Generic[T]):
-    @abstractmethod
-    async def pre(self, update: T, ctx: dict) -> bool:
+    async def pre(self, update: T, ctx: dict) -> bool:  # type: ignore
         pass
 
-    @abstractmethod
-    async def post(self, update: T, ctx: dict, responses: list[_]) -> None:
+    async def post(self, update: T, ctx: dict, responses: list[_]) -> None:  # type: ignore
         pass

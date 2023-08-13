@@ -5,7 +5,7 @@ from typing import Any
 class ABCNetworkClient(ABC):
     @staticmethod
     @abstractmethod
-    def construct_form(self, data: dict) -> Any:
+    def construct_form(data: dict) -> Any:
         pass
 
     @abstractmethod
