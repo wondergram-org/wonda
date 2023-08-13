@@ -433,6 +433,7 @@ class ForumTopicClosed(Model):
     the chat. Currently holds no information.
     """
 
+    pass
 
 
 class ForumTopicEdited(Model):
@@ -450,6 +451,7 @@ class ForumTopicReopened(Model):
     in the chat. Currently holds no information.
     """
 
+    pass
 
 
 class GeneralForumTopicHidden(Model):
@@ -458,6 +460,7 @@ class GeneralForumTopicHidden(Model):
     hidden in the chat. Currently holds no information.
     """
 
+    pass
 
 
 class GeneralForumTopicUnhidden(Model):
@@ -466,6 +469,7 @@ class GeneralForumTopicUnhidden(Model):
     unhidden in the chat. Currently holds no information.
     """
 
+    pass
 
 
 class UserShared(Model):
@@ -513,6 +517,7 @@ class VideoChatStarted(Model):
     the chat. Currently holds no information.
     """
 
+    pass
 
 
 class VideoChatEnded(Model):
@@ -2065,6 +2070,7 @@ class CallbackGame(Model):
     your game.
     """
 
+    pass
 
 
 class GameHighScore(Model):
