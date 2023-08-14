@@ -1,4 +1,4 @@
-# Wonda 🫧
+# Wonda ☁️
 
 [//]: # (Features)
 [examples]: examples/

@@ -1,0 +1,37 @@
+name: Bug report 🐛
+description: Report unexpected behavior in the framework
+labels:
+  - bug
+assignees:
+  - geo-madness
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for contributing to the project! Together we make it wonderful for everyone.
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: What version of the framework were you using?
+      options:
+        - 0.6.1 (stable)
+        - 0.7.0 (alpha)
+      default: 0
+      multiple: false
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: >
+        Describe the bug in detail. Attach the full traceback.
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Reproducible example
+      description: >
+        Include a minimal, complete, reproducible example, which can be run without modification to demonstrate the problem.
+      render: Python

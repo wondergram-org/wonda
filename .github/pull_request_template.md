@@ -1,4 +1,10 @@
-What issue this PR solves (describe the issue or link one): ...
+# What I did
+
+...
+
+# How I did it
+
+...
 
 * [ ] My code is tested
 * [ ] Changes are documented
