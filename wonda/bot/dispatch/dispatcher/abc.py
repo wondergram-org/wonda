@@ -6,7 +6,13 @@ if TYPE_CHECKING:
 
 
 def get_used_update_types(disp: "ABCDispatcher") -> list[str]:
-    return [k for k, v in disp.views().items() if v.handlers or v.middlewares]
+    update_types: list[str] = []
+
+    for v in disp.views().values():
+        if v.handlers or v.middlewares:
+            update_types.extend(v.matches)
+            
+    return update_types
 
 
 class ABCDispatcher(ABC):
