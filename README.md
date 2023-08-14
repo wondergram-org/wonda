@@ -1,10 +1,10 @@
 # Wonda 🫧
 
 [//]: # (Features)
-[examples]: examples/high_level
-[format text]: examples/high_level/formatting_example.py
-[upload files]: examples/high_level/file_upload_example.py
-[an advanced state system]: examples/high_level/use_state_dispenser.py
+[examples]: examples/
+[format text]: examples/formatting_example.py
+[upload files]: examples/file_upload_example.py
+[an advanced state system]: examples/use_state_dispenser.py
 
 [//]: # (Badges)
 ![Version](https://img.shields.io/pypi/v/wonda?label=version&style=flat-square)
