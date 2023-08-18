@@ -5,19 +5,15 @@ labels:
 assignees:
   - geo-madness
 body:
-  - type: markdown
-    attributes:
-      value: Thank you for contributing to the project! Together we make it wonderful for everyone.
   - type: dropdown
     id: version
     attributes:
       label: Version
       description: What version of the framework were you using?
-      options:
-        - 0.6.1 (stable)
-        - 0.7.0 (alpha)
-      default: 0
       multiple: false
+      options:
+        - 0.6.2 (stable)
+        - 0.7.0 (alpha)
     validations:
       required: true
   - type: textarea
