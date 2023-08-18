@@ -1150,6 +1150,20 @@ class APIMethods:
         )
         return json.decode(response, type=bool)
 
+    async def unpin_all_general_forum_topic_messages(
+        self, chat_id: int | str, **kwargs
+    ) -> bool:
+        """
+        Use this method to clear the list of pinned messages in a General
+        forum topic. The bot must be an administrator in the chat for this to
+        work and must have the can_pin_messages administrator right in the
+        supergroup. Returns True on success.
+        """
+        response = await self.api.request(
+            "unpinAllGeneralForumTopicMessages", get_params(locals())
+        )
+        return json.decode(response, type=bool)
+
     async def answer_callback_query(
         self,
         callback_query_id: str,

@@ -76,6 +76,7 @@ class Chat(Model):
     photo: "ChatPhoto | None" = None
     active_usernames: "list[str] | None" = None
     emoji_status_custom_emoji_id: str | None = None
+    emoji_status_expiration_date: int | None = None
     bio: str | None = None
     has_private_forwards: bool | None = None
     has_restricted_voice_and_video_messages: bool | None = None
@@ -128,6 +129,7 @@ class Message(Model):
     document: "Document | None" = None
     photo: "list[PhotoSize] | None" = None
     sticker: "Sticker | None" = None
+    story: "Story | None" = None
     video: "Video | None" = None
     video_note: "VideoNote | None" = None
     voice: "Voice | None" = None
@@ -258,6 +260,15 @@ class Document(Model):
     file_size: int | None = None
 
 
+class Story(Model):
+    """
+    This object represents a message about a forwarded story in the chat.
+    Currently holds no information.
+    """
+
+    pass
+
+
 class Video(Model):
     """
     This object represents a video file.
@@ -336,8 +347,9 @@ class PollAnswer(Model):
     """
 
     poll_id: str
-    user: "User"
     option_ids: "list[int]"
+    voter_chat: "Chat | None" = None
+    user: "User | None" = None
 
 
 class Poll(Model):
