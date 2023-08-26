@@ -12,15 +12,16 @@ class DefaultPoller(ABCPoller):
     def __init__(
         self, api: ABCAPI, error_handler: ABCErrorHandler | None = None
     ) -> None:
-        self.stop = False
-
-        self.api = api
-        self.error_handler = error_handler or ErrorHandler()
+        self.api, self.error_handler = api, error_handler or ErrorHandler()
 
         self.offset: int = 0
         self.allowed_updates: list[str] = []
 
+        self.stop = False
+
     async def get_updates(self) -> list[Update]:
+        updates = b"[]"
+
         try:
             updates = await self.api.request(
                 "getUpdates",
