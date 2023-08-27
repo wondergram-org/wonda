@@ -102,7 +102,9 @@ class ABCView(ABC, Generic[T]):
                 return
 
         for handler in self.handlers:
-            if not await handler.filter(upd, ctx):
+            result = await handler.filter(upd, ctx)
+
+            if result is False:
                 continue
 
             response = await handler.handle(upd, ctx)
