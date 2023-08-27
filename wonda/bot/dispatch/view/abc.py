@@ -83,11 +83,7 @@ class ABCView(ABC, Generic[T]):
         Handles the update, casting it into suitable model and saturating it with
         useful properties like contextual API and FSM representation.
         """
-        type = self.get_update_type(update)
-
-        upd = self.get_update_model()(
-            **update.dict()[type].dict(),
-        )
+        upd = self.get_update_model(update)
         upd.unprep_ctx_api, upd.state_repr = ctx_api, await state_dispenser.cast(
             self.get_state_key(upd)
         )
@@ -110,6 +106,9 @@ class ABCView(ABC, Generic[T]):
             response = await handler.handle(upd, ctx)
             responses.append(response)
 
+            if handler.blocking:
+                break
+
         for middleware in self.middlewares:
             await middleware.post(upd, ctx, responses)
 
@@ -123,5 +122,6 @@ class ABCView(ABC, Generic[T]):
 
         return ""
 
-    def get_update_model(self) -> type[T]:
-        return self.__orig_bases__[0].__args__[0]  # type: ignore
+    def get_update_model(self, update: "Update") -> T:
+        model = update.dict()[self.get_update_type(update)]
+        return self.__orig_bases__[0].__args__[0](**model.dict())  # type: ignore
