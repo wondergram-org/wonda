@@ -50,7 +50,7 @@ class Bot(ABCFramework):
         )
 
         async for update in self.poller.poll():
-            await self.router.route(update, self.api)
+            self.loop.create_task(self.router.route(update, self.api))
 
     def run_forever(self, *, drop_updates: bool = False) -> None:
         self.loop_wrapper.add_task(self.run_polling(drop_updates=drop_updates))
