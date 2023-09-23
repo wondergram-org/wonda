@@ -266,8 +266,6 @@ class Story(Model):
     Currently holds no information.
     """
 
-    pass
-
 
 class Video(Model):
     """
@@ -445,8 +443,6 @@ class ForumTopicClosed(Model):
     the chat. Currently holds no information.
     """
 
-    pass
-
 
 class ForumTopicEdited(Model):
     """
@@ -463,8 +459,6 @@ class ForumTopicReopened(Model):
     in the chat. Currently holds no information.
     """
 
-    pass
-
 
 class GeneralForumTopicHidden(Model):
     """
@@ -472,16 +466,12 @@ class GeneralForumTopicHidden(Model):
     hidden in the chat. Currently holds no information.
     """
 
-    pass
-
 
 class GeneralForumTopicUnhidden(Model):
     """
     This object represents a service message about General forum topic
     unhidden in the chat. Currently holds no information.
     """
-
-    pass
 
 
 class UserShared(Model):
@@ -507,11 +497,14 @@ class ChatShared(Model):
 class WriteAccessAllowed(Model):
     """
     This object represents a service message about a user allowing a bot
-    to write messages after adding the bot to the attachment menu or
-    launching a Web App from a link.
+    to write messages after adding it to the attachment menu, launching a
+    Web App from a link, or accepting an explicit request from a Web App
+    sent by the method requestWriteAccess.
     """
 
+    from_request: bool | None = None
     web_app_name: str | None = None
+    from_attachment_menu: bool | None = None
 
 
 class VideoChatScheduled(Model):
@@ -528,8 +521,6 @@ class VideoChatStarted(Model):
     This object represents a service message about a video chat started in
     the chat. Currently holds no information.
     """
-
-    pass
 
 
 class VideoChatEnded(Model):
@@ -800,6 +791,9 @@ class ChatAdministratorRights(Model):
     can_post_messages: bool | None = None
     can_edit_messages: bool | None = None
     can_pin_messages: bool | None = None
+    can_post_stories: bool | None = None
+    can_edit_stories: bool | None = None
+    can_delete_stories: bool | None = None
     can_manage_topics: bool | None = None
 
 
@@ -841,6 +835,9 @@ class ChatMemberAdministrator(ChatMember, tag="administrator"):
     can_post_messages: bool | None = None
     can_edit_messages: bool | None = None
     can_pin_messages: bool | None = None
+    can_post_stories: bool | None = None
+    can_edit_stories: bool | None = None
+    can_delete_stories: bool | None = None
     can_manage_topics: bool | None = None
     custom_title: str | None = None
 
@@ -2081,8 +2078,6 @@ class CallbackGame(Model):
     A placeholder, currently holds no information. Use BotFather to set up
     your game.
     """
-
-    pass
 
 
 class GameHighScore(Model):
