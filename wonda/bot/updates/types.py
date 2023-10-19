@@ -104,8 +104,9 @@ class MessageUpdate(BaseUpdate, Message):
         )
 
     async def delete(self, **kwargs) -> bool:
+        params = get_params(locals())
         return await self.ctx_api.delete_message(
-            message_id=self.message_id, chat_id=self.chat.id, **kwargs
+            message_id=self.message_id, chat_id=self.chat.id, **params
         )
 
 
