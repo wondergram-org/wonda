@@ -40,6 +40,7 @@ class ABCView(ABC, Generic[T]):
             self.register_handler(
                 FuncHandler(func, [*self.auto_rules, *rules], blocking=blocking)
             )
+            return func
 
         return decorator
 

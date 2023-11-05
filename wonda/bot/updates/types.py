@@ -103,6 +103,12 @@ class MessageUpdate(BaseUpdate, Message):
             from_chat_id=self.chat.id, message_id=self.message_id, **params
         )
 
+    async def delete(self, **kwargs) -> bool:
+        params = get_params(locals())
+        return await self.ctx_api.delete_message(
+            message_id=self.message_id, chat_id=self.chat.id, **params
+        )
+
 
 class CallbackQueryUpdate(BaseUpdate, CallbackQuery):
     async def answer(
