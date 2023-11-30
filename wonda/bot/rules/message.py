@@ -4,41 +4,30 @@ from re import Pattern, compile, match
 from wonda.bot.rules.abc import ABCRule
 from wonda.bot.updates import MessageUpdate
 from wonda.types.enums import ChatType, MessageEntityType
-from wonda.types.objects import User
 
 
 class Command(ABCRule[MessageUpdate]):
     """
-    A rule that handles bot commands. It takes in a list of
-    valid command texts and checks if the message
-    contains one of those commands.
+    Checks if the text of the message contains a given bot command.
     """
-
-    me: User | None = None
 
     def __init__(self, texts: str | list[str], prefixes: str | list[str] = "/") -> None:
         self.texts = texts if isinstance(texts, list) else [texts]
         self.prefixes = prefixes if isinstance(prefixes, list) else [prefixes]
 
     async def check(self, m: MessageUpdate, ctx: dict) -> bool:
-        if text := m.text or m.caption:
-            prefix, text, tag, args = self.parse(text)
+        text = m.text or m.caption
 
-            if m.chat.type in (ChatType.GROUP, ChatType.SUPERGROUP):
-                # Make a one-time request to get the bot info
-                # so we can compare it's short name to the tag
-                # contained in the command.
-                self.me = self.me or await m.ctx_api.get_me()
+        if not text:
+            return False
 
-                if not tag or tag.lower() != self.me.username.lower():  # type: ignore
-                    return False
+        prefix, text, _, args = self.parse(text)
 
-            if prefix not in self.prefixes or text not in self.texts:
-                return False
+        if prefix not in self.prefixes or text not in self.texts:
+            return False
 
-            ctx["args"] = args
-            return True
-        return False
+        ctx["args"] = args
+        return True
 
     @staticmethod
     def parse(text: str):
