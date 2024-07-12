@@ -1,20 +1,40 @@
-from msgspec import Struct, json, to_builtins
+from typing import TypeVar
 
-omit_defaults = True
-rename = lambda n: n.rstrip("_") if n.endswith("_") else None
+import msgspec
+from msgspec import Raw, Struct, json
 
-
-class Model(Struct, rename=rename, omit_defaults=omit_defaults):
-    def dict(self) -> dict:
-        return {k: getattr(self, k) for k in self.__struct_fields__}
+T = TypeVar("T")
 
 
-def to_json(v):
+def rename(n: str) -> str | None:
+    return n.rstrip("_") if n.endswith("_") else None
+
+
+class Model(Struct, rename=rename, omit_defaults=True):
+    def to_dict(self):
+        return msgspec.to_builtins(self)
+
+    def as_dict(self):
+        return msgspec.structs.asdict(self)
+
+
+class Response(Model):
+    ok: bool
+    result: Raw = Raw()
+    error_code: int | None = None
+    description: str | None = None
+
+
+def from_json(v: bytes, *, type: type[T]) -> T:
+    return json.decode(v, type=type)
+
+
+def to_json(v) -> str:
     return bytes.decode(json.encode(v))
 
 
 def translate(v):
-    v = to_builtins(v, builtin_types=(bytes,))
+    v = msgspec.to_builtins(v, builtin_types=(bytes,))
 
     if type(v) in (dict, list):
         return to_json(v)
@@ -28,4 +48,4 @@ def get_params(loc: dict):
     return n
 
 
-__all__ = ("Model", "get_params", "json")
+__all__ = ("Model", "get_params", "from_json", "to_json")

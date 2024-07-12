@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "wonda"
-version = "0.6.8"
-description = "Asynchronous feature-rich framework for building Telegram bots"
+version = "0.7.0"
+description = "A fast, convenient bot framework for Telegram."
 authors = []
 license = "MIT"
 readme = "README.md"
@@ -13,11 +13,14 @@ certifi = "^2023.7.22"
 aiohttp = "^3.8.5"
 structlog = "^23.1.0"
 choicelib = "^0.1.5"
-msgspec = "^0.18.0"
+msgspec = "^0.18.6"
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.6.0"
-isort = "^5.12.0"
+mypy = "^1.5.1"
+ruff = "^0.4.9"
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
 
 [build-system]
 requires = ["poetry-core"]

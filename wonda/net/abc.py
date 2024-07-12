@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Any
+
+from typing_extensions import Any, Self
 
 
 class ABCNetworkClient(ABC):
@@ -30,7 +31,7 @@ class ABCNetworkClient(ABC):
     async def close(self) -> None:
         pass
 
-    async def __aenter__(self) -> "ABCNetworkClient":
+    async def __aenter__(self) -> Self:
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:

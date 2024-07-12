@@ -17,7 +17,7 @@ class MemoryStorage(ABCStorage):
 
         return default
 
-    async def put(self, key: Key, value: Value) -> None:
+    async def set(self, key: Key, value: Value) -> None:
         self.data[key] = value
         return None
 
@@ -45,7 +45,7 @@ class MemoryExpiringStorage(ABCExpiringStorage):
 
         return default
 
-    async def put(self, key: Key, value: Value, ex: Ex = Ex("inf")) -> None:
+    async def set(self, key: Key, value: Value, ex: Ex = Ex("inf")) -> None:
         self.data[key] = value, ex + time()
         return None
 

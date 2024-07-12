@@ -1,6 +1,7 @@
 from asyncio import AbstractEventLoop, get_event_loop
 
-from wonda.api import API, Token
+from wonda.api import ABCAPI, DefaultAPI, Token
+from wonda.api.poller import ABCPoller, DefaultPoller, PollerOptions
 from wonda.bot.abc import ABCFramework
 from wonda.bot.dispatch import (
     ABCDispatcher,
@@ -9,9 +10,9 @@ from wonda.bot.dispatch import (
     DefaultRouter,
     get_used_update_types,
 )
-from wonda.bot.polling import ABCPoller, DefaultPoller
-from wonda.bot.states import ABCStateDispenser, DefaultStateDispenser
-from wonda.errors import ABCErrorHandler, ErrorHandler
+from wonda.bot.states import ABCStateManager, DefaultStateManager
+from wonda.errors import ABCErrorHandler, DefaultErrorHandler
+from wonda.modules import logger
 from wonda.tools import LoopWrapper
 
 
@@ -19,36 +20,43 @@ class Bot(ABCFramework):
     def __init__(
         self,
         token: Token | None = None,
-        api: API | None = None,
+        api: ABCAPI | None = None,
         dispatcher: ABCDispatcher | None = None,
         router: ABCRouter | None = None,
-        polling: ABCPoller | None = None,
-        state_dispenser: ABCStateDispenser | None = None,
+        state_manager: ABCStateManager | None = None,
+        poller: ABCPoller | None = None,
         error_handler: ABCErrorHandler | None = None,
-        loop: AbstractEventLoop | None = None,
         loop_wrapper: LoopWrapper | None = None,
+        loop: AbstractEventLoop | None = None,
     ):
-        self.error_handler = error_handler or ErrorHandler()
+        self.error_handler = error_handler or DefaultErrorHandler()
         self.loop_wrapper = loop_wrapper or LoopWrapper()
-
-        self.api = api or API(token or Token(""))
-        self.poller = polling or DefaultPoller(self.api, self.error_handler)
-
+        self.untyped_api = api or DefaultAPI(token or Token(""))
+        self.poller = poller or DefaultPoller(
+            self.untyped_api, self.error_handler, PollerOptions(0, None)
+        )
         self.dispatcher = dispatcher or DefaultDispatcher()
-        self.state_dispenser = state_dispenser or DefaultStateDispenser()
+        self.state_manager = state_manager or DefaultStateManager()
         self.router = router or DefaultRouter(
-            self.state_dispenser, self.error_handler, self.dispatcher.views()
+            self.state_manager, self.error_handler, self.dispatcher.views
         )
         self.loop = loop or get_event_loop()
 
-    async def run_polling(self, *, drop_updates: bool = False) -> None:
-        if drop_updates is True:
-            await self.api.request("deleteWebhook", {"drop_pending_updates": True})
+    async def run_polling(self, drop_updates: bool = False) -> None:
+        if drop_updates:
+            await self.untyped_api.request(
+                "deleteWebhook", {"drop_pending_updates": True}
+            )
 
-        self.poller.offset, self.poller.allowed_updates = 0, get_used_update_types(  # type: ignore
-            self.dispatcher
+        allowed_updates_empty = self.poller.options.allowed_updates is None
+        if allowed_updates_empty:
+            self.poller.options.allowed_updates = get_used_update_types(self.dispatcher)
+
+        await logger.ainfo(
+            "Starting",
+            offset=self.poller.options.offset,
+            allowed_updates=self.poller.options.allowed_updates,
         )
-
         async for update in self.poller.poll():
             self.loop.create_task(self.router.route(update, self.api))
 

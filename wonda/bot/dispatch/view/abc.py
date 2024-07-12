@@ -1,127 +1,84 @@
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
-from wonda.bot.dispatch.handler.abc import ABCHandler
+from typing_extensions import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Concatenate,
+    Coroutine,
+    Generic,
+    ParamSpec,
+    TypeVar,
+)
+
 from wonda.bot.dispatch.handler.func import FuncHandler
-from wonda.bot.dispatch.middlewares.abc import ABCMiddleware
 from wonda.bot.rules.abc import ABCRule
-from wonda.bot.updates.base import BaseUpdate
 
 if TYPE_CHECKING:
     from wonda.api import ABCAPI
-    from wonda.bot.states.dispenser.abc import ABCStateDispenser
+    from wonda.bot.dispatch import ABCHandler, ABCMiddleware
+    from wonda.bot.states.manager.abc import ABCBaseStateManager
+    from wonda.bot.updates.base import BaseUpdate
     from wonda.types.objects import Update
 
-
-_ = Any
-T = TypeVar("T", bound=BaseUpdate)
+P = ParamSpec("P")
+T = TypeVar("T", bound="BaseUpdate")
+FuncType = Callable[Concatenate[T, P], Coroutine[Any, Any, Any]]
 
 
 class ABCView(ABC, Generic[T]):
-    matches: str | list[str]
+    handlers: list["ABCHandler[T]"]
+    middleware: list["ABCMiddleware[T]"]
+    auto_rules: list["ABCRule[T]"]
 
     def __init__(self) -> None:
-        self.handlers: list["ABCHandler"] = []
-        self.middlewares: list["ABCMiddleware"] = []
-        self.auto_rules: list["ABCRule"] = []
+        self.handlers, self.middleware, self.auto_rules = [], [], []
 
-    def __init_subclass__(cls, matches: str | list[str]) -> None:
-        cls.matches = [matches] if isinstance(matches, str) else matches
-
-    def __call__(self, *rules: "ABCRule", blocking: bool = True):
-        """
-        Shortcut to register a handler in this view.
-        """
+    def __call__(
+        self, *rules: "ABCRule[T]", blocking: bool = True
+    ) -> Callable[[FuncType[T, P]], FuncType[T, P]]:
         assert all(
             isinstance(rule, ABCRule) for rule in rules
         ), "All rules must be subclasses of ABCRule"
 
-        def decorator(func) -> None:
+        def decorator(func: FuncType[T, P]):
             self.register_handler(
-                FuncHandler(func, [*self.auto_rules, *rules], blocking=blocking)
+                FuncHandler(func, *self.auto_rules, *rules, blocking=blocking)
             )
+            return func
 
         return decorator
 
-    def load(self, view: "ABCView") -> None:
-        self.middlewares.extend(view.middlewares)
-        self.auto_rules.extend(view.auto_rules)
-        self.handlers.extend(view.handlers)
-
-    def register_handler(self, handler: ABCHandler) -> None:
+    @abstractmethod
+    def register_handler(self, handler: "ABCHandler[T]") -> None:
         """
-        Registers a handler.
+        Registers a new handler in this view.
         """
-        if not isinstance(handler, ABCHandler):
-            raise TypeError("Argument is not an instance of ABCHandler")
-
-        self.handlers.append(handler)
-
-    def register_middleware(self, middleware: ABCMiddleware) -> None:
-        """
-        Registers a middleware.
-        """
-        if not isinstance(middleware, ABCMiddleware):
-            raise TypeError("Argument is not an instance of ABCMiddleware")
-
-        self.middlewares.append(middleware)
 
     @abstractmethod
-    def get_state_key(self, update: T) -> int | None:
-        pass
+    def register_middleware(self, middleware: "ABCMiddleware[T]") -> None:
+        """
+        Registers a new middleware in this view.
+        """
 
+    @abstractmethod
+    def load(self, view: "ABCView[T]") -> None:
+        """
+        Loads one view into another.
+        """
+
+    @abstractmethod
     async def filter(self, update: "Update") -> bool:
         """
-        Checks if the update is of the type this view supports.
+        Checks if an update can be handled by this view.
+        Must return either True or False.
         """
-        return self.get_update_type(update) in self.matches
 
+    @abstractmethod
     async def handle(
-        self, update: "Update", ctx_api: "ABCAPI", state_dispenser: "ABCStateDispenser"
+        self, update: "Update", ctx_api: "ABCAPI", state_manager: "ABCBaseStateManager"
     ) -> None:
         """
-        Handles the update, casting it into suitable model and saturating it with
-        useful properties like contextual API and FSM representation.
+        Handles an update. Can raise an exception
+        while handling is taking place.
         """
-        upd = self.get_update_model(update)
-        upd.unprep_ctx_api, upd.state_repr = ctx_api, await state_dispenser.cast(
-            self.get_state_key(upd)
-        )
-
-        ctx: dict[str, _] = {}
-        responses: list[_] = []
-
-        for middleware in self.middlewares:
-            result = await middleware.pre(upd, ctx)
-
-            if result is False:
-                return
-
-        for handler in self.handlers:
-            result = await handler.filter(upd, ctx)
-
-            if result is False:
-                continue
-
-            response = await handler.handle(upd, ctx)
-            responses.append(response)
-
-            if handler.blocking:
-                break
-
-        for middleware in self.middlewares:
-            await middleware.post(upd, ctx, responses)
-
-    def get_update_type(self, update: "Update") -> str:
-        for k in update.__struct_fields__:
-            v = getattr(update, k, None)
-
-            # Handle None values and `update_id` field
-            if v is not None and not isinstance(v, int):
-                return k
-
-        return ""
-
-    def get_update_model(self, update: "Update") -> T:
-        model = update.dict()[self.get_update_type(update)]
-        return self.__orig_bases__[0].__args__[0](**model.dict())  # type: ignore

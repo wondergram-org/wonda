@@ -2,5 +2,6 @@ from enum import Enum
 
 
 class ParseMode(Enum):
-    MARKDOWN = "MarkdownV2"
-    HTML = "HTML"
+    HTML = "html"
+    MARKDOWN = "markdown"
+    MARKDOWN_V2 = "markdown_v2"

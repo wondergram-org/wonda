@@ -1,4 +1,4 @@
-from wonda import API, TelegramAPIError, Token
+from wonda import API, APIException, Token
 
 # Make an API with a token from an environment variable.
 api = API(Token.from_env())
@@ -7,11 +7,11 @@ api = API(Token.from_env())
 async def main() -> None:
     try:
         await api.send_message("Hi bestie!", 1)
-    except TelegramAPIError[400]:
+    except APIException[400]:
         print("Oops, bad request.")
-    except TelegramAPIError[401, 404]:
+    except APIException[401, 404]:
         print("Oops, unauthorized.")
-    except TelegramAPIError as e:
+    except APIException as e:
         print(f"An error {e.code} occured.")
 
 

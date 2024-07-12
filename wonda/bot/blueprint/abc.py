@@ -6,13 +6,13 @@ from wonda.bot.abc import ABCFramework
 if TYPE_CHECKING:
     from wonda.api import ABCAPI
     from wonda.bot.dispatch.dispatcher import ABCDispatcher
-    from wonda.bot.states import ABCStateDispenser
+    from wonda.bot.states import ABCStateManager
 
 
 class ABCBlueprint(ABCFramework):
-    api: "ABCAPI"
     dispatcher: "ABCDispatcher"
-    state_dispenser: "ABCStateDispenser"
+    state_manager: "ABCStateManager"
+    untyped_api: "ABCAPI"
 
     @abstractmethod
     def load_into(self, framework: Any) -> "ABCBlueprint":

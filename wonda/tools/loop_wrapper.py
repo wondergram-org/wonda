@@ -1,6 +1,7 @@
 from asyncio import AbstractEventLoop, get_event_loop, iscoroutine, iscoroutinefunction
 from typing import Any, Callable, Coroutine
 
+from wonda.modules import logger
 from wonda.tools.delayed_task import DelayedTask
 
 _ = Any
@@ -10,22 +11,21 @@ Task = Coroutine[_, _, _]
 class LoopWrapper:
     def __init__(
         self,
-        *,
-        tasks: list["Task"] = [],
-        on_startup: list["Task"] = [],
-        on_shutdown: list["Task"] = []
+        tasks: list[Task] | None = None,
+        on_startup: list[Task] | None = None,
+        on_shutdown: list[Task] | None = None,
     ) -> None:
-        self.tasks = tasks
-        self.on_startup = on_startup
-        self.on_shutdown = on_shutdown
+        self.tasks = tasks or []
+        self.on_startup = on_startup or []
+        self.on_shutdown = on_shutdown or []
 
     def run_forever(self, loop: AbstractEventLoop | None = None) -> None:
         """
-        Runs startup tasks and makes the loop running forever
+        Manages startup and shutdown tasks and makes the loop run forever.
         """
 
         if not len(self.tasks):
-            print("Running loop without tasks")
+            logger.warning("Running loop without tasks")
 
         loop = loop or get_event_loop()
 
@@ -37,7 +37,7 @@ class LoopWrapper:
 
             loop.run_forever()
         except KeyboardInterrupt:
-            print("Keyboard interrupt")
+            logger.warning("Exiting")
         finally:
             [
                 loop.run_until_complete(shutdown_task)
@@ -48,7 +48,7 @@ class LoopWrapper:
 
     def add_task(self, task: "Task" | Callable[..., "Task"]) -> None:
         """
-        Add a task which will be run on `.run_forever()`
+        Add a task which will be run on `.run_forever()`.
         """
 
         if iscoroutinefunction(task) or isinstance(task, DelayedTask):
@@ -62,7 +62,7 @@ class LoopWrapper:
         self, seconds: int = 0, minutes: int = 0, hours: int = 0, days: int = 0
     ):
         """
-        Repeat a task with an interval until the program stops
+        Repeat a task with an interval until the program stops.
         """
 
         seconds += minutes * 60
@@ -70,14 +70,14 @@ class LoopWrapper:
         seconds += days * 24 * 60 * 60
 
         def decorator(func: Callable):
-            self.add_task(DelayedTask(seconds, func))
+            self.add_task(DelayedTask(func, seconds))
             return func
 
         return decorator
 
     def timer(self, seconds: int = 0, minutes: int = 0, hours: int = 0, days: int = 0):
         """
-        Run a task one time N seconds from now
+        Run a task one time N seconds from now.
         """
 
         seconds += minutes * 60
@@ -85,7 +85,7 @@ class LoopWrapper:
         seconds += days * 24 * 60 * 60
 
         def decorator(func: Callable):
-            self.add_task(DelayedTask(seconds, func, do_break=True))
+            self.add_task(DelayedTask(func, seconds, once=True))
             return func
 
         return decorator

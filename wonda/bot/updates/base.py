@@ -3,9 +3,12 @@ from wonda.bot.states import StateRepr
 
 
 class BaseUpdate:
-    unprep_ctx_api: ABCAPI | None = None
+    untyped_ctx_api: ABCAPI | None = None
     state_repr: StateRepr | None = None
 
     @property
     def ctx_api(self) -> API:
-        return self.unprep_ctx_api  # type: ignore
+        return self.untyped_ctx_api  # type: ignore
+
+    def get_state_key(self) -> int | None:
+        return None

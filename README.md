@@ -1,17 +1,17 @@
-# Wonda ☁️
+# Wonda 🍄
 
-[//]: # (Features)
+[//]: # "Features"
 [examples]: examples/
-[format text]: examples/formatting_example.py
+[format text]: examples/text_styling_example.py
 [upload files]: examples/file_upload_example.py
-[an advanced state system]: examples/use_state_dispenser.py
+[an advanced state system]: examples/use_state_manager.py
 
-[//]: # (Badges)
+[//]: # "Badges"
 ![Version](https://img.shields.io/pypi/v/wonda?label=version&style=flat-square)
 ![Package downloads](https://img.shields.io/pypi/dw/wonda?label=downloads&style=flat-square)
 ![Supported Python versions](https://img.shields.io/pypi/pyversions/wonda?label=supported%20python%20versions&style=flat-square)
 
-Wonda is a Telegram bot framework. It supports latest versions and features of the API. Incredibly fast and extraordinarily customizable, it gives you power to build the bot you always wanted.
+Wonda is a Telegram bot framework. It strikes a perfect balance between simple and advanced and makes bot development a breeze. Its concepts are easy to understand and extend. And, with immediate support for latest Bot API versions, it always stays up to the standard.
 
 ## Install
 
@@ -38,9 +38,11 @@ async def handler(m: Message) -> None:
 bot.run_forever()
 ```
 
-You can already [format text], [upload files], and make use of [an advanced state system] to craft complex interactions. And more features are expected to come! Check out the [examples].
+You can already [format text], [upload files], and make use of [an advanced state system] to build complex interactions. More features are expected to come! Check out the [examples].
 
 ## Customization
+
+Wonda ships with few dependencies by default. To customize your experience, you may want to install some extra dependencies on top.
 
 ### Speed up event loop
 
@@ -52,17 +54,34 @@ Wonda supports uvloop, an event loop implementation which makes I/O [2-4x quicke
 
 ### Replace default JSON module
 
-``` bash
+```bash
 pip install orjson
 ```
 
 Swap out the module that is used under the hood to manipulate JSON and increase speed up to [5 times](https://github.com/ijl/orjson#performance).
 
+### Display tracebacks in greater detail
+
+```bash
+pip install rich
+```
+
+Check out [rich](https://github.com/textualize/rich), a library which provides amazing rich text capabilities for your logs.
+
 ## Contrubuting
 
-The framework is not yet ready for production. If you like what you see, help us develop this amazing project! [Create an issue](https://github.com/wondergram-org/wonda/issues/new/choose) or [make a pull request](https://github.com/wondergram-org/wonda/compare).
+This framework is a robust solution for what it's worth, but the API may be unstable for a while. That means it's not yet ready for production use.
 
-## Copyright
+So, if you like our work, help us develop this amazing project! Here are some ways you can help.
 
-- timoniq (2019-2021)
-- geo-madness (2022-2023)
+### With code
+
+Contributions are welcome! [File a ticket](https://github.com/wondergram-org/wonda/issues) if you have something to say about the state of the framework.
+
+### With finances
+
+There are a couple options available for monetary help. Click [Sponsor](https://boosty.to/geo_madness) to see them. Thank you!
+
+## License
+
+This project exists thanks to the amazing work done by timoniq. Code is licensed under [MIT](LICENSE). Copyright (c) 2022-2024 kikimaradoni

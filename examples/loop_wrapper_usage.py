@@ -4,29 +4,27 @@ from wonda import Bot, LoopWrapper, Message, Token
 bot = Bot(Token.from_env())
 
 
-# Loop wrapper is a class that helps you to interact with the event loop.
-# It can help you run startup and shutdown tasks, auto-reload your code
-# and set up timers and intervals.
-#
+# Loop wrapper is a class that helps you interact with the event loop.
+# It helps you run startup and shutdown tasks, and set up timers and intervals.
 # A loop wrapper is created automatically when you initialize a bot and is accessible
-# through `bot.loop_wrapper`. For some reason, it's also possible
-# to create it manually.
+# through `bot.loop_wrapper`. For the purpose of demostration it will be created
+# manually here.
 loop_wrapper = LoopWrapper()
 
 
-# To set up a timer, use the `@lw.timer()` decorator.
-# It accepts a human-readable time intervals as arguments.
-# Timer handlers are coroutines, which means you must do
-# non-blocking operations in them. They also accept no arguments.
+# To set up a timer, use the `@lw.timer()` decorator. It receives
+# a time interval in seconds, minutes, hours and days.
 @loop_wrapper.timer(5)
 async def timer_handler() -> None:
+    # Timer handlers are coroutines, which means you must perform
+    # non-blocking operations in them. They also accept no arguments.
     print("It's my time to shine!")
 
 
 # You can also use `@lw.interval()` decorator to set up an interval coroutine.
 # It will work the same way as a timer, but will be called repeatedly
 # every time the interval is over until the bot is stopped.
-@loop_wrapper.interval(days=1)
+@loop_wrapper.interval(10)
 async def interval_handler() -> None:
     print("I'm here to stay!")
 
@@ -57,7 +55,7 @@ async def close_connection() -> None:
 loop_wrapper.on_startup.append(setup_db())
 loop_wrapper.on_shutdown.append(close_connection())
 
-# Run the bot. This function uses `.run_polling()` under the hood to start receiving updates.
-# It will also run any tasks you may've added in `loop_wrapper`.
+# Run the bot. This function uses `.run_polling()` under the hood to start
+# receiving updates. It will also run any tasks you may've added in `loop_wrapper`.
 bot.loop_wrapper = loop_wrapper
 bot.run_forever()

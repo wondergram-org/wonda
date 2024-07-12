@@ -1,0 +1,23 @@
+name: Bug report 🐛
+description: Report unexpected behavior in the framework
+labels:
+  - bug
+assignees:
+  - kikimaradoni
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: >
+        Describe the bug in detail. Attach the full traceback.
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Reproducible example
+      description: >
+        Include a minimal, complete, reproducible example, which can be run 
+        without modification to demonstrate the problem.
+      render: Python

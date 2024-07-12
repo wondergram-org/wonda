@@ -1,27 +1,23 @@
 import inspect
-from typing import Any, Callable
+from typing import Any, Callable, Concatenate, Coroutine, ParamSpec, TypeVar
 
 from wonda.bot.rules import ABCRule
 from wonda.bot.updates import BaseUpdate
+from wonda.modules import logger
 
 from .abc import ABCHandler
 
 _ = Any
+P = ParamSpec("P")
+T = TypeVar("T", bound=BaseUpdate)
+FuncType = Callable[Concatenate[T, P], Coroutine[Any, Any, Any]]
 
 
-class FuncHandler(ABCHandler):
-    def __init__(
-        self,
-        func: Callable,
-        rules: list[ABCRule],
-        *,
-        blocking: bool = True,
-    ):
-        self.blocking = blocking
-        self.rules = rules
-        self.func = func
+class FuncHandler(ABCHandler[T]):
+    def __init__(self, func: FuncType, *rules: ABCRule[T], blocking: bool = True):
+        self.func, self.blocking, self.rules = func, blocking, list(rules)
 
-    async def filter(self, update: "BaseUpdate", ctx: dict) -> bool:
+    async def filter(self, update: T, ctx: dict) -> bool:
         for rule in self.rules:
             result = await rule.check(update, ctx)
             if result is False or result is None:
@@ -31,7 +27,7 @@ class FuncHandler(ABCHandler):
             ctx |= result
         return True
 
-    async def handle(self, update: "BaseUpdate", ctx: dict) -> _:
+    async def handle(self, update: T, ctx: dict) -> _:
         sig = inspect.signature(self.func)
 
         args = [k for k in sig.parameters.keys()]
@@ -40,4 +36,4 @@ class FuncHandler(ABCHandler):
         return await self.func(update, **accepts)
 
     def __repr__(self):
-        return f"<FuncHandler {self.func.__name__} blocking={self.blocking} rules={self.rules}>"
+        return f"FuncHandler(func={self.func.__name__}, blocking={self.blocking}, rules={self.rules})"

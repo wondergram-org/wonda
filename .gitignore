@@ -1,10 +1,10 @@
-.idea
-.vscode
-
-.git
-
 .DS_Store
+
+.mypy_cache
+.ruff_cache
 
 __pycache__/
 dist/
 venv/
+
+poetry.toml

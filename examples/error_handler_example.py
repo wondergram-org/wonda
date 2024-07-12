@@ -1,14 +1,13 @@
-from wonda import ErrorHandler
+from wonda import DefaultErrorHandler
 
-error_handler = ErrorHandler()
-
+error_handler = DefaultErrorHandler()
 # You can set redirect_arguments in error handler. They
 # will be passed after exception to an exception handler.
-# ---
 # ```
 # async def f(a, b): raise RuntimeError
 # async def exc_h(exc: RuntimeError, a, b): ...
 # ```
+
 
 # Register an error handler for this type of exception
 # and all of its derivatives.
@@ -19,8 +18,8 @@ async def exc_handler(exc: RuntimeError):
 
 # Decorate the handler function in which an error may occur.
 @error_handler.catch
-async def main():
-    raise RuntimeError("Dear god, I am exceptional!")
+async def main() -> None:
+    raise RuntimeError("I am exceptional!")
 
 
 # Run an example function in the current event loop.

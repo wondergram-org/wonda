@@ -19,11 +19,11 @@ class ABCBaseStorage(ABC):
 
 class ABCStorage(ABCBaseStorage):
     @abstractmethod
-    async def put(self, key: Key, value: Value) -> None:
+    async def set(self, key: Key, value: Value) -> None:
         pass
 
 
 class ABCExpiringStorage(ABCBaseStorage):
     @abstractmethod
-    async def put(self, key: Key, value: Value, ex: Ex) -> None:
+    async def set(self, key: Key, value: Value, ex: Ex) -> None:
         pass

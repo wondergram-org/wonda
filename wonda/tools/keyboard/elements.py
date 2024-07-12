@@ -4,13 +4,17 @@ from wonda.types.objects import (
     ChatAdministratorRights,
     KeyboardButtonPollType,
     KeyboardButtonRequestChat,
-    KeyboardButtonRequestUser,
+    KeyboardButtonRequestUsers,
     LoginUrl,
     WebAppInfo,
 )
 
 
 class Button(ABCButton):
+    """
+    A basic text button.
+    """
+
     def __init__(self, text: str) -> None:
         self.text = text
 
@@ -88,9 +92,11 @@ class Switch(Button):
 
         setattr(
             self,
-            "switch_inline_query_current_chat"
-            if current_chat
-            else "switch_inline_query",
+            (
+                "switch_inline_query_current_chat"
+                if current_chat
+                else "switch_inline_query"
+            ),
             query,
         )
 
@@ -138,7 +144,7 @@ class Poll(Button):
         self.request_poll = KeyboardButtonPollType(type=type)
 
 
-class RequestUser(Button):
+class RequestUsers(Button):
     """
     Pressing the button will open a list of users suitable for given criteria.
     Tapping on any user will send their identifier to the bot in a "user_shared"
@@ -151,10 +157,20 @@ class RequestUser(Button):
         request_id: int,
         is_bot: bool | None = None,
         is_premium: bool | None = None,
+        max_quantity: int | None = None,
+        request_name: bool | None = None,
+        request_username: bool | None = None,
+        request_photo: bool | None = None,
     ) -> None:
         super().__init__(text)
-        self.request_user = KeyboardButtonRequestUser(
-            request_id=request_id, user_is_bot=is_bot, user_is_premium=is_premium
+        self.request_users = KeyboardButtonRequestUsers(
+            request_id=request_id,
+            max_quantity=max_quantity,
+            user_is_bot=is_bot,
+            user_is_premium=is_premium,
+            request_name=request_name,
+            request_username=request_username,
+            request_photo=request_photo,
         )
 
 
@@ -173,9 +189,12 @@ class RequestChat(Button):
         is_forum: bool | None = None,
         has_username: bool | None = None,
         is_created: bool | None = None,
-        user_administrator_rights: ChatAdministratorRights | None = None,
-        bot_administrator_rights: ChatAdministratorRights | None = None,
+        user_administrator_rights: "ChatAdministratorRights | None" = None,
+        bot_administrator_rights: "ChatAdministratorRights | None" = None,
         bot_is_member: bool | None = None,
+        request_title: bool | None = None,
+        request_username: bool | None = None,
+        request_photo: bool | None = None,
     ) -> None:
         super().__init__(text)
         self.request_chat = KeyboardButtonRequestChat(
@@ -187,4 +206,24 @@ class RequestChat(Button):
             user_administrator_rights=user_administrator_rights,
             bot_administrator_rights=bot_administrator_rights,
             bot_is_member=bot_is_member,
+            request_title=request_title,
+            request_username=request_username,
+            request_photo=request_photo,
         )
+
+
+__all__ = (
+    "URL",
+    "App",
+    "Button",
+    "Callback",
+    "Contact",
+    "Game",
+    "Location",
+    "Login",
+    "Pay",
+    "Poll",
+    "RequestChat",
+    "RequestUsers",
+    "Switch",
+)

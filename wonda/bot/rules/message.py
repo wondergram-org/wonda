@@ -1,19 +1,19 @@
 from difflib import SequenceMatcher
-from re import Pattern, compile, match
+from typing import Iterable
 
 from wonda.bot.rules.abc import ABCRule
 from wonda.bot.updates import MessageUpdate
-from wonda.types.enums import ChatType, MessageEntityType
+from wonda.types.enums import ChatType
 
 
 class Command(ABCRule[MessageUpdate]):
     """
-    Checks if the text of the message contains a given bot command.
+    Checks if the message contains a command. When the command is found,
+    its arguments get stored in the `args` context field.
     """
 
-    def __init__(self, texts: str | list[str], prefixes: str | list[str] = "/") -> None:
-        self.texts = texts if isinstance(texts, list) else [texts]
-        self.prefixes = prefixes if isinstance(prefixes, list) else [prefixes]
+    def __init__(self, *texts: str, prefixes: Iterable[str] = ("/",)) -> None:
+        self.texts, self.prefixes = texts, prefixes
 
     async def check(self, m: MessageUpdate, ctx: dict) -> bool:
         text = m.text or m.caption
@@ -21,7 +21,7 @@ class Command(ABCRule[MessageUpdate]):
         if not text:
             return False
 
-        prefix, text, _, args = self.parse(text)
+        prefix, text, _, args = self.parse_cmd(text)
 
         if prefix not in self.prefixes or text not in self.texts:
             return False
@@ -30,7 +30,7 @@ class Command(ABCRule[MessageUpdate]):
         return True
 
     @staticmethod
-    def parse(text: str):
+    def parse_cmd(text: str) -> tuple[str, str, str, list[str]]:
         head, *tail = text.split()
         pfx, (cmd, _, tag) = head[0], head[1:].partition("@")
         return pfx, cmd, tag, tail
@@ -38,54 +38,24 @@ class Command(ABCRule[MessageUpdate]):
 
 class From(ABCRule[MessageUpdate]):
     """
-    Checks if the message was sent from user or public chat
-    with given username(-s).
+    Checks if the message was sent from the user or the public chat 
+    with given ID or username.
     """
 
-    def __init__(self, usernames: str | list[str]) -> None:
-        self.usernames = usernames if isinstance(usernames, list) else [usernames]
+    def __init__(self, *chats: int | str) -> None:
+        self.chats = set(chats)
 
     async def check(self, m: MessageUpdate, _) -> bool:
-        username = m.from_.username if m.from_ is not None else m.chat.username
-        return username in self.usernames
+        return m.chat.id in self.chats or m.chat.username in self.chats
 
 
-class Fuzzy(ABCRule[MessageUpdate]):
+class FromChannel(ABCRule[MessageUpdate]):
     """
-    Compares message text with the given text
-    and returns the closest match.
-    """
-
-    def __init__(self, texts: str | list[str], min_ratio: float = 0.7) -> None:
-        self.texts = texts if isinstance(texts, list) else [texts]
-        self.min_ratio = min_ratio
-
-    async def check(self, m: MessageUpdate, _) -> bool:
-        text = m.text or m.caption
-
-        if not text:
-            return False
-
-        closest = max(SequenceMatcher(None, t, text).ratio() for t in self.texts)
-        return closest >= self.min_ratio
-
-
-class IsReply(ABCRule[MessageUpdate]):
-    """
-    Checks if the message is a reply.
+    Checks if the message was sent in a channel.
     """
 
     async def check(self, m: MessageUpdate, _) -> bool:
-        return m.reply_to_message is not None
-
-
-class IsForward(ABCRule[MessageUpdate]):
-    """
-    Checks if the message was forwarded.
-    """
-
-    async def check(self, m: MessageUpdate, _) -> bool:
-        return m.forward_date is not None
+        return m.chat.type == ChatType.CHANNEL
 
 
 class FromGroup(ABCRule[MessageUpdate]):
@@ -97,6 +67,84 @@ class FromGroup(ABCRule[MessageUpdate]):
         return m.chat.type in (ChatType.GROUP, ChatType.SUPERGROUP)
 
 
+class FromTopic(ABCRule[MessageUpdate]):
+    """
+    Checks if the message was sent in a forum topic.
+    """
+
+    async def check(self, m: MessageUpdate, _) -> bool:
+        return m.message_thread_id is not None
+
+
+class Fuzzy(ABCRule[MessageUpdate]):
+    """
+    Checks if the message text compares closely with one of the given strings.
+    """
+
+    def __init__(self, *texts: str, min_ratio: float = 0.7) -> None:
+        self.texts = texts
+        self.min_ratio = min_ratio
+
+    async def check(self, m: MessageUpdate, _) -> bool:
+        text = m.text or m.caption
+
+        if not text:
+            return False
+
+        closest = max(self.get_string_similarity_ratio(t, text) for t in self.texts)
+        return closest >= self.min_ratio
+
+    @staticmethod
+    def get_string_similarity_ratio(a: str, b: str) -> float:
+        return SequenceMatcher(isjunk=None, a=a, b=b).ratio()
+
+
+class HasMediaSpoiler(ABCRule[MessageUpdate]):
+    """
+    Checks if the message has media that was marked with a spoiler.
+    """
+
+    async def check(self, m: MessageUpdate, _) -> bool:
+        return bool(m.has_media_spoiler)
+
+
+class HasProtectedContent(ABCRule[MessageUpdate]):
+    """
+    Checks if the message has protected content and can't be forwarded.
+    """
+
+    async def check(self, m: MessageUpdate, _) -> bool:
+        return bool(m.has_protected_content)
+
+
+class IsAutomaticForward(ABCRule[MessageUpdate]):
+    """
+    Checks if the message is a channel post automatically forwarded to 
+    the connected discussion group.
+    """
+
+    async def check(self, m: MessageUpdate, _) -> bool:
+        return bool(m.is_automatic_forward)
+
+
+class IsForward(ABCRule[MessageUpdate]):
+    """
+    Checks if the message was forwarded.
+    """
+
+    async def check(self, m: MessageUpdate, _) -> bool:
+        return m.forward_origin is not None
+
+
+class IsReply(ABCRule[MessageUpdate]):
+    """
+    Checks if the message is a reply.
+    """
+
+    async def check(self, m: MessageUpdate, _) -> bool:
+        return m.reply_to_message is not None
+
+
 class IsPrivate(ABCRule[MessageUpdate]):
     """
     Checks if the message is private.
@@ -106,79 +154,12 @@ class IsPrivate(ABCRule[MessageUpdate]):
         return m.chat.type == ChatType.PRIVATE
 
 
-class Length(ABCRule[MessageUpdate]):
+class IsSuccessfulPayment(ABCRule[MessageUpdate]):
     """
-    Checks if the message is longer than or equal to the given length.
+    Checks if the message is a service message about a successful payment.
     """
-
-    def __init__(self, min_length: int) -> None:
-        self.min_length = min_length
-
     async def check(self, m: MessageUpdate, _) -> bool:
-        text = m.text or m.caption
-
-        if not text:
-            return False
-
-        return len(text) >= self.min_length
-
-
-class Mention(ABCRule[MessageUpdate]):
-    """
-    Parses message entities and checks if the message contains mention(-s).
-    Returns a list of mentioned usernames.
-    """
-
-    async def check(self, m: MessageUpdate, ctx: dict) -> bool:
-        text = m.text or m.caption
-        entities = m.entities or m.caption_entities
-
-        if entities is None or text is None:
-            return False
-
-        mentions = [
-            text[e.offset : e.offset + e.length].strip("@")
-            for e in entities
-            if e.type == MessageEntityType.MENTION
-        ]
-
-        ctx["mentions"] = mentions
-        return True
-
-
-PatternLike = str | Pattern
-
-
-class Regex(ABCRule[MessageUpdate]):
-    """
-    Checks if the message text matches the given regex.
-    """
-
-    def __init__(self, expr: PatternLike | list[PatternLike]) -> None:
-        self.expr: list[Pattern[str]] = []
-
-        match expr:
-            case Pattern() as p:
-                self.expr += [p]
-            case str(p):
-                self.expr += [compile(p)]
-            case _:
-                self.expr += [
-                    compile(expr) if isinstance(expr, str) else e for e in expr  # type: ignore
-                ]
-
-    async def check(self, m: MessageUpdate, ctx: dict) -> bool:
-        text = m.text or m.caption
-
-        if not text:
-            return False
-
-        for e in self.expr:
-            if result := match(e, text):
-                ctx["match"] = result.groups()
-                return True
-
-        return False
+        return m.successful_payment is not None
 
 
 class WasEdited(ABCRule[MessageUpdate]):
@@ -188,3 +169,21 @@ class WasEdited(ABCRule[MessageUpdate]):
 
     async def check(self, m: MessageUpdate, _) -> bool:
         return m.edit_date is not None
+
+
+__all__ = (
+    "Command",
+    "From",
+    "FromChannel",
+    "FromGroup",
+    "FromTopic",
+    "Fuzzy",
+    "HasMediaSpoiler",
+    "HasProtectedContent",
+    "IsAutomaticForward",
+    "IsForward",
+    "IsReply",
+    "IsPrivate",
+    "IsSuccessfulPayment",
+    "WasEdited",
+)
