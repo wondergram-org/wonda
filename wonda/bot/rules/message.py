@@ -73,7 +73,7 @@ class FromTopic(ABCRule[MessageUpdate]):
     """
 
     async def check(self, m: MessageUpdate, _) -> bool:
-        return m.message_thread_id is not None
+        return bool(m.message_thread_id)
 
 
 class Fuzzy(ABCRule[MessageUpdate]):
@@ -133,7 +133,7 @@ class IsForward(ABCRule[MessageUpdate]):
     """
 
     async def check(self, m: MessageUpdate, _) -> bool:
-        return m.forward_origin is not None
+        return bool(m.forward_origin)
 
 
 class IsReply(ABCRule[MessageUpdate]):
@@ -142,7 +142,7 @@ class IsReply(ABCRule[MessageUpdate]):
     """
 
     async def check(self, m: MessageUpdate, _) -> bool:
-        return m.reply_to_message is not None
+        return bool(m.reply_to_message)
 
 
 class IsPrivate(ABCRule[MessageUpdate]):

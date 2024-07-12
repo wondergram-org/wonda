@@ -46,7 +46,7 @@ else:
             for pattern in self.patterns:
                 match = self.patcher.check(pattern, text)
 
-                if match is not False or match is not None:
+                if match is not None and match is not False:
                     ctx |= match
                     return True
 
