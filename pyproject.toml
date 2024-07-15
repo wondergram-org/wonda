@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wonda"
-version = "0.7.1"
+version = "0.7.2"
 description = "A fast, convenient bot framework for Telegram."
 authors = []
 license = "MIT"
@@ -9,9 +9,9 @@ homepage = "https://github.com/wondergram-org/wonda/"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-certifi = "^2023.7.22"
-aiohttp = "^3.8.5"
-structlog = "^23.1.0"
+certifi = "^2024.7.4"
+aiohttp = "^3.9.5"
+structlog = "^24.2.0"
 choicelib = "^0.1.5"
 msgspec = "^0.18.6"
 
