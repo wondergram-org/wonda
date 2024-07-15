@@ -9,8 +9,6 @@ from wonda.types.methods import APIMethods
 
 
 class DefaultAPI(ABCAPI, APIMethods):
-    REQUEST_URL = "https://api.telegram.org/"
-
     def __init__(
         self, token: Token, *, http_client: ABCNetworkClient | None = None
     ) -> None:
