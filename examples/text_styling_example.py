@@ -8,17 +8,20 @@ bot = Bot(Token.from_env())
 
 @bot.on.message(Command("styling"))
 async def styling_handler(m: Message) -> None:
-    # You can decorate your text with whatever text styles are available in the API.
-    # New styling options are quick and easy to implement. To implement a text style,
-    # inherit from `wonda.tools.text.styling.styles.TextStyle`.
+    # Wonda uses custom styling builder to format text. It's easy to read and maintain,
+    # and it extends as easily as the inferior styling method which uses parse modes.
+    # You can decorate text with any text styles that are available today. Here's
+    # an example using plain, bold, italic and underline styles.
     decorations = (
         Plain("Text. Plain and simple. ")
         + Bold("This is a bold statement. ")
         + Italic("Mama mia! ")
         + Underline("Notice me!")
     )
-    # This also includes blocks of text or code blocks. You can even nest other text styles
-    # inside while being able to customize them!
+
+    # Text styling also includes Blockquote and Code blocks to help decorate long blocks
+    # of text. You can put any number of entities inside these blocks, and they are
+    # super easy to customize.
     blocks = Blockquote(
         Link("Ernest Hemingway", "https://en.wikipedia.org/wiki/Ernest_Hemingway")
         + Plain(
@@ -26,8 +29,9 @@ async def styling_handler(m: Message) -> None:
         )
     ) + Code("print('Hello world!')", "python")
 
-    # Message shortcuts natively support text styles. They call `.to_text()` and `.to_entities()`
-    # under the hood on the chain to retrieve its text and translate text styles to entities.
+    # Message shortcuts natively support text styles. They call `.to_string()`
+    # and `.to_entities()` under the hood on the chain to retrieve
+    # its text and translate text styles to entities.
     await m.answer(decorations + blocks)
 
 
