@@ -7,7 +7,11 @@ _ = Any
 Text = Union[str, "ABCStyle"]
 
 
-class TextStyle(ABCStyle[MessageEntity]):
+class PlainStyle(ABCStyle[MessageEntity]):
+    """
+    A plain text style. It is ignored by the entity builder but affects text offsets.
+    """
+
     entity_type: MessageEntityType | None = None
 
     def __init__(self, text: Text) -> None:
@@ -21,13 +25,16 @@ class TextStyle(ABCStyle[MessageEntity]):
         return StyleChain(self, style)
 
     def __eq__(self, style: object) -> bool:
-        if not isinstance(style, TextStyle):
+        if not isinstance(style, PlainStyle):
             return False
 
         return type(self) is type(style) and self.to_string() == style.to_string()
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({', '.join(f'{k}={v!r}' for k, v in self.__dict__.items())})"
+        return (
+            f"{self.__class__.__name__}"
+            f"({', '.join(f'{k}={v!r}' for k, v in self.__dict__.items())})"
+        )
 
     def dict(self) -> dict[str, _]:
         return {k: v for k, v in self.__dict__.items() if k != "text"}
@@ -49,61 +56,55 @@ class TextStyle(ABCStyle[MessageEntity]):
         return self.text.to_string() if isinstance(self.text, ABCStyle) else self.text
 
 
-class PlainStyle(TextStyle):
-    """
-    A plain text style. It is ignored by the entity builder but affects text offsets.
-    """
-
-
-class BoldStyle(TextStyle, entity_type="bold"):
+class BoldStyle(PlainStyle, entity_type="bold"):
     """
     A bold text style.
     """
 
 
-class ItalicStyle(TextStyle, entity_type="italic"):
+class ItalicStyle(PlainStyle, entity_type="italic"):
     """
     An italic text style.
     """
 
 
-class UnderlineStyle(TextStyle, entity_type="underline"):
+class UnderlineStyle(PlainStyle, entity_type="underline"):
     """
     An underline text style.
     """
 
 
-class StrikethroughStyle(TextStyle, entity_type="strikethrough"):
+class StrikethroughStyle(PlainStyle, entity_type="strikethrough"):
     """
     A strikethrough text style.
     """
 
 
-class SpoilerStyle(TextStyle, entity_type="spoiler"):
+class SpoilerStyle(PlainStyle, entity_type="spoiler"):
     """
     A text spoiler.
     """
 
 
-class BlockquoteStyle(TextStyle, entity_type="blockquote"):
+class BlockquoteStyle(PlainStyle, entity_type="blockquote"):
     """
     A blockquote.
     """
 
 
-class ExpandableBlockquoteStyle(TextStyle, entity_type="expandable_blockquote"):
+class ExpandableBlockquoteStyle(PlainStyle, entity_type="expandable_blockquote"):
     """
     An expandable blockquote.
     """
 
 
-class InlineCodeStyle(TextStyle, entity_type="code"):
+class InlineCodeStyle(PlainStyle, entity_type="code"):
     """
     An inline code block.
     """
 
 
-class CodeStyle(TextStyle, entity_type="pre"):
+class CodeStyle(PlainStyle, entity_type="pre"):
     """
     A code block.
     """
@@ -113,7 +114,7 @@ class CodeStyle(TextStyle, entity_type="pre"):
         self.language = language
 
 
-class LinkStyle(TextStyle, entity_type="text_link"):
+class LinkStyle(PlainStyle, entity_type="text_link"):
     """
     A link style.
     """
@@ -132,7 +133,7 @@ class InlineMentionStyle(LinkStyle):
         super().__init__(text, f"tg://user?id={user_id}")
 
 
-class MentionStyle(TextStyle, entity_type="text_mention"):
+class MentionStyle(PlainStyle, entity_type="text_mention"):
     """
     A mention of a user without a username.
     """
@@ -142,7 +143,7 @@ class MentionStyle(TextStyle, entity_type="text_mention"):
         self.user = user
 
 
-class CustomEmojiStyle(TextStyle, entity_type="custom_emoji"):
+class CustomEmojiStyle(PlainStyle, entity_type="custom_emoji"):
     """
     A custom emoji style.
     """
