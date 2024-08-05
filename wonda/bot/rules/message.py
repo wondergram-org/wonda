@@ -38,7 +38,7 @@ class Command(ABCRule[MessageUpdate]):
 
 class From(ABCRule[MessageUpdate]):
     """
-    Checks if the message was sent from the user or the public chat 
+    Checks if the message was sent from the user or the public chat
     with given ID or username.
     """
 
@@ -119,7 +119,7 @@ class HasProtectedContent(ABCRule[MessageUpdate]):
 
 class IsAutomaticForward(ABCRule[MessageUpdate]):
     """
-    Checks if the message is a channel post automatically forwarded to 
+    Checks if the message is a channel post automatically forwarded to
     the connected discussion group.
     """
 
@@ -158,6 +158,7 @@ class IsSuccessfulPayment(ABCRule[MessageUpdate]):
     """
     Checks if the message is a service message about a successful payment.
     """
+
     async def check(self, m: MessageUpdate, _) -> bool:
         return m.successful_payment is not None
 

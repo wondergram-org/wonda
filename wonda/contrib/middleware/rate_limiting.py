@@ -7,6 +7,7 @@ class RateLimitingMiddleware(ABCMiddleware[MessageUpdate]):
     """
     Limits how often your bot should handle messages from a user.
     """
+
     def __init__(self, ex: int, storage: ABCExpiringStorage | None = None) -> None:
         self.ex, self.storage = ex, storage or MemoryExpiringStorage()
 

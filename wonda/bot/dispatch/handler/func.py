@@ -1,11 +1,10 @@
 import inspect
 from typing import Any, Callable, Concatenate, Coroutine, ParamSpec, TypeVar
 
-from wonda.bot.rules import ABCRule
-from wonda.bot.updates import BaseUpdate
-from wonda.modules import logger
+from wonda.bot.dispatch.handler.abc import ABCHandler
+from wonda.bot.rules.abc import ABCRule
+from wonda.bot.updates.base import BaseUpdate
 
-from .abc import ABCHandler
 
 _ = Any
 P = ParamSpec("P")
@@ -36,4 +35,7 @@ class FuncHandler(ABCHandler[T]):
         return await self.func(update, **accepts)
 
     def __repr__(self):
-        return f"FuncHandler(func={self.func.__name__}, blocking={self.blocking}, rules={self.rules})"
+        return (
+            f"FuncHandler(func={self.func.__name__}, "
+            f"blocking={self.blocking}, rules={self.rules})"
+        )

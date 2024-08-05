@@ -53,8 +53,6 @@ class DefaultDispatcher(ABCDispatcher):
         self.poll_answer = DefaultView(PollAnswer, "poll_answer")
         self.poll = DefaultView(Poll, "poll")
 
-    
-
     def load(self, dispatcher: "ABCDispatcher") -> None:
         assert self != dispatcher, "Dispatcher can't be loaded in itself"
 

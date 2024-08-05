@@ -63,12 +63,12 @@ class Regex(ABCRule[T]):
 
             if response is None:
                 return False
-            
+
             if matches := response.groupdict():
                 ctx |= matches
             elif matches := response.group() or response.groups():
                 ctx |= {"matches": tuple(matches)}
-            
+
             return True
 
         return False
