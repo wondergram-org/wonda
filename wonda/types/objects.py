@@ -266,6 +266,10 @@ class User(Model):
     Optional. True, if the bot can be connected to a Telegram Business
     account to receive its messages. Returned only in getMe.
     """
+    has_main_web_app: bool | None = None
+    """
+    Optional. True, if the bot has a main Web App. Returned only in getMe.
+    """
     is_premium: bool | None = None
     """
     Optional. True, if this user is a Telegram Premium user
