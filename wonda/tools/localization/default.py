@@ -4,6 +4,20 @@ from wonda.tools.localization.abc import ABCLocalizator
 from wonda.tools.localization.types import Locale, Translation
 
 
+def construct_key(source_directory: Path, file_path: Path) -> str:
+    return "/".join(
+        file_path.relative_to(source_directory).parts[:-1] + (file_path.stem,)
+    )
+
+
+def read_file_content(path: Path) -> str | bytes:
+    return (
+        path.read_text()
+        if path.suffix in (".txt", ".html", ".md")
+        else path.read_bytes()
+    )
+
+
 class DefaultLocalizator(ABCLocalizator):
     def __init__(self, path: Path | str, default_language: str = "en") -> None:
         self.default_language = default_language
@@ -25,21 +39,16 @@ class DefaultLocalizator(ABCLocalizator):
 
             self.locales[d.name] = Locale(d.name, self.load_translations(d))
 
-    def load_translations(self, source: Path) -> list[Translation]:
+    def load_translations(self, directory: Path) -> list[Translation]:
         translations = []
 
-        for path in source.iterdir():
-            if path.is_dir():
-                self.load_translations(path)
-            elif path.is_file():
-                content: bytes = path.read_bytes()
-
-                if path.suffix in (".txt", ".html", ".md"):
-                    content: bytes = content.decode("utf-8")
-
-                translations.append(Translation(path.stem, content))
+        for f in directory.rglob("*"):
+            if f.is_file():
+                translations.append(
+                    Translation(construct_key(directory, f), read_file_content(f))
+                )
 
         return translations
 
     def get_locale(self, language_code: str) -> Locale:
-        return self.locales.get(language_code, self.locales.get(self.default_language))
+        return self.locales.get(language_code, self.locales[self.default_language])
