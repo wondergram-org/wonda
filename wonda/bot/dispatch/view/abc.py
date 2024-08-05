@@ -24,6 +24,7 @@ if TYPE_CHECKING:
 P = ParamSpec("P")
 T = TypeVar("T", bound="BaseUpdate")
 FuncType = Callable[Concatenate[T, P], Coroutine[Any, Any, Any]]
+Decorator = Callable[[FuncType[T, P]], FuncType[T, P]]
 
 
 class ABCView(ABC, Generic[T]):
@@ -34,14 +35,12 @@ class ABCView(ABC, Generic[T]):
     def __init__(self) -> None:
         self.handlers, self.middleware, self.auto_rules = [], [], []
 
-    def __call__(
-        self, *rules: "ABCRule[T]", blocking: bool = True
-    ) -> Callable[[FuncType[T, P]], FuncType[T, P]]:
+    def __call__(self, *rules: "ABCRule[T]", blocking: bool = True) -> Decorator:
         assert all(
             isinstance(rule, ABCRule) for rule in rules
-        ), "All rules must be subclasses of ABCRule"
+        ), "All rules must be instances of ABCRule"
 
-        def decorator(func: FuncType[T, P]):
+        def decorator(func: FuncType[T, P]) -> FuncType[T, P]:
             self.register_handler(
                 FuncHandler(func, *self.auto_rules, *rules, blocking=blocking)
             )

@@ -18,7 +18,7 @@ class DefaultStateManager(ABCStateManager):
         return await self.storage.set(
             key=f"manager:{id}", value=StateRepr(state, id, payload)
         )
-    
+
     async def get(self, id: int | None) -> StateRepr | None:
         return await self.storage.get(f"manager:{id}", default=None)
 
@@ -41,7 +41,7 @@ class DefaultExpiringStateManager(ABCExpiringStateManager):
             value=StateRepr(state, id, payload),
         )
 
-    async def get(self, id: int) -> StateRepr:
+    async def get(self, id: int) -> StateRepr | None:
         return await self.storage.get(f"manager:{id}", default=None)
 
     async def clear(self, id: int) -> None:
