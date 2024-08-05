@@ -2,7 +2,7 @@ import importlib.util
 
 from wonda.modules import JSONModule, json
 from wonda.tools.storage.abc import ABCExpiringStorage
-from wonda.tools.storage.types import Ex, Key, Value
+from wonda.tools.storage.types import Ex, K, V
 
 redis = importlib.util.find_spec("redis")
 
@@ -15,7 +15,7 @@ if redis is None:
 else:
     from redis.asyncio import Redis
 
-    class RedisExpiringStorage(ABCExpiringStorage):
+    class RedisExpiringStorage(ABCExpiringStorage[K, V]):
         def __init__(
             self,
             host: str | None = None,
@@ -34,27 +34,27 @@ else:
             )
             self.json_processing_module = json_processing_module or json
 
-        async def get(self, key: Key, default: Value = ...) -> Value:
+        async def get(self, key: K, default: V | None = None) -> V | None:
             if await self.contains(key):
                 v = await self.client.get(key)
                 return self.json_processing_module.loads(v)
 
-            if default is ...:
+            if default is None:
                 raise KeyError("There is no such key")
 
             return default
 
-        async def set(self, key: Key, value: Value, ex: Ex = Ex("inf")) -> None:
+        async def set(self, key: K, value: V, ex: Ex = Ex("inf")) -> None:
             await self.client.set(
                 key, ex=ex, value=self.json_processing_module.dumps(value)
             )
             return None
 
-        async def contains(self, key: Key) -> bool:
+        async def contains(self, key: K) -> bool:
             result = await self.client.exists(key)
             return bool(result)
 
-        async def delete(self, key: Key) -> None:
+        async def delete(self, key: K) -> None:
             if not await self.contains(key):
                 raise KeyError("Storage does not contain this key")
 

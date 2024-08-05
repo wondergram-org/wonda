@@ -1,7 +1,7 @@
-from typing import Any, Callable
+from typing import Callable, TypeVar
 
-Key = str
+K = TypeVar("K")
 Ex = float
 
-Value = Any
-Dumper, Loader = Callable[[Value], str], Callable[[str], Value]
+V = TypeVar("V")
+Dumper, Loader = Callable[[V], str], Callable[[str], V]

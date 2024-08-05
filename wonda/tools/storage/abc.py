@@ -1,29 +1,30 @@
 from abc import ABC, abstractmethod
+from typing import Generic
 
-from wonda.tools.storage.types import Ex, Key, Value
+from wonda.tools.storage.types import Ex, K, V
 
 
-class ABCBaseStorage(ABC):
+class ABCBaseStorage(ABC, Generic[K, V]):
     @abstractmethod
-    async def get(self, key: Key, default: Value = ...) -> Value:
+    async def get(self, key: K, default: V | None = None) -> V | None:
         pass
 
     @abstractmethod
-    async def delete(self, key: Key) -> None:
+    async def delete(self, key: K) -> None:
         pass
 
     @abstractmethod
-    async def contains(self, key: Key) -> bool:
+    async def contains(self, key: K) -> bool:
         pass
 
 
-class ABCStorage(ABCBaseStorage):
+class ABCStorage(ABCBaseStorage[K, V]):
     @abstractmethod
-    async def set(self, key: Key, value: Value) -> None:
+    async def set(self, key: K, value: V) -> None:
         pass
 
 
-class ABCExpiringStorage(ABCBaseStorage):
+class ABCExpiringStorage(ABCBaseStorage[K, V]):
     @abstractmethod
-    async def set(self, key: Key, value: Value, ex: Ex) -> None:
+    async def set(self, key: K, value: V, ex: Ex) -> None:
         pass
