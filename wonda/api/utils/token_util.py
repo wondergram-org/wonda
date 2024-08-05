@@ -41,6 +41,10 @@ class Token(str):
                 "https://core.telegram.org/bots/api#making-requests"
             )
         return super().__new__(cls, token)
+    
+    @property
+    def user_id(self) -> int:
+        return int(self.split(":")[0])
 
     @classmethod
     def from_file(

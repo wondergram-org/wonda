@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 
 class ABCAPI(ABC):
-    API_URL = "https://api.telegram.org/"
+    REQUEST_URL = "https://api.telegram.org/"
 
     network_client: "ABCNetworkClient"
     token: "Token"
@@ -17,14 +17,14 @@ class ABCAPI(ABC):
         """
         URL for API requests.
         """
-        return self.API_URL + f"bot{self.token}/"
+        return self.REQUEST_URL + f"bot{self.token}/"
 
     @property
     def file_url(self) -> str:
         """
         Link to the file storage of the bot.
         """
-        return self.API_URL + f"file/bot{self.token}/"
+        return self.REQUEST_URL + f"file/bot{self.token}/"
 
     @abstractmethod
     async def request(self, method: str, params: dict) -> bytes:
