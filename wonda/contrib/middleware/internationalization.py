@@ -11,13 +11,18 @@ class InternationalizationMiddleware(ABCMiddleware[MessageUpdate]):
     def __init__(
         self,
         localizator: ABCLocalizator | None = None,
+        *,
         default_language_code: str = "en",
+        context_name: str = "locale",
     ) -> None:
+        self.context_name = context_name
         self.default_language_code = default_language_code
         self.localizator = localizator or DefaultLocalizator("loc/")
 
     async def pre(self, m: MessageUpdate, ctx: dict) -> bool:
-        ctx["locale"] = self.localizator.get_locale(await self.get_language_code(m))
+        ctx[self.context_name] = self.localizator.get_locale(
+            await self.get_language_code(m)
+        )
         return True
 
     async def get_language_code(self, m: MessageUpdate) -> str:
