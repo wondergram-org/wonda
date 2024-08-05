@@ -32,16 +32,15 @@ class ABCDispatcher(ABC):
     message: ABCView["MessageUpdate"]
     """
     This view is used to handle message updates. It receives `message` and
-    `edited_message` updates. Edited message updates can be sent even when
-    the fields changes are made to are not available for your bot.
+    `edited_message` updates. Edited message updates can be sent even if
+    the changed fields are not available to your bot.
     """
 
     channel_post: ABCView["MessageUpdate"]
     """
     A view for handling channel posts. It receives `channel_post` and
-    `edited_channel_post` updates. Edited message updates can be sent
-    even when the fields changes are made to are not available
-    for your bot.
+    `edited_channel_post` updates. Edited channel post updates can be 
+    sent even if the changed fields are not available to your bot.
     """
 
     business_connection: ABCView["BusinessConnectionUpdate"]
@@ -55,6 +54,8 @@ class ABCDispatcher(ABC):
     """
     A view for handling messages from connected business accounts.
     It receives `business_message` and `edited_business_message` updates.
+    Edited business message updates can be sent even if the changed fields 
+    are not available to your bot.
     """
 
     deleted_business_messages: ABCView["DeletedBusinessMessagesUpdate"]
@@ -112,7 +113,7 @@ class ABCDispatcher(ABC):
 
     shipping_query: ABCView["ShippingQueryUpdate"]
     """
-    A view for handling shipping queries. This update is received only
+    A view for handling shipping queries. This update is sent only
     if the invoice has a flexible price.
     """
 
@@ -141,8 +142,8 @@ class ABCDispatcher(ABC):
 
     poll: ABCView["PollUpdate"]
     """
-    This view is used to handle updates made to a poll, such as content edits
-    or manual closure.
+    This view handles updates to polls, including content modifications 
+    and manual closures.
     """
 
     @abstractmethod
