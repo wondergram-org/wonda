@@ -10,12 +10,12 @@ from wonda.types.methods import APIMethods
 
 class DefaultAPI(ABCAPI, APIMethods):
     def __init__(
-        self, token: Token, *, http_client: ABCNetworkClient | None = None
+        self, token: Token, *, network_client: ABCNetworkClient | None = None
     ) -> None:
         super().__init__(self)
 
         self.token = token
-        self.network_client = http_client or DefaultNetworkClient()
+        self.network_client = network_client or DefaultNetworkClient()
 
     async def request(self, method: str, params: dict) -> bytes:
         await logger.adebug("Calling", method=method, params=params)
