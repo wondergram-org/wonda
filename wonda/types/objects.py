@@ -572,18 +572,19 @@ class Message(Model):
     """
     from_: "User | None" = None
     """
-    Optional. Sender of the message; empty for messages sent to channels.
-    For backward compatibility, the field contains a fake sender user in
-    non-channel chats, if the message was sent on behalf of a chat.
+    Optional. Sender of the message; may be empty for messages sent to
+    channels. For backward compatibility, if the message was sent on
+    behalf of a chat, the field contains a fake sender user in non-channel
+    chats
     """
     sender_chat: "Chat | None" = None
     """
-    Optional. Sender of the message, sent on behalf of a chat. For
-    example, the channel itself for channel posts, the supergroup itself
-    for messages from anonymous group administrators, the linked channel
-    for messages automatically forwarded to the discussion group. For
-    backward compatibility, the field from contains a fake sender user in
-    non-channel chats, if the message was sent on behalf of a chat.
+    Optional. Sender of the message when sent on behalf of a chat. For
+    example, the supergroup itself for messages sent by its anonymous
+    administrators or a linked channel for messages automatically
+    forwarded to the channel's discussion group. For backward
+    compatibility, if the message was sent on behalf of a chat, the field
+    from contains a fake sender user in non-channel chats.
     """
     sender_boost_count: int | None = None
     """
@@ -3128,6 +3129,17 @@ class ChatInviteLink(Model):
     """
     Optional. Number of pending join requests created using this link
     """
+    subscription_period: int | None = None
+    """
+    Optional. The number of seconds the subscription will be active for
+    before the next payment
+    """
+    subscription_price: int | None = None
+    """
+    Optional. The amount of Telegram Stars a user must pay initially and
+    after each subsequent subscription period to be a member of the chat
+    using the link
+    """
 
 
 class ChatAdministratorRights(Model):
@@ -3375,6 +3387,10 @@ class ChatMemberMember(Model, tag_field="status", tag="member"):
     user: "User"
     """
     Information about the user
+    """
+    until_date: int | None = None
+    """
+    Optional. Date when the user's subscription will expire; Unix time
     """
 
 
@@ -3727,6 +3743,12 @@ class ReactionTypeCustomEmoji(Model, tag_field="type", tag="custom_emoji"):
     custom_emoji_id: str
     """
     Custom emoji identifier
+    """
+
+
+class ReactionTypePaid(Model, tag_field="type", tag="paid"):
+    """
+    The reaction is paid.
     """
 
 
@@ -6444,6 +6466,10 @@ class TransactionPartnerUser(Model, tag_field="type", tag="user"):
     """
     Optional. Bot-specified invoice payload
     """
+    paid_media: "list[PaidMedia] | None" = None
+    """
+    Optional. Information about the paid media bought by the user
+    """
 
 
 class TransactionPartnerFragment(Model, tag_field="type", tag="fragment"):
@@ -6989,10 +7015,10 @@ ChatMemberRestricted, ChatMemberLeft, ChatMemberBanned.
 """
 
 
-ReactionType = ReactionTypeEmoji | ReactionTypeCustomEmoji
+ReactionType = ReactionTypeEmoji | ReactionTypeCustomEmoji | ReactionTypePaid
 """
 This object describes the type of a reaction. Currently, it can be one
-of ReactionTypeEmoji, ReactionTypeCustomEmoji.
+of ReactionTypeEmoji, ReactionTypeCustomEmoji, ReactionTypePaid.
 """
 
 

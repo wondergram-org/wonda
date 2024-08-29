@@ -201,6 +201,7 @@ from .objects import (
     ReactionType,
     ReactionTypeCustomEmoji,
     ReactionTypeEmoji,
+    ReactionTypePaid,
     RefundedPayment,
     ReplyKeyboardMarkup,
     ReplyKeyboardRemove,

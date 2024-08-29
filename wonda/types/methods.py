@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from .helper import from_json, get_params
 from .objects import (
@@ -520,11 +520,12 @@ class APIMethods:
         disable_notification: bool | None = None,
         caption_entities: list[MessageEntity] | None = None,
         caption: str | None = None,
+        business_connection_id: str | None = None,
         **kwargs,
     ) -> Message:
         """
-        Use this method to send paid media to channel chats. On success, the
-        sent Message is returned.
+        Use this method to send paid media. On success, the sent Message is
+        returned.
         """
         response = await self.api.request("sendPaidMedia", get_params(locals()))
         return from_json(response, type=Message)
@@ -644,7 +645,7 @@ class APIMethods:
         question: str,
         options: list[InputPollOption],
         chat_id: int | str,
-        type: str | None = None,
+        type: Literal["quiz", "regular"] | None = None,
         reply_parameters: ReplyParameters | None = None,
         reply_markup: InlineKeyboardMarkup
         | ReplyKeyboardMarkup
@@ -688,7 +689,7 @@ class APIMethods:
         protect_content: bool | None = None,
         message_thread_id: int | None = None,
         message_effect_id: str | None = None,
-        emoji: str | None = None,
+        emoji: Literal["🎲", "🎯", "🏀", "⚽", "🎳", "🎰"] | None = None,
         disable_notification: bool | None = None,
         business_connection_id: str | None = None,
         **kwargs,
@@ -703,7 +704,19 @@ class APIMethods:
     async def send_chat_action(
         self,
         chat_id: int | str,
-        action: str,
+        action: Literal[
+            "typing",
+            "upload_photo",
+            "record_video",
+            "upload_video",
+            "record_voice",
+            "upload_voice",
+            "upload_document",
+            "choose_sticker",
+            "find_location",
+            "record_video_note",
+            "upload_video_note",
+        ],
         message_thread_id: int | None = None,
         business_connection_id: str | None = None,
         **kwargs,
@@ -735,7 +748,8 @@ class APIMethods:
         Use this method to change the chosen reactions on a message. Service
         messages can't be reacted to. Automatically forwarded messages from a
         channel to its discussion group have the same available reactions as
-        messages in the channel. Returns True on success.
+        messages in the channel. Bots can't use paid reactions. Returns True
+        on success.
         """
         response = await self.api.request("setMessageReaction", get_params(locals()))
         return from_json(response, type=bool)
@@ -958,6 +972,39 @@ class APIMethods:
         response = await self.api.request("editChatInviteLink", get_params(locals()))
         return from_json(response, type=ChatInviteLink)
 
+    async def create_chat_subscription_invite_link(
+        self,
+        subscription_price: int,
+        subscription_period: int,
+        chat_id: int | str,
+        name: str | None = None,
+        **kwargs,
+    ) -> ChatInviteLink:
+        """
+        Use this method to create a subscription invite link for a channel
+        chat. The bot must have the can_invite_users administrator rights. The
+        link can be edited using the method editChatSubscriptionInviteLink or
+        revoked using the method revokeChatInviteLink. Returns the new invite
+        link as a ChatInviteLink object.
+        """
+        response = await self.api.request(
+            "createChatSubscriptionInviteLink", get_params(locals())
+        )
+        return from_json(response, type=ChatInviteLink)
+
+    async def edit_chat_subscription_invite_link(
+        self, invite_link: str, chat_id: int | str, name: str | None = None, **kwargs
+    ) -> ChatInviteLink:
+        """
+        Use this method to edit a subscription invite link created by the bot.
+        The bot must have the can_invite_users administrator rights. Returns
+        the edited invite link as a ChatInviteLink object.
+        """
+        response = await self.api.request(
+            "editChatSubscriptionInviteLink", get_params(locals())
+        )
+        return from_json(response, type=ChatInviteLink)
+
     async def revoke_chat_invite_link(
         self, invite_link: str, chat_id: int | str, **kwargs
     ) -> ChatInviteLink:
@@ -1174,7 +1221,8 @@ class APIMethods:
         name: str,
         chat_id: int | str,
         icon_custom_emoji_id: str | None = None,
-        icon_color: int | None = None,
+        icon_color: Literal[7322096, 16766590, 13338331, 9367192, 16749490, 16478047]
+        | None = None,
         **kwargs,
     ) -> ForumTopic:
         """
@@ -1197,8 +1245,8 @@ class APIMethods:
         """
         Use this method to edit name and icon of a topic in a forum supergroup
         chat. The bot must be an administrator in the chat for this to work
-        and must have can_manage_topics administrator rights, unless it is the
-        creator of the topic. Returns True on success.
+        and must have the can_manage_topics administrator rights, unless it is
+        the creator of the topic. Returns True on success.
         """
         response = await self.api.request("editForumTopic", get_params(locals()))
         return from_json(response, type=bool)
@@ -1259,8 +1307,8 @@ class APIMethods:
         """
         Use this method to edit the name of the 'General' topic in a forum
         supergroup chat. The bot must be an administrator in the chat for this
-        to work and must have can_manage_topics administrator rights. Returns
-        True on success.
+        to work and must have the can_manage_topics administrator rights.
+        Returns True on success.
         """
         response = await self.api.request("editGeneralForumTopic", get_params(locals()))
         return from_json(response, type=bool)
@@ -1756,7 +1804,11 @@ class APIMethods:
         return from_json(response, type=list[Sticker])
 
     async def upload_sticker_file(
-        self, user_id: int, sticker_format: str, sticker: InputFile, **kwargs
+        self,
+        user_id: int,
+        sticker_format: Literal["static", "animated", "video"],
+        sticker: InputFile,
+        **kwargs,
     ) -> File:
         """
         Use this method to upload a file with a sticker for later use in the
@@ -1773,7 +1825,7 @@ class APIMethods:
         title: str,
         stickers: list[InputSticker],
         name: str,
-        sticker_type: str | None = None,
+        sticker_type: Literal["mask", "custom_emoji"] | None = None,
         needs_repainting: bool | None = None,
         **kwargs,
     ) -> bool:
@@ -1875,7 +1927,7 @@ class APIMethods:
         self,
         user_id: int,
         name: str,
-        format: str,
+        format: Literal["static", "animated", "video"],
         thumbnail: InputFile | str | None = None,
         **kwargs,
     ) -> bool:
