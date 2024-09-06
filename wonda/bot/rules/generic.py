@@ -54,7 +54,15 @@ class Regex(ABCRule[T]):
     async def check(self, upd: T, ctx: dict) -> bool:
         if not any(
             text := getattr(upd, src, "")
-            for src in ("text", "caption", "data", "query", "question")
+            for src in (
+                "text",
+                "caption",
+                "data",
+                "query",
+                "question",
+                "invoice_payload",
+                "paid_media_payload",
+            )
         ):
             return False
 
@@ -118,7 +126,15 @@ class Text(ABCRule[T]):
     async def check(self, upd: T, _) -> bool:
         if not any(
             text := getattr(upd, src, "")
-            for src in ("text", "caption", "data", "query", "question")
+            for src in (
+                "text",
+                "caption",
+                "data",
+                "query",
+                "question",
+                "invoice_payload",
+                "paid_media_payload",
+            )
         ):
             return False
 

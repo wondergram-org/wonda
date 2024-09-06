@@ -16,7 +16,7 @@ async def message_handler(m: Message) -> None:
     # If the match is successful, following lines will be executed.
 
     # This line will call a shortcut method to answer a message from user
-    # (see https://github.com/wondergram-org/wonda/blob/main/wonda/bot/updates/types.py#L54).
+    # (see https://github.com/wondergram-org/wonda/blob/main/wonda/bot/updates/types.py#L63).
     await m.answer("Hello, friend!")
 
 
