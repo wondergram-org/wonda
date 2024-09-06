@@ -178,6 +178,7 @@ from .objects import (
     PaidMediaInfo,
     PaidMediaPhoto,
     PaidMediaPreview,
+    PaidMediaPurchased,
     PaidMediaVideo,
     PassportData,
     PassportElementError,

@@ -516,6 +516,7 @@ class APIMethods:
         | ForceReply
         | None = None,
         protect_content: bool | None = None,
+        payload: str | None = None,
         parse_mode: str | None = None,
         disable_notification: bool | None = None,
         caption_entities: list[MessageEntity] | None = None,

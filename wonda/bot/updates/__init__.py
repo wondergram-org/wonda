@@ -14,6 +14,7 @@ from .types import (
     PollAnswerUpdate,
     PollUpdate,
     PreCheckoutQueryUpdate,
+    PurchasedPaidMediaUpdate,
     RemovedChatBoostUpdate,
     ShippingQueryUpdate,
 )
@@ -31,6 +32,7 @@ ChatBoost = ChatBoostUpdate
 RemovedChatBoost = RemovedChatBoostUpdate
 ChosenInlineResult = ChosenInlineResultUpdate
 PreCheckoutQuery = PreCheckoutQueryUpdate
+PurchasedPaidMedia = PurchasedPaidMediaUpdate
 ShippingQuery = ShippingQueryUpdate
 PollAnswer = PollAnswerUpdate
 Poll = PollUpdate

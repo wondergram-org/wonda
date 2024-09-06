@@ -124,6 +124,11 @@ class Update(Model):
     Optional. New incoming pre-checkout query. Contains full information
     about checkout
     """
+    purchased_paid_media: "PaidMediaPurchased | None" = None
+    """
+    Optional. A user purchased paid media with a non-empty payload sent by
+    the bot in a non-channel chat
+    """
     poll: "Poll | None" = None
     """
     Optional. New poll state. Bots receive only updates about manually
@@ -2335,7 +2340,13 @@ class VideoChatParticipantsInvited(Model):
 class GiveawayCreated(Model):
     """
     This object represents a service message about the creation of a
-    scheduled giveaway. Currently holds no information.
+    scheduled giveaway.
+    """
+
+    prize_star_count: int | None = None
+    """
+    Optional. The number of Telegram Stars to be split between giveaway
+    winners; for Telegram Star giveaways only
     """
 
 
@@ -2371,10 +2382,16 @@ class Giveaway(Model):
     Users with a phone number that was bought on Fragment can always
     participate in giveaways.
     """
+    prize_star_count: int | None = None
+    """
+    Optional. The number of Telegram Stars to be split between giveaway
+    winners; for Telegram Star giveaways only
+    """
     premium_subscription_month_count: int | None = None
     """
     Optional. The number of months the Telegram Premium subscription won
-    from the giveaway will be active for
+    from the giveaway will be active for; for Telegram Premium giveaways
+    only
     """
     only_new_members: bool | None = None
     """
@@ -2420,10 +2437,16 @@ class GiveawayWinners(Model):
     Optional. The number of other chats the user had to join in order to
     be eligible for the giveaway
     """
+    prize_star_count: int | None = None
+    """
+    Optional. The number of Telegram Stars that were split between
+    giveaway winners; for Telegram Star giveaways only
+    """
     premium_subscription_month_count: int | None = None
     """
     Optional. The number of months the Telegram Premium subscription won
-    from the giveaway will be active for
+    from the giveaway will be active for; for Telegram Premium giveaways
+    only
     """
     unclaimed_prize_count: int | None = None
     """
@@ -2463,6 +2486,11 @@ class GiveawayCompleted(Model):
     """
     Optional. Message with the giveaway that was completed, if it wasn't
     deleted
+    """
+    is_star_giveaway: bool | None = None
+    """
+    Optional. True, if the giveaway is a Telegram Star giveaway.
+    Otherwise, currently, the giveaway is a Telegram Premium giveaway.
     """
 
 
@@ -4035,9 +4063,11 @@ class ChatBoostSourceGiftCode(Model, tag_field="source", tag="gift_code"):
 
 class ChatBoostSourceGiveaway(Model, tag_field="source", tag="giveaway"):
     """
-    The boost was obtained by the creation of a Telegram Premium giveaway.
-    This boosts the chat 4 times for the duration of the corresponding
-    Telegram Premium subscription.
+    The boost was obtained by the creation of a Telegram Premium or a
+    Telegram Star giveaway. This boosts the chat 4 times for the duration
+    of the corresponding Telegram Premium subscription for Telegram
+    Premium giveaways and ??? times for one year for Telegram Star
+    giveaways.
     """
 
     giveaway_message_id: int
@@ -4048,7 +4078,13 @@ class ChatBoostSourceGiveaway(Model, tag_field="source", tag="giveaway"):
     """
     user: "User | None" = None
     """
-    Optional. User that won the prize in the giveaway if any
+    Optional. User that won the prize in the giveaway if any; for Telegram
+    Premium giveaways only
+    """
+    prize_star_count: int | None = None
+    """
+    Optional. The number of Telegram Stars to be split between giveaway
+    winners; for Telegram Star giveaways only
     """
     is_unclaimed: bool | None = None
     """
@@ -6029,7 +6065,7 @@ class InputInvoiceMessageContent(Model):
     payload: str
     """
     Bot-defined invoice payload, 1-128 bytes. This will not be displayed
-    to the user, use for your internal processes.
+    to the user, use it for your internal processes.
     """
     currency: str
     """
@@ -6426,6 +6462,21 @@ class PreCheckoutQuery(Model):
     """
 
 
+class PaidMediaPurchased(Model):
+    """
+    This object contains information about a paid media purchase.
+    """
+
+    from_: "User"
+    """
+    User who purchased the media
+    """
+    paid_media_payload: str
+    """
+    Bot-specified paid media payload
+    """
+
+
 class RevenueWithdrawalStatePending(Model, tag_field="type", tag="pending"):
     """
     The withdrawal is in progress.
@@ -6469,6 +6520,10 @@ class TransactionPartnerUser(Model, tag_field="type", tag="user"):
     paid_media: "list[PaidMedia] | None" = None
     """
     Optional. Information about the paid media bought by the user
+    """
+    paid_media_payload: str | None = None
+    """
+    Optional. Bot-specified paid media payload
     """
 
 

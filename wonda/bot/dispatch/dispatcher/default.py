@@ -15,6 +15,7 @@ from wonda.bot.updates import (
     Poll,
     PollAnswer,
     PreCheckoutQuery,
+    PurchasedPaidMedia,
     RemovedChatBoost,
     ShippingQuery,
 )
@@ -47,6 +48,9 @@ class DefaultDispatcher(ABCDispatcher):
             ChosenInlineResult, "chosen_inline_result"
         )
         self.pre_checkout_query = DefaultView(PreCheckoutQuery, "pre_checkout_query")
+        self.purchased_paid_media = DefaultView(
+            PurchasedPaidMedia, "purchased_paid_media"
+        )
         self.shipping_query = DefaultView(ShippingQuery, "shipping_query")
         self.chat_boost = DefaultView(ChatBoost, "chat_boost")
         self.removed_chat_boost = DefaultView(RemovedChatBoost, "removed_chat_boost")

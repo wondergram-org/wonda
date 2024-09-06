@@ -19,6 +19,7 @@ if TYPE_CHECKING:
         PollAnswerUpdate,
         PollUpdate,
         PreCheckoutQueryUpdate,
+        PurchasedPaidMediaUpdate,
         RemovedChatBoostUpdate,
         ShippingQueryUpdate,
     )
@@ -120,6 +121,11 @@ class ABCDispatcher(ABC):
     pre_checkout_query: ABCView["PreCheckoutQueryUpdate"]
     """
     This view is used to handle pre-checkout queries.
+    """
+
+    purchased_paid_media: ABCView["PurchasedPaidMediaUpdate"]
+    """
+    A view for handling paid media purchased by a user in a non-channel chat.
     """
 
     chat_boost: ABCView["ChatBoostUpdate"]

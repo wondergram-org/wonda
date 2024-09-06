@@ -22,6 +22,7 @@ from wonda.types.objects import (
     MessageEntity,
     MessageReactionCountUpdated,
     MessageReactionUpdated,
+    PaidMediaPurchased,
     Poll,
     PollAnswer,
     PreCheckoutQuery,
@@ -50,6 +51,7 @@ class BotUpdateType(Enum):
     CALLBACK_QUERY = "callback_query"
     SHIPPING_QUERY = "shipping_query"
     PRE_CHECKOUT_QUERY = "pre_checkout_query"
+    PURCHASED_PAID_MEDIA = "purchased_paid_media"
     POLL = "poll"
     POLL_ANSWER = "poll_answer"
     MY_CHAT_MEMBER = "my_chat_member"
@@ -198,6 +200,7 @@ class CallbackQueryUpdate(BaseUpdate, CallbackQuery):
             chat_id=self.message.chat.id,
             message_id=self.message.message_id,
             inline_message_id=self.inline_message_id,
+            business_connection_id=self.message.business_connection_id,
             **params,
         )
 
@@ -215,7 +218,10 @@ class CallbackQueryUpdate(BaseUpdate, CallbackQuery):
 
         if "caption_entities" not in params and isinstance(caption, ABCStyle):
             params.update(
-                {"caption": caption.to_string(), "caption_entities": caption.to_entities()}
+                {
+                    "caption": caption.to_string(),
+                    "caption_entities": caption.to_entities(),
+                }
             )
 
         assert self.message is not None, "Message is not available"
@@ -223,6 +229,7 @@ class CallbackQueryUpdate(BaseUpdate, CallbackQuery):
             chat_id=self.message.chat.id,
             message_id=self.message.message_id,
             inline_message_id=self.inline_message_id,
+            business_connection_id=self.message.business_connection_id,
             **get_params(locals()),
         )
 
@@ -234,6 +241,7 @@ class CallbackQueryUpdate(BaseUpdate, CallbackQuery):
             chat_id=self.message.chat.id,
             message_id=self.message.message_id,
             inline_message_id=self.inline_message_id,
+            business_connection_id=self.message.business_connection_id,
             **get_params(locals()),
         )
 
@@ -340,6 +348,9 @@ class RemovedChatBoostUpdate(BaseUpdate, ChatBoostRemoved): ...
 class PollUpdate(BaseUpdate, Poll): ...
 
 
+class PurchasedPaidMediaUpdate(BaseUpdate, PaidMediaPurchased): ...
+
+
 __all__ = (
     "BaseUpdate",
     "BotUpdateType",
@@ -347,10 +358,17 @@ __all__ = (
     "CallbackQueryUpdate",
     "InlineQueryUpdate",
     "ChatJoinRequestUpdate",
-    "ChatMemberUpdate",
-    "ChosenInlineResultUpdate",
     "PreCheckoutQueryUpdate",
     "ShippingQueryUpdate",
+    "ChatMemberUpdate",
+    "ChosenInlineResultUpdate",
     "PollAnswerUpdate",
+    "MessageReactionUpdate",
+    "BusinessConnectionUpdate",
+    "DeletedBusinessMessagesUpdate",
+    "MessageReactionCountUpdate",
+    "ChatBoostUpdate",
+    "RemovedChatBoostUpdate",
     "PollUpdate",
+    "PurchasedPaidMediaUpdate",
 )
