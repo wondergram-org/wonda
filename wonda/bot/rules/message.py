@@ -12,18 +12,18 @@ class Command(ABCRule[MessageUpdate]):
     its arguments get stored in the `args` context field.
     """
 
-    def __init__(self, *texts: str, prefixes: Iterable[str] = ("/",)) -> None:
-        self.texts, self.prefixes = texts, prefixes
+    def __init__(self, *aliases: str, prefixes: Iterable[str] = ("/",)) -> None:
+        self.aliases, self.prefixes = aliases, prefixes
 
     async def check(self, m: MessageUpdate, ctx: dict) -> bool:
-        text = m.text or m.caption
+        alias = m.text or m.caption
 
-        if not text:
+        if not alias:
             return False
 
-        prefix, text, _, args = self.parse_cmd(text)
+        prefix, text, _, args = self.parse_cmd(alias)
 
-        if prefix not in self.prefixes or text not in self.texts:
+        if prefix not in self.prefixes or text not in self.aliases:
             return False
 
         ctx["args"] = args
