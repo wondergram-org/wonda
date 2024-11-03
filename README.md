@@ -1,17 +1,19 @@
-# Wonda 🍄
+# Wonda [🍄]
 
-[//]: # "Features"
+[//]: # "Links"
 [examples]: examples/
 [format text]: examples/text_styling_example.py
 [upload files]: examples/file_upload_example.py
 [an advanced state system]: examples/use_state_manager.py
+[translate your bot to dozens of languages]: examples/internationalization_example.py
+[🍄]: https://t.me/wndrgrm
 
 [//]: # "Badges"
 ![Version](https://img.shields.io/pypi/v/wonda?label=version&style=flat-square)
 ![Package downloads](https://img.shields.io/pypi/dw/wonda?label=downloads&style=flat-square)
 ![Supported Python versions](https://img.shields.io/pypi/pyversions/wonda?label=supported%20python%20versions&style=flat-square)
 
-Wonda is a Telegram bot framework. It strikes a perfect balance between simple and advanced and makes bot development a breeze. Its concepts are easy to understand and extend. And, with immediate support for latest Bot API versions, it always stays up to the standard.
+Wonda is a Telegram bot framework. It's light, blazing fast and feature rich. It also supports latest Bot API versions immediately. **Join our Telegram forum by clicking the mushroom up top!**
 
 ## Install
 
@@ -23,7 +25,7 @@ A stable version of Wonda can be installed using this command. Add `--pre` to th
 
 ## Features
 
-Ever wanted to build a bot? You can do that in only 6 lines of code.
+You can build a basic bot in only 6 lines of code:
 
 ```python
 from wonda import Bot, Message
@@ -38,7 +40,7 @@ async def handler(m: Message) -> None:
 bot.run_forever()
 ```
 
-You can already [format text], [upload files], and make use of [an advanced state system] to build complex interactions. More features are expected to come! Check out the [examples].
+You can also [format text], [upload files], [translate your bot to dozens of languages] and make use of [an advanced state system] to build complex interactions. To learn more, check out the [examples].
 
 ## Customization
 
@@ -84,4 +86,4 @@ There are a couple options available for monetary help. Click [Sponsor](https://
 
 ## License
 
-This project exists thanks to the amazing work done by timoniq. Code is licensed under [MIT](LICENSE). Copyright (c) 2022-2024 kikimaradoni
+This project exists thanks to the amazing work done by timoniq. Code is licensed under [MIT](LICENSE).
