@@ -29,12 +29,11 @@ class StyleChain(ABCStyle[E], Generic[E]):
 
         for style in self.styles:
             entities = style.to_entities()
-            text = style.to_string()
 
             for entity in entities:
                 entity.offset += cursor
 
-            cursor += len(text)
+            cursor += len(style)
             entity_list.extend(entities)
 
         return entity_list

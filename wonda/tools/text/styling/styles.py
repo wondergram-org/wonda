@@ -44,7 +44,7 @@ class PlainStyle(ABCStyle[MessageEntity]):
 
         if self.entity_type is not None:
             entities.append(
-                MessageEntity(self.entity_type, 0, len(self.to_string()), **self.dict())
+                MessageEntity(self.entity_type, 0, len(self), **self.dict())
             )
 
         if isinstance(self.text, ABCStyle):

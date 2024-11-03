@@ -29,3 +29,6 @@ class ABCStyle(ABC, Generic[E]):
         """
         Get the underlying text of a style.
         """
+
+    def __len__(self) -> int:
+        return len(self.to_string().encode("utf-16-le")) // 2
