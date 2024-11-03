@@ -31,7 +31,7 @@ class Bot(ABCFramework):
     ):
         self.error_handler = error_handler or DefaultErrorHandler()
         self.loop_wrapper = loop_wrapper or LoopWrapper()
-        self.untyped_api = api or DefaultAPI(token or Token(""))
+        self.untyped_api = api or DefaultAPI(Token(token or ""))
         self.poller = poller or DefaultPoller(
             self.untyped_api, self.error_handler, PollerOptions(0, None)
         )
