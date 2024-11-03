@@ -85,14 +85,14 @@ class MessageUpdate(BaseUpdate, Message):
     ) -> Message:
         params = get_params(locals())
 
-        if "message_thread_id" not in params and self.is_topic_message:
-            params["message_thread_id"] = self.message_thread_id
-
-        if "business_connection_id" not in params and self.business_connection_id:
-            params["business_connection_id"] = self.business_connection_id
-
         if "entities" not in params and isinstance(text, ABCStyle):
             params.update({"text": text.to_string(), "entities": text.to_entities()})
+
+        if "message_thread_id" not in params and self.is_topic_message:
+            params.update({"message_thread_id": self.message_thread_id})
+
+        if "business_connection_id" not in params and self.business_connection_id:
+            params.update({"business_connection_id": self.business_connection_id})
 
         return await self.ctx_api.send_message(chat_id=self.chat.id, **params)
 
@@ -119,14 +119,14 @@ class MessageUpdate(BaseUpdate, Message):
     ) -> Message:
         params = get_params(locals())
 
+        if "entities" not in params and isinstance(text, ABCStyle):
+            params.update({"text": text.to_string(), "entities": text.to_entities()})
+
         if "message_thread_id" not in params and self.is_topic_message:
             params.update({"message_thread_id": self.message_thread_id})
 
         if "business_connection_id" not in params and self.business_connection_id:
             params.update({"business_connection_id": self.business_connection_id})
-
-        if "entities" not in params and isinstance(text, ABCStyle):
-            params.update({"text": text.to_string(), "entities": text.to_entities()})
 
         return await self.ctx_api.send_message(
             chat_id=self.chat.id, reply_to_message_id=self.message_id, **params
@@ -207,7 +207,6 @@ class CallbackQueryUpdate(BaseUpdate, CallbackQuery):
     async def edit_caption(
         self,
         caption: Text,
-        *,
         reply_markup: InlineKeyboardMarkup | None = None,
         parse_mode: str | None = None,
         link_preview_options: LinkPreviewOptions | None = None,
