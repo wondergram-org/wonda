@@ -2,6 +2,7 @@ from wonda.tools.keyboard.abc import ABCButton
 from wonda.types.objects import (
     CallbackGame,
     ChatAdministratorRights,
+    CopyTextButton,
     KeyboardButtonPollType,
     KeyboardButtonRequestChat,
     KeyboardButtonRequestUsers,
@@ -45,6 +46,12 @@ class Callback(Button):
     def __init__(self, text: str, data: str) -> None:
         super().__init__(text)
         self.callback_data = data
+
+
+class Copy(Button):
+    def __init__(self, text: str, content: str) -> None:
+        super().__init__(text)
+        self.copy_text = CopyTextButton(content)
 
 
 class Game(Button):
@@ -218,6 +225,7 @@ __all__ = (
     "Button",
     "Callback",
     "Contact",
+    "Copy",
     "Game",
     "Location",
     "Login",
