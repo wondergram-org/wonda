@@ -559,7 +559,11 @@ class Message(Model):
 
     message_id: int
     """
-    Unique message identifier inside this chat
+    Unique message identifier inside this chat. In specific instances
+    (e.g., message containing a video sent to a big chat), the server
+    might automatically schedule a message instead of sending it
+    immediately. In such cases, this field will be 0 and the relevant
+    message will be unusable until it is actually sent
     """
     date: int
     """
@@ -978,7 +982,11 @@ class MessageId(Model):
 
     message_id: int
     """
-    Unique message identifier
+    Unique message identifier. In specific instances (e.g., message
+    containing a video sent to a big chat), the server might automatically
+    schedule a message instead of sending it immediately. In such cases,
+    this field will be 0 and the relevant message will be unusable until
+    it is actually sent
     """
 
 
@@ -991,7 +999,8 @@ class MessageEntity(Model):
     type: MessageEntityType
     """
     Type of the entity. Currently, can be "mention" (@username), "hashtag"
-    (#hashtag), "cashtag" ($USD), "bot_command" (/start@jobs_bot), "url"
+    (#hashtag or #hashtag@chatusername), "cashtag" ($USD or
+    $USD@chatusername), "bot_command" (/start@jobs_bot), "url"
     (https://telegram.org), "email" (do-not-reply@telegram.org),
     "phone_number" (+1-212-555-0123), "bold" (bold text), "italic" (italic
     text), "underline" (underlined text), "strikethrough" (strikethrough
@@ -2920,6 +2929,11 @@ class InlineKeyboardButton(Model):
     Not supported for messages sent on behalf of a Telegram Business
     account.
     """
+    copy_text: "CopyTextButton | None" = None
+    """
+    Optional. Description of the button that copies the specified text to
+    the clipboard.
+    """
     callback_game: "CallbackGame | None" = None
     """
     Optional. Description of the game that will be launched when the user
@@ -3001,6 +3015,18 @@ class SwitchInlineQueryChosenChat(Model):
     allow_channel_chats: bool | None = None
     """
     Optional. True, if channel chats can be chosen
+    """
+
+
+class CopyTextButton(Model):
+    """
+    This object represents an inline keyboard button that copies specified
+    text to the clipboard.
+    """
+
+    text: str
+    """
+    The text to be copied to the clipboard; 1-256 characters
     """
 
 
@@ -4066,8 +4092,8 @@ class ChatBoostSourceGiveaway(Model, tag_field="source", tag="giveaway"):
     The boost was obtained by the creation of a Telegram Premium or a
     Telegram Star giveaway. This boosts the chat 4 times for the duration
     of the corresponding Telegram Premium subscription for Telegram
-    Premium giveaways and ??? times for one year for Telegram Star
-    giveaways.
+    Premium giveaways and prize_star_count / 500 times for one year for
+    Telegram Star giveaways.
     """
 
     giveaway_message_id: int
@@ -6544,6 +6570,18 @@ class TransactionPartnerTelegramAds(Model, tag_field="type", tag="telegram_ads")
     """
 
 
+class TransactionPartnerTelegramApi(Model, tag_field="type", tag="telegram_api"):
+    """
+    Describes a transaction with payment for paid broadcasting.
+    """
+
+    request_count: int
+    """
+    The number of successful requests that exceeded regular limits and
+    were therefore billed
+    """
+
+
 class TransactionPartnerOther(Model, tag_field="type", tag="other"):
     """
     Describes a transaction with an unknown source or recipient.
@@ -6557,7 +6595,7 @@ class StarTransaction(Model):
 
     id: str
     """
-    Unique identifier of the transaction. Coincides with the identifer of
+    Unique identifier of the transaction. Coincides with the identifier of
     the original transaction for refund transactions. Coincides with
     SuccessfulPayment.telegram_payment_charge_id for successful incoming
     payments from users.
@@ -7205,13 +7243,15 @@ TransactionPartner = (
     TransactionPartnerUser
     | TransactionPartnerFragment
     | TransactionPartnerTelegramAds
+    | TransactionPartnerTelegramApi
     | TransactionPartnerOther
 )
 """
 This object describes the source of a transaction, or its recipient
 for outgoing transactions. Currently, it can be one of
 TransactionPartnerUser, TransactionPartnerFragment,
-TransactionPartnerTelegramAds, TransactionPartnerOther.
+TransactionPartnerTelegramAds, TransactionPartnerTelegramApi,
+TransactionPartnerOther.
 """
 
 

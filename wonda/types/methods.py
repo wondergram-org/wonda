@@ -173,6 +173,7 @@ class APIMethods:
         entities: list[MessageEntity] | None = None,
         disable_notification: bool | None = None,
         business_connection_id: str | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> Message:
         """
@@ -238,6 +239,7 @@ class APIMethods:
         disable_notification: bool | None = None,
         caption_entities: list[MessageEntity] | None = None,
         caption: str | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> MessageId:
         """
@@ -297,6 +299,7 @@ class APIMethods:
         caption_entities: list[MessageEntity] | None = None,
         caption: str | None = None,
         business_connection_id: str | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> Message:
         """
@@ -328,6 +331,7 @@ class APIMethods:
         caption_entities: list[MessageEntity] | None = None,
         caption: str | None = None,
         business_connection_id: str | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> Message:
         """
@@ -361,6 +365,7 @@ class APIMethods:
         caption_entities: list[MessageEntity] | None = None,
         caption: str | None = None,
         business_connection_id: str | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> Message:
         """
@@ -396,6 +401,7 @@ class APIMethods:
         caption_entities: list[MessageEntity] | None = None,
         caption: str | None = None,
         business_connection_id: str | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> Message:
         """
@@ -431,6 +437,7 @@ class APIMethods:
         caption_entities: list[MessageEntity] | None = None,
         caption: str | None = None,
         business_connection_id: str | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> Message:
         """
@@ -461,6 +468,7 @@ class APIMethods:
         caption_entities: list[MessageEntity] | None = None,
         caption: str | None = None,
         business_connection_id: str | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> Message:
         """
@@ -493,6 +501,7 @@ class APIMethods:
         duration: int | None = None,
         disable_notification: bool | None = None,
         business_connection_id: str | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> Message:
         """
@@ -522,6 +531,7 @@ class APIMethods:
         caption_entities: list[MessageEntity] | None = None,
         caption: str | None = None,
         business_connection_id: str | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> Message:
         """
@@ -543,6 +553,7 @@ class APIMethods:
         message_effect_id: str | None = None,
         disable_notification: bool | None = None,
         business_connection_id: str | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> list[Message]:
         """
@@ -574,6 +585,7 @@ class APIMethods:
         heading: int | None = None,
         disable_notification: bool | None = None,
         business_connection_id: str | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> Message:
         """
@@ -605,6 +617,7 @@ class APIMethods:
         foursquare_id: str | None = None,
         disable_notification: bool | None = None,
         business_connection_id: str | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> Message:
         """
@@ -632,6 +645,7 @@ class APIMethods:
         last_name: str | None = None,
         disable_notification: bool | None = None,
         business_connection_id: str | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> Message:
         """
@@ -669,6 +683,7 @@ class APIMethods:
         close_date: int | None = None,
         business_connection_id: str | None = None,
         allows_multiple_answers: bool | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> Message:
         """
@@ -693,6 +708,7 @@ class APIMethods:
         emoji: Literal["🎲", "🎯", "🏀", "⚽", "🎳", "🎰"] | None = None,
         disable_notification: bool | None = None,
         business_connection_id: str | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> Message:
         """
@@ -1633,15 +1649,16 @@ class APIMethods:
     ) -> Message | bool:
         """
         Use this method to edit animation, audio, document, photo, or video
-        messages. If a message is part of a message album, then it can be
-        edited only to an audio for audio albums, only to a document for
-        document albums and to a photo or a video otherwise. When an inline
-        message is edited, a new file can't be uploaded; use a previously
-        uploaded file via its file_id or specify a URL. On success, if the
-        edited message is not an inline message, the edited Message is
-        returned, otherwise True is returned. Note that business messages that
-        were not sent by the bot and do not contain an inline keyboard can
-        only be edited within 48 hours from the time they were sent.
+        messages, or to add media to text messages. If a message is part of a
+        message album, then it can be edited only to an audio for audio
+        albums, only to a document for document albums and to a photo or a
+        video otherwise. When an inline message is edited, a new file can't be
+        uploaded; use a previously uploaded file via its file_id or specify a
+        URL. On success, if the edited message is not an inline message, the
+        edited Message is returned, otherwise True is returned. Note that
+        business messages that were not sent by the bot and do not contain an
+        inline keyboard can only be edited within 48 hours from the time they
+        were sent.
         """
         response = await self.api.request("editMessageMedia", get_params(locals()))
         return from_json(response, type=Message | bool)  # type: ignore
@@ -1775,6 +1792,7 @@ class APIMethods:
         emoji: str | None = None,
         disable_notification: bool | None = None,
         business_connection_id: str | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> Message:
         """
@@ -2021,6 +2039,7 @@ class APIMethods:
         max_tip_amount: int | None = None,
         is_flexible: bool | None = None,
         disable_notification: bool | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> Message:
         """
@@ -2146,6 +2165,7 @@ class APIMethods:
         message_effect_id: str | None = None,
         disable_notification: bool | None = None,
         business_connection_id: str | None = None,
+        allow_paid_broadcast: bool | None = None,
         **kwargs,
     ) -> Message:
         """

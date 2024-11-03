@@ -34,7 +34,8 @@ class ChatFullInfoType(StrEnum):
 class MessageEntityType(StrEnum):
     """
     Type of the entity. Currently, can be "mention" (@username), "hashtag"
-    (#hashtag), "cashtag" ($USD), "bot_command" (/start@jobs_bot), "url"
+    (#hashtag or #hashtag@chatusername), "cashtag" ($USD or
+    $USD@chatusername), "bot_command" (/start@jobs_bot), "url"
     (https://telegram.org), "email" (do-not-reply@telegram.org),
     "phone_number" (+1-212-555-0123), "bold" (bold text), "italic" (italic
     text), "underline" (underlined text), "strikethrough" (strikethrough
