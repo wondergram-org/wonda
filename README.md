@@ -12,7 +12,7 @@
 ![Package downloads](https://img.shields.io/pypi/dw/wonda?label=downloads&style=flat-square)
 ![Supported Python versions](https://img.shields.io/pypi/pyversions/wonda?label=supported%20python%20versions&style=flat-square)
 
-Wonda is a Telegram bot framework. It's light, blazing fast and feature rich. It also supports latest Bot API versions immediately. Join our Telegram forum
+Wonda is a Telegram bot framework. It's light, blazing fast and feature rich. It also supports latest Bot API versions immediately. [Join our Telegram forum](https://t.me/wndrgrm)
 
 ## Install
 
