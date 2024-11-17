@@ -1,4 +1,4 @@
-# Wonda [🍄]
+# Wonda
 
 [//]: # "Links"
 [examples]: examples/
@@ -6,14 +6,13 @@
 [upload files]: examples/file_upload_example.py
 [an advanced state system]: examples/use_state_manager.py
 [translate your bot to dozens of languages]: examples/internationalization_example.py
-[🍄]: https://t.me/wndrgrm
 
 [//]: # "Badges"
 ![Version](https://img.shields.io/pypi/v/wonda?label=version&style=flat-square)
 ![Package downloads](https://img.shields.io/pypi/dw/wonda?label=downloads&style=flat-square)
 ![Supported Python versions](https://img.shields.io/pypi/pyversions/wonda?label=supported%20python%20versions&style=flat-square)
 
-Wonda is a Telegram bot framework. It's light, blazing fast and feature rich. It also supports latest Bot API versions immediately. **Join our Telegram forum by clicking the mushroom up top!**
+Wonda is a Telegram bot framework. It's light, blazing fast and feature rich. It also supports latest Bot API versions immediately. Join our Telegram forum
 
 ## Install
 
