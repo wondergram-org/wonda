@@ -146,7 +146,7 @@ class Poll(Button):
     and send it to the bot. Available in private chats only.
     """
 
-    def __init__(self, text: str, type: str) -> None:
+    def __init__(self, text: str, type: str | None = None) -> None:
         super().__init__(text)
         self.request_poll = KeyboardButtonPollType(type=type)
 

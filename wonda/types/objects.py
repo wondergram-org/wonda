@@ -4790,6 +4790,46 @@ class InputSticker(Model):
     """
 
 
+class Gift(Model):
+    """
+    This object represents a gift that can be sent by the bot.
+    """
+
+    id: str
+    """
+    Unique identifier of the gift
+    """
+    sticker: "Sticker"
+    """
+    The sticker that represents the gift
+    """
+    star_count: int
+    """
+    The number of Telegram Stars that must be paid to send the sticker
+    """
+    total_count: int | None = None
+    """
+    Optional. The total number of the gifts of this type that can be sent;
+    for limited gifts only
+    """
+    remaining_count: int | None = None
+    """
+    Optional. The number of remaining gifts of this type that can be sent;
+    for limited gifts only
+    """
+
+
+class Gifts(Model):
+    """
+    This object represent a list of gifts.
+    """
+
+    gifts: "list[Gift]"
+    """
+    The list of gifts
+    """
+
+
 class InlineQuery(Model):
     """
     This object represents an incoming inline query. When the user sends
@@ -6228,6 +6268,22 @@ class SentWebAppMessage(Model):
     """
 
 
+class PreparedInlineMessage(Model):
+    """
+    Describes an inline message to be sent by a user of a Mini App.
+    """
+
+    id: str
+    """
+    Unique identifier of the prepared message
+    """
+    expiration_date: int
+    """
+    Expiration date of the prepared message, in Unix time. Expired
+    prepared messages can no longer be used
+    """
+
+
 class LabeledPrice(Model):
     """
     This object represents a portion of the price for goods or services.
@@ -6383,6 +6439,11 @@ class SuccessfulPayment(Model):
     """
     Provider payment identifier
     """
+    subscription_expiration_date: int | None = None
+    """
+    Optional. Expiration date of the subscription, in Unix time; for
+    recurring payments only
+    """
     shipping_option_id: str | None = None
     """
     Optional. Identifier of the shipping option chosen by the user
@@ -6390,6 +6451,15 @@ class SuccessfulPayment(Model):
     order_info: "OrderInfo | None" = None
     """
     Optional. Order information provided by the user
+    """
+    is_recurring: bool | None = None
+    """
+    Optional. True, if the payment is a recurring payment for a
+    subscription
+    """
+    is_first_recurring: bool | None = None
+    """
+    Optional. True, if the payment is the first payment for a subscription
     """
 
 
@@ -6543,6 +6613,10 @@ class TransactionPartnerUser(Model, tag_field="type", tag="user"):
     """
     Optional. Bot-specified invoice payload
     """
+    subscription_period: int | None = None
+    """
+    Optional. The duration of the paid subscription
+    """
     paid_media: "list[PaidMedia] | None" = None
     """
     Optional. Information about the paid media bought by the user
@@ -6550,6 +6624,10 @@ class TransactionPartnerUser(Model, tag_field="type", tag="user"):
     paid_media_payload: str | None = None
     """
     Optional. Bot-specified paid media payload
+    """
+    gift: str | None = None
+    """
+    Optional. The gift sent to the user by the bot
     """
 
 

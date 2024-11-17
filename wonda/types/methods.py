@@ -17,6 +17,7 @@ from .objects import (
     ForceReply,
     ForumTopic,
     GameHighScore,
+    Gifts,
     InlineKeyboardMarkup,
     InlineQueryResult,
     InlineQueryResultsButton,
@@ -38,6 +39,7 @@ from .objects import (
     MessageId,
     PassportElementError,
     Poll,
+    PreparedInlineMessage,
     ReactionType,
     ReplyKeyboardMarkup,
     ReplyKeyboardRemove,
@@ -784,6 +786,21 @@ class APIMethods:
         """
         response = await self.api.request("getUserProfilePhotos", get_params(locals()))
         return from_json(response, type=UserProfilePhotos)
+
+    async def set_user_emoji_status(
+        self,
+        user_id: int,
+        emoji_status_expiration_date: int | None = None,
+        emoji_status_custom_emoji_id: str | None = None,
+        **kwargs,
+    ) -> bool:
+        """
+        Changes the emoji status for a given user that previously allowed the
+        bot to manage their emoji status via the Mini App method
+        requestEmojiStatusAccess. Returns True on success.
+        """
+        response = await self.api.request("setUserEmojiStatus", get_params(locals()))
+        return from_json(response, type=bool)
 
     async def get_file(self, file_id: str, **kwargs) -> File:
         """
@@ -1980,6 +1997,30 @@ class APIMethods:
         response = await self.api.request("deleteStickerSet", get_params(locals()))
         return from_json(response, type=bool)
 
+    async def get_available_gifts(self, **kwargs) -> Gifts:
+        """
+        Returns the list of gifts that can be sent by the bot to users.
+        Requires no parameters. Returns a Gifts object.
+        """
+        response = await self.api.request("getAvailableGifts", get_params(locals()))
+        return from_json(response, type=Gifts)
+
+    async def send_gift(
+        self,
+        user_id: int,
+        gift_id: str,
+        text_parse_mode: str | None = None,
+        text_entities: list[MessageEntity] | None = None,
+        text: str | None = None,
+        **kwargs,
+    ) -> bool:
+        """
+        Sends a gift to the given user. The gift can't be converted to
+        Telegram Stars by the user. Returns True on success.
+        """
+        response = await self.api.request("sendGift", get_params(locals()))
+        return from_json(response, type=bool)
+
     async def answer_inline_query(
         self,
         results: list[InlineQueryResult],
@@ -2008,6 +2049,25 @@ class APIMethods:
         """
         response = await self.api.request("answerWebAppQuery", get_params(locals()))
         return from_json(response, type=SentWebAppMessage)
+
+    async def save_prepared_inline_message(
+        self,
+        user_id: int,
+        result: InlineQueryResult,
+        allow_user_chats: bool | None = None,
+        allow_group_chats: bool | None = None,
+        allow_channel_chats: bool | None = None,
+        allow_bot_chats: bool | None = None,
+        **kwargs,
+    ) -> PreparedInlineMessage:
+        """
+        Stores a message that can be sent by a user of a Mini App. Returns a
+        PreparedInlineMessage object.
+        """
+        response = await self.api.request(
+            "savePreparedInlineMessage", get_params(locals())
+        )
+        return from_json(response, type=PreparedInlineMessage)
 
     async def send_invoice(
         self,
@@ -2057,6 +2117,7 @@ class APIMethods:
         description: str,
         currency: str,
         suggested_tip_amounts: list[int] | None = None,
+        subscription_period: int | None = None,
         send_phone_number_to_provider: bool | None = None,
         send_email_to_provider: bool | None = None,
         provider_token: str | None = None,
@@ -2071,6 +2132,7 @@ class APIMethods:
         need_email: bool | None = None,
         max_tip_amount: int | None = None,
         is_flexible: bool | None = None,
+        business_connection_id: str | None = None,
         **kwargs,
     ) -> str:
         """
@@ -2135,6 +2197,18 @@ class APIMethods:
         success.
         """
         response = await self.api.request("refundStarPayment", get_params(locals()))
+        return from_json(response, type=bool)
+
+    async def edit_user_star_subscription(
+        self, user_id: int, telegram_payment_charge_id: str, is_canceled: bool, **kwargs
+    ) -> bool:
+        """
+        Allows the bot to cancel or re-enable extension of a subscription paid
+        in Telegram Stars. Returns True on success.
+        """
+        response = await self.api.request(
+            "editUserStarSubscription", get_params(locals())
+        )
         return from_json(response, type=bool)
 
     async def set_passport_data_errors(
