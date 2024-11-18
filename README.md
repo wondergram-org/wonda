@@ -69,7 +69,7 @@ pip install rich
 
 Check out [rich](https://github.com/textualize/rich), a library which provides amazing rich text capabilities for your logs.
 
-## Contrubuting
+## Contributing
 
 This framework is a robust solution for what it's worth, but the API may be unstable for a while. That means it's not yet ready for production use.
 
