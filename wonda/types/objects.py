@@ -2071,7 +2071,7 @@ class BackgroundTypeWallpaper(Model, tag_field="type", tag="wallpaper"):
 
 class BackgroundTypePattern(Model, tag_field="type", tag="pattern"):
     """
-    The background is a PNG or TGV (gzipped subset of SVG with MIME type
+    The background is a .PNG or .TGV (gzipped subset of SVG with MIME type
     "application/x-tgwallpattern") pattern to be combined with the
     background fill chosen by the user.
     """
@@ -4771,7 +4771,7 @@ class InputSticker(Model):
     format: InputStickerFormat
     """
     Format of the added sticker, must be one of "static" for a .WEBP or
-    .PNG image, "animated" for a .TGS animation, "video" for a WEBM video
+    .PNG image, "animated" for a .TGS animation, "video" for a .WEBM video
     """
     emoji_list: "list[str]"
     """
@@ -4806,6 +4806,11 @@ class Gift(Model):
     star_count: int
     """
     The number of Telegram Stars that must be paid to send the sticker
+    """
+    upgrade_star_count: int | None = None
+    """
+    Optional. The number of Telegram Stars that must be paid to upgrade
+    the gift to a unique one
     """
     total_count: int | None = None
     """
@@ -4924,11 +4929,6 @@ class InlineQueryResultArticle(Model, tag_field="type", tag="article"):
     """
     Optional. URL of the result
     """
-    hide_url: bool | None = None
-    """
-    Optional. Pass True if you don't want the URL to be shown in the
-    message
-    """
     description: str | None = None
     """
     Optional. Short description of the result
@@ -5028,7 +5028,7 @@ class InlineQueryResultGif(Model, tag_field="type", tag="gif"):
     """
     gif_url: str
     """
-    A valid URL for the GIF file. File size must not exceed 1MB
+    A valid URL for the GIF file
     """
     thumbnail_url: str
     """
@@ -5102,7 +5102,7 @@ class InlineQueryResultMpeg4Gif(Model, tag_field="type", tag="mpeg4_gif"):
     """
     mpeg4_url: str
     """
-    A valid URL for the MPEG4 file. File size must not exceed 1MB
+    A valid URL for the MPEG4 file
     """
     thumbnail_url: str
     """
@@ -6600,6 +6600,40 @@ class RevenueWithdrawalStateFailed(Model, tag_field="type", tag="failed"):
     """
 
 
+class AffiliateInfo(Model):
+    """
+    Contains information about the affiliate that received a commission
+    via this transaction.
+    """
+
+    commission_per_mille: int
+    """
+    The number of Telegram Stars received by the affiliate for each 1000
+    Telegram Stars received by the bot from referred users
+    """
+    amount: int
+    """
+    Integer amount of Telegram Stars received by the affiliate from the
+    transaction, rounded to 0; can be negative for refunds
+    """
+    affiliate_user: "User | None" = None
+    """
+    Optional. The bot or the user that received an affiliate commission if
+    it was received by a bot or a user
+    """
+    affiliate_chat: "Chat | None" = None
+    """
+    Optional. The chat that received an affiliate commission if it was
+    received by a chat
+    """
+    nanostar_amount: int | None = None
+    """
+    Optional. The number of 1/1000000000 shares of Telegram Stars received
+    by the affiliate; from -999999999 to 999999999; can be negative for
+    refunds
+    """
+
+
 class TransactionPartnerUser(Model, tag_field="type", tag="user"):
     """
     Describes a transaction with a user.
@@ -6608,6 +6642,11 @@ class TransactionPartnerUser(Model, tag_field="type", tag="user"):
     user: "User"
     """
     Information about the user
+    """
+    affiliate: "AffiliateInfo | None" = None
+    """
+    Optional. Information about the affiliate that received a commission
+    via this transaction
     """
     invoice_payload: str | None = None
     """
@@ -6625,9 +6664,30 @@ class TransactionPartnerUser(Model, tag_field="type", tag="user"):
     """
     Optional. Bot-specified paid media payload
     """
-    gift: str | None = None
+    gift: "Gift | None" = None
     """
     Optional. The gift sent to the user by the bot
+    """
+
+
+class TransactionPartnerAffiliateProgram(
+    Model, tag_field="type", tag="affiliate_program"
+):
+    """
+    Describes the affiliate program that issued the affiliate commission
+    received via this transaction.
+    """
+
+    commission_per_mille: int
+    """
+    The number of Telegram Stars received by the bot for each 1000
+    Telegram Stars received by the affiliate program sponsor from referred
+    users
+    """
+    sponsor_user: "User | None" = None
+    """
+    Optional. Information about the bot that sponsored the affiliate
+    program
     """
 
 
@@ -6680,11 +6740,16 @@ class StarTransaction(Model):
     """
     amount: int
     """
-    Number of Telegram Stars transferred by the transaction
+    Integer amount of Telegram Stars transferred by the transaction
     """
     date: int
     """
     Date the transaction was created in Unix time
+    """
+    nanostar_amount: int | None = None
+    """
+    Optional. The number of 1/1000000000 shares of Telegram Stars
+    transferred by the transaction; from 0 to 999999999
     """
     source: "TransactionPartner | None" = None
     """
@@ -7319,6 +7384,7 @@ RevenueWithdrawalStateSucceeded, RevenueWithdrawalStateFailed.
 
 TransactionPartner = (
     TransactionPartnerUser
+    | TransactionPartnerAffiliateProgram
     | TransactionPartnerFragment
     | TransactionPartnerTelegramAds
     | TransactionPartnerTelegramApi
@@ -7327,9 +7393,9 @@ TransactionPartner = (
 """
 This object describes the source of a transaction, or its recipient
 for outgoing transactions. Currently, it can be one of
-TransactionPartnerUser, TransactionPartnerFragment,
-TransactionPartnerTelegramAds, TransactionPartnerTelegramApi,
-TransactionPartnerOther.
+TransactionPartnerUser, TransactionPartnerAffiliateProgram,
+TransactionPartnerFragment, TransactionPartnerTelegramAds,
+TransactionPartnerTelegramApi, TransactionPartnerOther.
 """
 
 

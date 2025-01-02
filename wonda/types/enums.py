@@ -200,7 +200,7 @@ class MaskPositionPoint(StrEnum):
 class InputStickerFormat(StrEnum):
     """
     Format of the added sticker, must be one of "static" for a .WEBP or
-    .PNG image, "animated" for a .TGS animation, "video" for a WEBM video
+    .PNG image, "animated" for a .TGS animation, "video" for a .WEBM video
     """
 
     STATIC = "static"

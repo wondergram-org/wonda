@@ -25,6 +25,7 @@ from .enums import (
 )
 from .methods import APIMethods as APIMethods
 from .objects import (
+    AffiliateInfo,
     Animation,
     Audio,
     BackgroundFill,
@@ -230,6 +231,7 @@ from .objects import (
     SwitchInlineQueryChosenChat,
     TextQuote,
     TransactionPartner,
+    TransactionPartnerAffiliateProgram,
     TransactionPartnerFragment,
     TransactionPartnerOther,
     TransactionPartnerTelegramAds,

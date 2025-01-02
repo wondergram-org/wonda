@@ -94,12 +94,13 @@ class APIMethods:
         Use this method to specify a URL and receive incoming updates via an
         outgoing webhook. Whenever there is an update for the bot, we will
         send an HTTPS POST request to the specified URL, containing a JSON-
-        serialized Update. In case of an unsuccessful request, we will give up
-        after a reasonable amount of attempts. Returns True on success. If
-        you'd like to make sure that the webhook was set by you, you can
-        specify secret data in the parameter secret_token. If specified, the
-        request will contain a header "X-Telegram-Bot-Api-Secret-Token" with
-        the secret token as content.
+        serialized Update. In case of an unsuccessful request (a request with
+        response HTTP status code different from 2XY), we will repeat the
+        request and give up after a reasonable amount of attempts. Returns
+        True on success. If you'd like to make sure that the webhook was set
+        by you, you can specify secret data in the parameter secret_token. If
+        specified, the request will contain a header "X-Telegram-Bot-Api-
+        Secret-Token" with the secret token as content.
         """
         response = await self.api.request("setWebhook", get_params(locals()))
         return from_json(response, type=bool)
@@ -2012,6 +2013,7 @@ class APIMethods:
         text_parse_mode: str | None = None,
         text_entities: list[MessageEntity] | None = None,
         text: str | None = None,
+        pay_for_upgrade: bool | None = None,
         **kwargs,
     ) -> bool:
         """
@@ -2019,6 +2021,46 @@ class APIMethods:
         Telegram Stars by the user. Returns True on success.
         """
         response = await self.api.request("sendGift", get_params(locals()))
+        return from_json(response, type=bool)
+
+    async def verify_user(
+        self, user_id: int, custom_description: str | None = None, **kwargs
+    ) -> bool:
+        """
+        Verifies a user on behalf of the organization which is represented by
+        the bot. Returns True on success.
+        """
+        response = await self.api.request("verifyUser", get_params(locals()))
+        return from_json(response, type=bool)
+
+    async def verify_chat(
+        self, chat_id: int | str, custom_description: str | None = None, **kwargs
+    ) -> bool:
+        """
+        Verifies a chat on behalf of the organization which is represented by
+        the bot. Returns True on success.
+        """
+        response = await self.api.request("verifyChat", get_params(locals()))
+        return from_json(response, type=bool)
+
+    async def remove_user_verification(self, user_id: int, **kwargs) -> bool:
+        """
+        Removes verification from a user who is currently verified on behalf
+        of the organization represented by the bot. Returns True on success.
+        """
+        response = await self.api.request(
+            "removeUserVerification", get_params(locals())
+        )
+        return from_json(response, type=bool)
+
+    async def remove_chat_verification(self, chat_id: int | str, **kwargs) -> bool:
+        """
+        Removes verification from a chat that is currently verified on behalf
+        of the organization represented by the bot. Returns True on success.
+        """
+        response = await self.api.request(
+            "removeChatVerification", get_params(locals())
+        )
         return from_json(response, type=bool)
 
     async def answer_inline_query(
