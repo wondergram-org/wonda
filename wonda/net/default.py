@@ -3,7 +3,8 @@ import ssl
 import certifi
 from aiohttp import ClientSession, ClientTimeout, FormData, TCPConnector
 
-from wonda.modules import JSONModule, json
+from wonda.modules import JSONModule
+from wonda.modules import json as default_json_module
 from wonda.net.abc import ABCNetworkClient
 
 
@@ -14,18 +15,23 @@ class DefaultNetworkClient(ABCNetworkClient):
         json_processing_module: JSONModule | None = None,
         timeout: ClientTimeout | None = None,
     ) -> None:
-        self.json_processing_module = json_processing_module or json
-        self.session = session or ClientSession(
-            timeout=timeout or ClientTimeout(0),
-            connector=TCPConnector(
-                ssl=ssl.create_default_context(cafile=certifi.where())
-            ),
-            json_serialize=self.json_processing_module.dumps,
-        )
+        self.json_processing_module = json_processing_module or default_json_module
+        self.timeout = timeout or ClientTimeout(0)
+        self.session = session
 
     async def request_bytes(
         self, url: str, method: str = "get", data: dict | None = None, **kw
     ) -> bytes:
+        if not self.session:
+            connector = TCPConnector(
+                ssl=ssl.create_default_context(cafile=certifi.where())
+            )
+            self.session = ClientSession(
+                json_serialize=self.json_processing_module.dumps,
+                timeout=self.timeout,
+                connector=connector,
+            )
+
         async with self.session.request(
             url=url, method=method, data=data, **kw
         ) as response:
