@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Generic, TypeVar
 
 T = TypeVar("T", bound=str | bytes)
@@ -45,3 +46,25 @@ class Locale(Generic[T]):
             )
 
         return suitable_translation
+
+
+@dataclass
+class FileContent:
+    """
+    A container for file content with path information.
+    """
+
+    path: Path
+    content: str | bytes
+
+    @classmethod
+    def from_file(cls, path: Path) -> "FileContent":
+        """
+        Creates an instance from a file path.
+        """
+        content = (
+            path.read_text()
+            if path.suffix in (".txt", ".html", ".md")
+            else path.read_bytes()
+        )
+        return cls(path=path, content=content)

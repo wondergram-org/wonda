@@ -1,54 +1,75 @@
 from pathlib import Path
 
+from wonda.errors.internal import EmptyDirectoryError, InvalidPathError
 from wonda.tools.localization.abc import ABCLocalizator
-from wonda.tools.localization.types import Locale, Translation
+from wonda.tools.localization.types import Locale, Translation, FileContent
 
 
-def construct_key(source_directory: Path, file_path: Path) -> str:
-    return "/".join(
-        file_path.relative_to(source_directory).parts[:-1] + (file_path.stem,)
-    )
+class TranslationLoader:
+    """
+    Handles loading and processing of translation files.
+    """
 
+    def __init__(self, base_directory: Path):
+        self.base_directory = base_directory
 
-def read_file_content(path: Path) -> str | bytes:
-    return (
-        path.read_text()
-        if path.suffix in (".txt", ".html", ".md")
-        else path.read_bytes()
-    )
+    def construct_key(self, file_path: Path) -> str:
+        """
+        Constructs translation key from file path.
+        """
+        return "/".join(
+            file_path.relative_to(self.base_directory).parts[:-1] + (file_path.stem,)
+        )
+
+    def load_translations(self) -> list[Translation]:
+        """
+        Loads all translations from a directory.
+        """
+        translations = []
+
+        for file_path in self.base_directory.rglob("*"):
+            if file_path.is_file():
+                file_content = FileContent.from_file(file_path)
+                key = self.construct_key(file_path)
+                translations.append(Translation(key, file_content.content))
+
+        return translations
 
 
 class DefaultLocalizator(ABCLocalizator):
+    """
+    Default implementation of the localization system.
+    """
+
     def __init__(self, path: Path | str, default_language: str = "en") -> None:
-        self.default_language = default_language
         self.locales = {}
+        self.default_language = default_language
+        self.path = Path(path) if isinstance(path, str) else path
 
-        self.path = path if isinstance(path, Path) else Path(path)
+        self._initialize_locales()
 
+    def _initialize_locales(self) -> None:
+        """
+        Initialize locales from directory structure.
+        """
+        
         if not self.path.is_dir():
-            raise SystemExit("Localization path has to be a directory")
+            raise InvalidPathError("Localization path must be a directory")
 
-        directories = [i for i in self.path.iterdir() if i.is_dir()]
-
+        directories = [d for d in self.path.iterdir() if d.is_dir()]
         if not directories:
-            raise FileNotFoundError("No language directories found")
+            raise EmptyDirectoryError("No language directories found")
 
-        for d in directories:
-            if not any(d.iterdir()):
-                raise KeyError(f"Language directory {d.name!r} is empty")
-
-            self.locales[d.name] = Locale(d.name, self.load_translations(d))
-
-    def load_translations(self, directory: Path) -> list[Translation]:
-        translations = []
-
-        for f in directory.rglob("*"):
-            if f.is_file():
-                translations.append(
-                    Translation(construct_key(directory, f), read_file_content(f))
+        for directory in directories:
+            if not any(directory.iterdir()):
+                raise EmptyDirectoryError(
+                    f"Language directory {directory.name!r} is empty"
                 )
 
-        return translations
+            loader = TranslationLoader(directory)
+            self.locales[directory.name] = Locale(
+                directory.name, loader.load_translations()
+            )
 
     def get_locale(self, language_code: str) -> Locale:
         return self.locales.get(language_code, self.locales[self.default_language])
