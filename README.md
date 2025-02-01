@@ -71,9 +71,7 @@ Check out [rich](https://github.com/textualize/rich), a library which provides a
 
 ## Contributing
 
-This framework is a robust solution for what it's worth, but the API may be unstable for a while. That means it's not yet ready for production use.
-
-So, if you like our work, help us develop this amazing project! Here are some ways you can help.
+This framework is a robust solution, but the API may change and improve as we continue to work on it. If you like our work, help us develop this amazing project! Here are some ways you can help.
 
 ### With code
 
