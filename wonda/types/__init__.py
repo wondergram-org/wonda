@@ -232,6 +232,7 @@ from .objects import (
     TextQuote,
     TransactionPartner,
     TransactionPartnerAffiliateProgram,
+    TransactionPartnerChat,
     TransactionPartnerFragment,
     TransactionPartnerOther,
     TransactionPartnerTelegramAds,

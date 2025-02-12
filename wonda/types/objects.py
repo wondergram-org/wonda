@@ -1523,6 +1523,15 @@ class Video(Model):
     """
     Optional. Video thumbnail
     """
+    cover: "list[PhotoSize] | None" = None
+    """
+    Optional. Available sizes of the cover of the video in the message
+    """
+    start_timestamp: int | None = None
+    """
+    Optional. Timestamp in seconds from which the video will play in the
+    message
+    """
     file_name: str | None = None
     """
     Optional. Original filename as defined by the sender
@@ -4328,7 +4337,7 @@ class InputMediaVideo(Model, tag_field="type", tag="video"):
     information on Sending Files:
     https://core.telegram.org/bots/api/#sending-files
     """
-    thumbnail: "InputFile | str | None" = None
+    thumbnail: str | None = None
     """
     Optional. Thumbnail of the file sent; can be ignored if thumbnail
     generation for the file is supported server-side. The thumbnail should
@@ -4339,6 +4348,19 @@ class InputMediaVideo(Model, tag_field="type", tag="video"):
     if the thumbnail was uploaded using multipart/form-data under
     file_attach_name>. More information on Sending Files:
     https://core.telegram.org/bots/api/#sending-files
+    """
+    cover: str | None = None
+    """
+    Optional. Cover for the video in the message. Pass a file_id to send a
+    file that exists on the Telegram servers (recommended), pass an HTTP
+    URL for Telegram to get a file from the Internet, or pass
+    "attach://file_attach_name>" to upload a new one using multipart/form-
+    data under file_attach_name> name. More information on Sending Files:
+    https://core.telegram.org/bots/api/#sending-files
+    """
+    start_timestamp: int | None = None
+    """
+    Optional. Start timestamp for the video in the message
     """
     caption: str | None = None
     """
@@ -4398,7 +4420,7 @@ class InputMediaAnimation(Model, tag_field="type", tag="animation"):
     information on Sending Files:
     https://core.telegram.org/bots/api/#sending-files
     """
-    thumbnail: "InputFile | str | None" = None
+    thumbnail: str | None = None
     """
     Optional. Thumbnail of the file sent; can be ignored if thumbnail
     generation for the file is supported server-side. The thumbnail should
@@ -4463,7 +4485,7 @@ class InputMediaAudio(Model, tag_field="type", tag="audio"):
     information on Sending Files:
     https://core.telegram.org/bots/api/#sending-files
     """
-    thumbnail: "InputFile | str | None" = None
+    thumbnail: str | None = None
     """
     Optional. Thumbnail of the file sent; can be ignored if thumbnail
     generation for the file is supported server-side. The thumbnail should
@@ -4518,7 +4540,7 @@ class InputMediaDocument(Model, tag_field="type", tag="document"):
     information on Sending Files:
     https://core.telegram.org/bots/api/#sending-files
     """
-    thumbnail: "InputFile | str | None" = None
+    thumbnail: str | None = None
     """
     Optional. Thumbnail of the file sent; can be ignored if thumbnail
     generation for the file is supported server-side. The thumbnail should
@@ -4587,7 +4609,7 @@ class InputPaidMediaVideo(Model, tag_field="type", tag="video"):
     information on Sending Files:
     https://core.telegram.org/bots/api/#sending-files
     """
-    thumbnail: "InputFile | str | None" = None
+    thumbnail: str | None = None
     """
     Optional. Thumbnail of the file sent; can be ignored if thumbnail
     generation for the file is supported server-side. The thumbnail should
@@ -4598,6 +4620,19 @@ class InputPaidMediaVideo(Model, tag_field="type", tag="video"):
     if the thumbnail was uploaded using multipart/form-data under
     file_attach_name>. More information on Sending Files:
     https://core.telegram.org/bots/api/#sending-files
+    """
+    cover: str | None = None
+    """
+    Optional. Cover for the video in the message. Pass a file_id to send a
+    file that exists on the Telegram servers (recommended), pass an HTTP
+    URL for Telegram to get a file from the Internet, or pass
+    "attach://file_attach_name>" to upload a new one using multipart/form-
+    data under file_attach_name> name. More information on Sending Files:
+    https://core.telegram.org/bots/api/#sending-files
+    """
+    start_timestamp: int | None = None
+    """
+    Optional. Start timestamp for the video in the message
     """
     width: int | None = None
     """
@@ -6412,6 +6447,9 @@ class ShippingOption(Model):
 class SuccessfulPayment(Model):
     """
     This object contains basic information about a successful payment.
+    Note that if the buyer initiates a chargeback with the relevant
+    payment provider following this transaction, the funds may be debited
+    from your balance. This is outside of Telegram's control.
     """
 
     currency: str
@@ -6670,6 +6708,21 @@ class TransactionPartnerUser(Model, tag_field="type", tag="user"):
     """
 
 
+class TransactionPartnerChat(Model, tag_field="type", tag="chat"):
+    """
+    Describes a transaction with a chat.
+    """
+
+    chat: "Chat"
+    """
+    Information about the chat
+    """
+    gift: "Gift | None" = None
+    """
+    Optional. The gift sent to the chat by the bot
+    """
+
+
 class TransactionPartnerAffiliateProgram(
     Model, tag_field="type", tag="affiliate_program"
 ):
@@ -6728,7 +6781,11 @@ class TransactionPartnerOther(Model, tag_field="type", tag="other"):
 
 class StarTransaction(Model):
     """
-    Describes a Telegram Star transaction.
+    Describes a Telegram Star transaction. Note that if the buyer
+    initiates a chargeback with the payment provider from whom they
+    acquired Stars (e.g., Apple, Google) following this transaction, the
+    refunded Stars will be deducted from the bot's balance. This is
+    outside of Telegram's control.
     """
 
     id: str
@@ -7384,6 +7441,7 @@ RevenueWithdrawalStateSucceeded, RevenueWithdrawalStateFailed.
 
 TransactionPartner = (
     TransactionPartnerUser
+    | TransactionPartnerChat
     | TransactionPartnerAffiliateProgram
     | TransactionPartnerFragment
     | TransactionPartnerTelegramAds
@@ -7393,9 +7451,10 @@ TransactionPartner = (
 """
 This object describes the source of a transaction, or its recipient
 for outgoing transactions. Currently, it can be one of
-TransactionPartnerUser, TransactionPartnerAffiliateProgram,
-TransactionPartnerFragment, TransactionPartnerTelegramAds,
-TransactionPartnerTelegramApi, TransactionPartnerOther.
+TransactionPartnerUser, TransactionPartnerChat,
+TransactionPartnerAffiliateProgram, TransactionPartnerFragment,
+TransactionPartnerTelegramAds, TransactionPartnerTelegramApi,
+TransactionPartnerOther.
 """
 
 

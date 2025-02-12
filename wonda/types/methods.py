@@ -191,6 +191,7 @@ class APIMethods:
         message_id: int,
         from_chat_id: int | str,
         chat_id: int | str,
+        video_start_timestamp: int | None = None,
         protect_content: bool | None = None,
         message_thread_id: int | None = None,
         disable_notification: bool | None = None,
@@ -229,6 +230,7 @@ class APIMethods:
         message_id: int,
         from_chat_id: int | str,
         chat_id: int | str,
+        video_start_timestamp: int | None = None,
         show_caption_above_media: bool | None = None,
         reply_parameters: ReplyParameters | None = None,
         reply_markup: InlineKeyboardMarkup
@@ -386,6 +388,7 @@ class APIMethods:
         width: int | None = None,
         thumbnail: InputFile | str | None = None,
         supports_streaming: bool | None = None,
+        start_timestamp: int | None = None,
         show_caption_above_media: bool | None = None,
         reply_parameters: ReplyParameters | None = None,
         reply_markup: InlineKeyboardMarkup
@@ -401,6 +404,7 @@ class APIMethods:
         has_spoiler: bool | None = None,
         duration: int | None = None,
         disable_notification: bool | None = None,
+        cover: InputFile | str | None = None,
         caption_entities: list[MessageEntity] | None = None,
         caption: str | None = None,
         business_connection_id: str | None = None,
@@ -766,10 +770,10 @@ class APIMethods:
     ) -> bool:
         """
         Use this method to change the chosen reactions on a message. Service
-        messages can't be reacted to. Automatically forwarded messages from a
-        channel to its discussion group have the same available reactions as
-        messages in the channel. Bots can't use paid reactions. Returns True
-        on success.
+        messages of some types can't be reacted to. Automatically forwarded
+        messages from a channel to its discussion group have the same
+        available reactions as messages in the channel. Bots can't use paid
+        reactions. Returns True on success.
         """
         response = await self.api.request("setMessageReaction", get_params(locals()))
         return from_json(response, type=bool)
@@ -2000,25 +2004,26 @@ class APIMethods:
 
     async def get_available_gifts(self, **kwargs) -> Gifts:
         """
-        Returns the list of gifts that can be sent by the bot to users.
-        Requires no parameters. Returns a Gifts object.
+        Returns the list of gifts that can be sent by the bot to users and
+        channel chats. Requires no parameters. Returns a Gifts object.
         """
         response = await self.api.request("getAvailableGifts", get_params(locals()))
         return from_json(response, type=Gifts)
 
     async def send_gift(
         self,
-        user_id: int,
         gift_id: str,
+        user_id: int | None = None,
         text_parse_mode: str | None = None,
         text_entities: list[MessageEntity] | None = None,
         text: str | None = None,
         pay_for_upgrade: bool | None = None,
+        chat_id: int | str | None = None,
         **kwargs,
     ) -> bool:
         """
-        Sends a gift to the given user. The gift can't be converted to
-        Telegram Stars by the user. Returns True on success.
+        Sends a gift to the given user or channel chat. The gift can't be
+        converted to Telegram Stars by the receiver. Returns True on success.
         """
         response = await self.api.request("sendGift", get_params(locals()))
         return from_json(response, type=bool)
