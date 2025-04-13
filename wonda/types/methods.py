@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Literal
 
 from .helper import from_json, get_params
 from .objects import (
+    AcceptedGiftTypes,
     BotCommand,
     BotCommandScope,
     BotDescription,
@@ -29,7 +30,9 @@ from .objects import (
     InputMediaVideo,
     InputPaidMedia,
     InputPollOption,
+    InputProfilePhoto,
     InputSticker,
+    InputStoryContent,
     LabeledPrice,
     LinkPreviewOptions,
     MaskPosition,
@@ -37,6 +40,7 @@ from .objects import (
     Message,
     MessageEntity,
     MessageId,
+    OwnedGifts,
     PassportElementError,
     Poll,
     PreparedInlineMessage,
@@ -46,9 +50,12 @@ from .objects import (
     ReplyParameters,
     SentWebAppMessage,
     ShippingOption,
+    StarAmount,
     StarTransactions,
     Sticker,
     StickerSet,
+    Story,
+    StoryArea,
     Update,
     User,
     UserChatBoosts,
@@ -61,6 +68,10 @@ if TYPE_CHECKING:
 
 
 class APIMethods:
+    """
+    Bot API 9.0 from April 11, 2025
+    """
+
     def __init__(self, api: "ABCAPI") -> None:
         self.api = api
 
@@ -1798,6 +1809,345 @@ class APIMethods:
         response = await self.api.request("deleteMessages", get_params(locals()))
         return from_json(response, type=bool)
 
+    async def get_available_gifts(self, **kwargs) -> Gifts:
+        """
+        Returns the list of gifts that can be sent by the bot to users and
+        channel chats. Requires no parameters. Returns a Gifts object.
+        """
+        response = await self.api.request("getAvailableGifts", get_params(locals()))
+        return from_json(response, type=Gifts)
+
+    async def send_gift(
+        self,
+        gift_id: str,
+        user_id: int | None = None,
+        text_parse_mode: str | None = None,
+        text_entities: list[MessageEntity] | None = None,
+        text: str | None = None,
+        pay_for_upgrade: bool | None = None,
+        chat_id: int | str | None = None,
+        **kwargs,
+    ) -> bool:
+        """
+        Sends a gift to the given user or channel chat. The gift can't be
+        converted to Telegram Stars by the receiver. Returns True on success.
+        """
+        response = await self.api.request("sendGift", get_params(locals()))
+        return from_json(response, type=bool)
+
+    async def gift_premium_subscription(
+        self,
+        user_id: int,
+        star_count: int,
+        month_count: Literal[3, 6, 12],
+        text_parse_mode: str | None = None,
+        text_entities: list[MessageEntity] | None = None,
+        text: str | None = None,
+        **kwargs,
+    ) -> bool:
+        """
+        Gifts a Telegram Premium subscription to the given user. Returns True
+        on success.
+        """
+        response = await self.api.request(
+            "giftPremiumSubscription", get_params(locals())
+        )
+        return from_json(response, type=bool)
+
+    async def verify_user(
+        self, user_id: int, custom_description: str | None = None, **kwargs
+    ) -> bool:
+        """
+        Verifies a user on behalf of the organization which is represented by
+        the bot. Returns True on success.
+        """
+        response = await self.api.request("verifyUser", get_params(locals()))
+        return from_json(response, type=bool)
+
+    async def verify_chat(
+        self, chat_id: int | str, custom_description: str | None = None, **kwargs
+    ) -> bool:
+        """
+        Verifies a chat on behalf of the organization which is represented by
+        the bot. Returns True on success.
+        """
+        response = await self.api.request("verifyChat", get_params(locals()))
+        return from_json(response, type=bool)
+
+    async def remove_user_verification(self, user_id: int, **kwargs) -> bool:
+        """
+        Removes verification from a user who is currently verified on behalf
+        of the organization represented by the bot. Returns True on success.
+        """
+        response = await self.api.request(
+            "removeUserVerification", get_params(locals())
+        )
+        return from_json(response, type=bool)
+
+    async def remove_chat_verification(self, chat_id: int | str, **kwargs) -> bool:
+        """
+        Removes verification from a chat that is currently verified on behalf
+        of the organization represented by the bot. Returns True on success.
+        """
+        response = await self.api.request(
+            "removeChatVerification", get_params(locals())
+        )
+        return from_json(response, type=bool)
+
+    async def read_business_message(
+        self, message_id: int, chat_id: int, business_connection_id: str, **kwargs
+    ) -> bool:
+        """
+        Marks incoming message as read on behalf of a business account.
+        Requires the can_read_messages business bot right. Returns True on
+        success.
+        """
+        response = await self.api.request("readBusinessMessage", get_params(locals()))
+        return from_json(response, type=bool)
+
+    async def delete_business_messages(
+        self, message_ids: list[int], business_connection_id: str, **kwargs
+    ) -> bool:
+        """
+        Delete messages on behalf of a business account. Requires the
+        can_delete_outgoing_messages business bot right to delete messages
+        sent by the bot itself, or the can_delete_all_messages business bot
+        right to delete any message. Returns True on success.
+        """
+        response = await self.api.request(
+            "deleteBusinessMessages", get_params(locals())
+        )
+        return from_json(response, type=bool)
+
+    async def set_business_account_name(
+        self,
+        first_name: str,
+        business_connection_id: str,
+        last_name: str | None = None,
+        **kwargs,
+    ) -> bool:
+        """
+        Changes the first and last name of a managed business account.
+        Requires the can_change_name business bot right. Returns True on
+        success.
+        """
+        response = await self.api.request(
+            "setBusinessAccountName", get_params(locals())
+        )
+        return from_json(response, type=bool)
+
+    async def set_business_account_username(
+        self, business_connection_id: str, username: str | None = None, **kwargs
+    ) -> bool:
+        """
+        Changes the username of a managed business account. Requires the
+        can_change_username business bot right. Returns True on success.
+        """
+        response = await self.api.request(
+            "setBusinessAccountUsername", get_params(locals())
+        )
+        return from_json(response, type=bool)
+
+    async def set_business_account_bio(
+        self, business_connection_id: str, bio: str | None = None, **kwargs
+    ) -> bool:
+        """
+        Changes the bio of a managed business account. Requires the
+        can_change_bio business bot right. Returns True on success.
+        """
+        response = await self.api.request("setBusinessAccountBio", get_params(locals()))
+        return from_json(response, type=bool)
+
+    async def set_business_account_profile_photo(
+        self,
+        photo: InputProfilePhoto,
+        business_connection_id: str,
+        is_public: bool | None = None,
+        **kwargs,
+    ) -> bool:
+        """
+        Changes the profile photo of a managed business account. Requires the
+        can_edit_profile_photo business bot right. Returns True on success.
+        """
+        response = await self.api.request(
+            "setBusinessAccountProfilePhoto", get_params(locals())
+        )
+        return from_json(response, type=bool)
+
+    async def remove_business_account_profile_photo(
+        self, business_connection_id: str, is_public: bool | None = None, **kwargs
+    ) -> bool:
+        """
+        Removes the current profile photo of a managed business account.
+        Requires the can_edit_profile_photo business bot right. Returns True
+        on success.
+        """
+        response = await self.api.request(
+            "removeBusinessAccountProfilePhoto", get_params(locals())
+        )
+        return from_json(response, type=bool)
+
+    async def set_business_account_gift_settings(
+        self,
+        show_gift_button: bool,
+        business_connection_id: str,
+        accepted_gift_types: AcceptedGiftTypes,
+        **kwargs,
+    ) -> bool:
+        """
+        Changes the privacy settings pertaining to incoming gifts in a managed
+        business account. Requires the can_change_gift_settings business bot
+        right. Returns True on success.
+        """
+        response = await self.api.request(
+            "setBusinessAccountGiftSettings", get_params(locals())
+        )
+        return from_json(response, type=bool)
+
+    async def get_business_account_star_balance(
+        self, business_connection_id: str, **kwargs
+    ) -> StarAmount:
+        """
+        Returns the amount of Telegram Stars owned by a managed business
+        account. Requires the can_view_gifts_and_stars business bot right.
+        Returns StarAmount on success.
+        """
+        response = await self.api.request(
+            "getBusinessAccountStarBalance", get_params(locals())
+        )
+        return from_json(response, type=StarAmount)
+
+    async def transfer_business_account_stars(
+        self, star_count: int, business_connection_id: str, **kwargs
+    ) -> bool:
+        """
+        Transfers Telegram Stars from the business account balance to the
+        bot's balance. Requires the can_transfer_stars business bot right.
+        Returns True on success.
+        """
+        response = await self.api.request(
+            "transferBusinessAccountStars", get_params(locals())
+        )
+        return from_json(response, type=bool)
+
+    async def get_business_account_gifts(
+        self,
+        business_connection_id: str,
+        sort_by_price: bool | None = None,
+        offset: str | None = None,
+        limit: int | None = None,
+        exclude_unsaved: bool | None = None,
+        exclude_unlimited: bool | None = None,
+        exclude_unique: bool | None = None,
+        exclude_saved: bool | None = None,
+        exclude_limited: bool | None = None,
+        **kwargs,
+    ) -> OwnedGifts:
+        """
+        Returns the gifts received and owned by a managed business account.
+        Requires the can_view_gifts_and_stars business bot right. Returns
+        OwnedGifts on success.
+        """
+        response = await self.api.request(
+            "getBusinessAccountGifts", get_params(locals())
+        )
+        return from_json(response, type=OwnedGifts)
+
+    async def convert_gift_to_stars(
+        self, owned_gift_id: str, business_connection_id: str, **kwargs
+    ) -> bool:
+        """
+        Converts a given regular gift to Telegram Stars. Requires the
+        can_convert_gifts_to_stars business bot right. Returns True on
+        success.
+        """
+        response = await self.api.request("convertGiftToStars", get_params(locals()))
+        return from_json(response, type=bool)
+
+    async def upgrade_gift(
+        self,
+        owned_gift_id: str,
+        business_connection_id: str,
+        star_count: int | None = None,
+        keep_original_details: bool | None = None,
+        **kwargs,
+    ) -> bool:
+        """
+        Upgrades a given regular gift to a unique gift. Requires the
+        can_transfer_and_upgrade_gifts business bot right. Additionally
+        requires the can_transfer_stars business bot right if the upgrade is
+        paid. Returns True on success.
+        """
+        response = await self.api.request("upgradeGift", get_params(locals()))
+        return from_json(response, type=bool)
+
+    async def transfer_gift(
+        self,
+        owned_gift_id: str,
+        new_owner_chat_id: int,
+        business_connection_id: str,
+        star_count: int | None = None,
+        **kwargs,
+    ) -> bool:
+        """
+        Transfers an owned unique gift to another user. Requires the
+        can_transfer_and_upgrade_gifts business bot right. Requires
+        can_transfer_stars business bot right if the transfer is paid. Returns
+        True on success.
+        """
+        response = await self.api.request("transferGift", get_params(locals()))
+        return from_json(response, type=bool)
+
+    async def post_story(
+        self,
+        content: InputStoryContent,
+        business_connection_id: str,
+        active_period: Literal[86400],
+        protect_content: bool | None = None,
+        post_to_chat_page: bool | None = None,
+        parse_mode: str | None = None,
+        caption_entities: list[MessageEntity] | None = None,
+        caption: str | None = None,
+        areas: list[StoryArea] | None = None,
+        **kwargs,
+    ) -> Story:
+        """
+        Posts a story on behalf of a managed business account. Requires the
+        can_manage_stories business bot right. Returns Story on success.
+        """
+        response = await self.api.request("postStory", get_params(locals()))
+        return from_json(response, type=Story)
+
+    async def edit_story(
+        self,
+        story_id: int,
+        content: InputStoryContent,
+        business_connection_id: str,
+        parse_mode: str | None = None,
+        caption_entities: list[MessageEntity] | None = None,
+        caption: str | None = None,
+        areas: list[StoryArea] | None = None,
+        **kwargs,
+    ) -> Story:
+        """
+        Edits a story previously posted by the bot on behalf of a managed
+        business account. Requires the can_manage_stories business bot right.
+        Returns Story on success.
+        """
+        response = await self.api.request("editStory", get_params(locals()))
+        return from_json(response, type=Story)
+
+    async def delete_story(
+        self, story_id: int, business_connection_id: str, **kwargs
+    ) -> bool:
+        """
+        Deletes a story previously posted by the bot on behalf of a managed
+        business account. Requires the can_manage_stories business bot right.
+        Returns True on success.
+        """
+        response = await self.api.request("deleteStory", get_params(locals()))
+        return from_json(response, type=bool)
+
     async def send_sticker(
         self,
         sticker: InputFile | str,
@@ -2000,72 +2350,6 @@ class APIMethods:
         Returns True on success.
         """
         response = await self.api.request("deleteStickerSet", get_params(locals()))
-        return from_json(response, type=bool)
-
-    async def get_available_gifts(self, **kwargs) -> Gifts:
-        """
-        Returns the list of gifts that can be sent by the bot to users and
-        channel chats. Requires no parameters. Returns a Gifts object.
-        """
-        response = await self.api.request("getAvailableGifts", get_params(locals()))
-        return from_json(response, type=Gifts)
-
-    async def send_gift(
-        self,
-        gift_id: str,
-        user_id: int | None = None,
-        text_parse_mode: str | None = None,
-        text_entities: list[MessageEntity] | None = None,
-        text: str | None = None,
-        pay_for_upgrade: bool | None = None,
-        chat_id: int | str | None = None,
-        **kwargs,
-    ) -> bool:
-        """
-        Sends a gift to the given user or channel chat. The gift can't be
-        converted to Telegram Stars by the receiver. Returns True on success.
-        """
-        response = await self.api.request("sendGift", get_params(locals()))
-        return from_json(response, type=bool)
-
-    async def verify_user(
-        self, user_id: int, custom_description: str | None = None, **kwargs
-    ) -> bool:
-        """
-        Verifies a user on behalf of the organization which is represented by
-        the bot. Returns True on success.
-        """
-        response = await self.api.request("verifyUser", get_params(locals()))
-        return from_json(response, type=bool)
-
-    async def verify_chat(
-        self, chat_id: int | str, custom_description: str | None = None, **kwargs
-    ) -> bool:
-        """
-        Verifies a chat on behalf of the organization which is represented by
-        the bot. Returns True on success.
-        """
-        response = await self.api.request("verifyChat", get_params(locals()))
-        return from_json(response, type=bool)
-
-    async def remove_user_verification(self, user_id: int, **kwargs) -> bool:
-        """
-        Removes verification from a user who is currently verified on behalf
-        of the organization represented by the bot. Returns True on success.
-        """
-        response = await self.api.request(
-            "removeUserVerification", get_params(locals())
-        )
-        return from_json(response, type=bool)
-
-    async def remove_chat_verification(self, chat_id: int | str, **kwargs) -> bool:
-        """
-        Removes verification from a chat that is currently verified on behalf
-        of the organization represented by the bot. Returns True on success.
-        """
-        response = await self.api.request(
-            "removeChatVerification", get_params(locals())
-        )
         return from_json(response, type=bool)
 
     async def answer_inline_query(

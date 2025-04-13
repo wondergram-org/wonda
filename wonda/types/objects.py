@@ -24,6 +24,8 @@ from .enums import (
     ReactionTypeEmojiEmoji,
     StickerSetStickerType,
     StickerType,
+    TransactionPartnerUserTransactionType,
+    UniqueGiftInfoOrigin,
 )
 from .helper import Model
 
@@ -355,6 +357,11 @@ class ChatFullInfo(Model):
     The maximum number of reactions that can be set on a message in the
     chat
     """
+    accepted_gift_types: "AcceptedGiftTypes"
+    """
+    Information about types of gifts that are accepted by the chat or by
+    the corresponding user for private chats
+    """
     title: str | None = None
     """
     Optional. Title, for supergroups, channels and group chats
@@ -656,6 +663,11 @@ class Message(Model):
     Optional. Signature of the post author for messages in channels, or
     the custom title of an anonymous group administrator
     """
+    paid_star_count: int | None = None
+    """
+    Optional. The number of Telegram Stars that were paid by the sender of
+    the message to send it
+    """
     text: str | None = None
     """
     Optional. For text messages, the actual UTF-8 text of the message
@@ -827,6 +839,14 @@ class Message(Model):
     """
     Optional. Service message: a chat was shared with the bot
     """
+    gift: "GiftInfo | None" = None
+    """
+    Optional. Service message: a regular gift was sent or received
+    """
+    unique_gift: "UniqueGiftInfo | None" = None
+    """
+    Optional. Service message: a unique gift was sent or received
+    """
     connected_website: str | None = None
     """
     Optional. The domain name of the website on which the user has logged
@@ -896,6 +916,11 @@ class Message(Model):
     """
     Optional. Service message: a giveaway without public winners was
     completed
+    """
+    paid_message_price_changed: "PaidMessagePriceChanged | None" = None
+    """
+    Optional. Service message: the price for paid messages has changed in
+    the chat
     """
     video_chat_scheduled: "VideoChatScheduled | None" = None
     """
@@ -2355,6 +2380,19 @@ class VideoChatParticipantsInvited(Model):
     """
 
 
+class PaidMessagePriceChanged(Model):
+    """
+    Describes a service message about a change in the price of paid
+    messages within a chat.
+    """
+
+    paid_message_star_count: int
+    """
+    The new number of Telegram Stars that must be paid by non-
+    administrator users of the supergroup chat for each sent message
+    """
+
+
 class GiveawayCreated(Model):
     """
     This object represents a service message about the creation of a
@@ -3765,6 +3803,162 @@ class BusinessOpeningHours(Model):
     """
 
 
+class StoryAreaPosition(Model):
+    """
+    Describes the position of a clickable area within a story.
+    """
+
+    x_percentage: float
+    """
+    The abscissa of the area's center, as a percentage of the media width
+    """
+    y_percentage: float
+    """
+    The ordinate of the area's center, as a percentage of the media height
+    """
+    width_percentage: float
+    """
+    The width of the area's rectangle, as a percentage of the media width
+    """
+    height_percentage: float
+    """
+    The height of the area's rectangle, as a percentage of the media
+    height
+    """
+    rotation_angle: float
+    """
+    The clockwise rotation angle of the rectangle, in degrees; 0-360
+    """
+    corner_radius_percentage: float
+    """
+    The radius of the rectangle corner rounding, as a percentage of the
+    media width
+    """
+
+
+class LocationAddress(Model):
+    """
+    Describes the physical address of a location.
+    """
+
+    country_code: str
+    """
+    The two-letter ISO 3166-1 alpha-2 country code of the country where
+    the location is located
+    """
+    state: str | None = None
+    """
+    Optional. State of the location
+    """
+    city: str | None = None
+    """
+    Optional. City of the location
+    """
+    street: str | None = None
+    """
+    Optional. Street address of the location
+    """
+
+
+class StoryAreaTypeLocation(Model, tag_field="type", tag="location"):
+    """
+    Describes a story area pointing to a location. Currently, a story can
+    have up to 10 location areas.
+    """
+
+    latitude: float
+    """
+    Location latitude in degrees
+    """
+    longitude: float
+    """
+    Location longitude in degrees
+    """
+    address: "LocationAddress | None" = None
+    """
+    Optional. Address of the location
+    """
+
+
+class StoryAreaTypeSuggestedReaction(Model, tag_field="type", tag="suggested_reaction"):
+    """
+    Describes a story area pointing to a suggested reaction. Currently, a
+    story can have up to 5 suggested reaction areas.
+    """
+
+    reaction_type: "ReactionType"
+    """
+    Type of the reaction
+    """
+    is_dark: bool | None = None
+    """
+    Optional. Pass True if the reaction area has a dark background
+    """
+    is_flipped: bool | None = None
+    """
+    Optional. Pass True if reaction area corner is flipped
+    """
+
+
+class StoryAreaTypeLink(Model, tag_field="type", tag="link"):
+    """
+    Describes a story area pointing to an HTTP or tg:// link. Currently, a
+    story can have up to 3 link areas.
+    """
+
+    url: str
+    """
+    HTTP or tg:// URL to be opened when the area is clicked
+    """
+
+
+class StoryAreaTypeWeather(Model, tag_field="type", tag="weather"):
+    """
+    Describes a story area containing weather information. Currently, a
+    story can have up to 3 weather areas.
+    """
+
+    temperature: float
+    """
+    Temperature, in degree Celsius
+    """
+    emoji: str
+    """
+    Emoji representing the weather
+    """
+    background_color: int
+    """
+    A color of the area background in the ARGB format
+    """
+
+
+class StoryAreaTypeUniqueGift(Model, tag_field="type", tag="unique_gift"):
+    """
+    Describes a story area pointing to a unique gift. Currently, a story
+    can have at most 1 unique gift area.
+    """
+
+    name: str
+    """
+    Unique name of the gift
+    """
+
+
+class StoryArea(Model):
+    """
+    Describes a clickable area on a story media.
+    """
+
+    position: "StoryAreaPosition"
+    """
+    Position of the area
+    """
+    type: "StoryAreaType"
+    """
+    Type of the area
+    """
+
+
 class ChatLocation(Model):
     """
     Represents a location to which a chat is connected.
@@ -3914,6 +4108,404 @@ class ForumTopic(Model):
     """
     Optional. Unique identifier of the custom emoji shown as the topic
     icon
+    """
+
+
+class Gift(Model):
+    """
+    This object represents a gift that can be sent by the bot.
+    """
+
+    id: str
+    """
+    Unique identifier of the gift
+    """
+    sticker: "Sticker"
+    """
+    The sticker that represents the gift
+    """
+    star_count: int
+    """
+    The number of Telegram Stars that must be paid to send the sticker
+    """
+    upgrade_star_count: int | None = None
+    """
+    Optional. The number of Telegram Stars that must be paid to upgrade
+    the gift to a unique one
+    """
+    total_count: int | None = None
+    """
+    Optional. The total number of the gifts of this type that can be sent;
+    for limited gifts only
+    """
+    remaining_count: int | None = None
+    """
+    Optional. The number of remaining gifts of this type that can be sent;
+    for limited gifts only
+    """
+
+
+class Gifts(Model):
+    """
+    This object represent a list of gifts.
+    """
+
+    gifts: "list[Gift]"
+    """
+    The list of gifts
+    """
+
+
+class UniqueGiftModel(Model):
+    """
+    This object describes the model of a unique gift.
+    """
+
+    name: str
+    """
+    Name of the model
+    """
+    sticker: "Sticker"
+    """
+    The sticker that represents the unique gift
+    """
+    rarity_per_mille: int
+    """
+    The number of unique gifts that receive this model for every 1000
+    gifts upgraded
+    """
+
+
+class UniqueGiftSymbol(Model):
+    """
+    This object describes the symbol shown on the pattern of a unique
+    gift.
+    """
+
+    name: str
+    """
+    Name of the symbol
+    """
+    sticker: "Sticker"
+    """
+    The sticker that represents the unique gift
+    """
+    rarity_per_mille: int
+    """
+    The number of unique gifts that receive this model for every 1000
+    gifts upgraded
+    """
+
+
+class UniqueGiftBackdropColors(Model):
+    """
+    This object describes the colors of the backdrop of a unique gift.
+    """
+
+    center_color: int
+    """
+    The color in the center of the backdrop in RGB format
+    """
+    edge_color: int
+    """
+    The color on the edges of the backdrop in RGB format
+    """
+    symbol_color: int
+    """
+    The color to be applied to the symbol in RGB format
+    """
+    text_color: int
+    """
+    The color for the text on the backdrop in RGB format
+    """
+
+
+class UniqueGiftBackdrop(Model):
+    """
+    This object describes the backdrop of a unique gift.
+    """
+
+    name: str
+    """
+    Name of the backdrop
+    """
+    colors: "UniqueGiftBackdropColors"
+    """
+    Colors of the backdrop
+    """
+    rarity_per_mille: int
+    """
+    The number of unique gifts that receive this backdrop for every 1000
+    gifts upgraded
+    """
+
+
+class UniqueGift(Model):
+    """
+    This object describes a unique gift that was upgraded from a regular
+    gift.
+    """
+
+    base_name: str
+    """
+    Human-readable name of the regular gift from which this unique gift
+    was upgraded
+    """
+    name: str
+    """
+    Unique name of the gift. This name can be used in https://t.me/nft/...
+    links and story areas
+    """
+    number: int
+    """
+    Unique number of the upgraded gift among gifts upgraded from the same
+    regular gift
+    """
+    model: "UniqueGiftModel"
+    """
+    Model of the gift
+    """
+    symbol: "UniqueGiftSymbol"
+    """
+    Symbol of the gift
+    """
+    backdrop: "UniqueGiftBackdrop"
+    """
+    Backdrop of the gift
+    """
+
+
+class GiftInfo(Model):
+    """
+    Describes a service message about a regular gift that was sent or
+    received.
+    """
+
+    gift: "Gift"
+    """
+    Information about the gift
+    """
+    owned_gift_id: str | None = None
+    """
+    Optional. Unique identifier of the received gift for the bot; only
+    present for gifts received on behalf of business accounts
+    """
+    convert_star_count: int | None = None
+    """
+    Optional. Number of Telegram Stars that can be claimed by the receiver
+    by converting the gift; omitted if conversion to Telegram Stars is
+    impossible
+    """
+    prepaid_upgrade_star_count: int | None = None
+    """
+    Optional. Number of Telegram Stars that were prepaid by the sender for
+    the ability to upgrade the gift
+    """
+    text: str | None = None
+    """
+    Optional. Text of the message that was added to the gift
+    """
+    entities: "list[MessageEntity] | None" = None
+    """
+    Optional. Special entities that appear in the text
+    """
+    can_be_upgraded: bool | None = None
+    """
+    Optional. True, if the gift can be upgraded to a unique gift
+    """
+    is_private: bool | None = None
+    """
+    Optional. True, if the sender and gift text are shown only to the gift
+    receiver; otherwise, everyone will be able to see them
+    """
+
+
+class UniqueGiftInfo(Model):
+    """
+    Describes a service message about a unique gift that was sent or
+    received.
+    """
+
+    gift: "UniqueGift"
+    """
+    Information about the gift
+    """
+    origin: UniqueGiftInfoOrigin
+    """
+    Origin of the gift. Currently, either "upgrade" or "transfer"
+    """
+    owned_gift_id: str | None = None
+    """
+    Optional. Unique identifier of the received gift for the bot; only
+    present for gifts received on behalf of business accounts
+    """
+    transfer_star_count: int | None = None
+    """
+    Optional. Number of Telegram Stars that must be paid to transfer the
+    gift; omitted if the bot cannot transfer the gift
+    """
+
+
+class OwnedGiftRegular(Model, tag_field="type", tag="regular"):
+    """
+    Describes a regular gift owned by a user or a chat.
+    """
+
+    gift: "Gift"
+    """
+    Information about the regular gift
+    """
+    send_date: int
+    """
+    Date the gift was sent in Unix time
+    """
+    owned_gift_id: str | None = None
+    """
+    Optional. Unique identifier of the gift for the bot; for gifts
+    received on behalf of business accounts only
+    """
+    sender_user: "User | None" = None
+    """
+    Optional. Sender of the gift if it is a known user
+    """
+    text: str | None = None
+    """
+    Optional. Text of the message that was added to the gift
+    """
+    entities: "list[MessageEntity] | None" = None
+    """
+    Optional. Special entities that appear in the text
+    """
+    convert_star_count: int | None = None
+    """
+    Optional. Number of Telegram Stars that can be claimed by the receiver
+    instead of the gift; omitted if the gift cannot be converted to
+    Telegram Stars
+    """
+    prepaid_upgrade_star_count: int | None = None
+    """
+    Optional. Number of Telegram Stars that were paid by the sender for
+    the ability to upgrade the gift
+    """
+    is_private: bool | None = None
+    """
+    Optional. True, if the sender and gift text are shown only to the gift
+    receiver; otherwise, everyone will be able to see them
+    """
+    is_saved: bool | None = None
+    """
+    Optional. True, if the gift is displayed on the account's profile
+    page; for gifts received on behalf of business accounts only
+    """
+    can_be_upgraded: bool | None = None
+    """
+    Optional. True, if the gift can be upgraded to a unique gift; for
+    gifts received on behalf of business accounts only
+    """
+    was_refunded: bool | None = None
+    """
+    Optional. True, if the gift was refunded and isn't available anymore
+    """
+
+
+class OwnedGiftUnique(Model, tag_field="type", tag="unique"):
+    """
+    Describes a unique gift received and owned by a user or a chat.
+    """
+
+    gift: "UniqueGift"
+    """
+    Information about the unique gift
+    """
+    send_date: int
+    """
+    Date the gift was sent in Unix time
+    """
+    owned_gift_id: str | None = None
+    """
+    Optional. Unique identifier of the received gift for the bot; for
+    gifts received on behalf of business accounts only
+    """
+    sender_user: "User | None" = None
+    """
+    Optional. Sender of the gift if it is a known user
+    """
+    transfer_star_count: int | None = None
+    """
+    Optional. Number of Telegram Stars that must be paid to transfer the
+    gift; omitted if the bot cannot transfer the gift
+    """
+    is_saved: bool | None = None
+    """
+    Optional. True, if the gift is displayed on the account's profile
+    page; for gifts received on behalf of business accounts only
+    """
+    can_be_transferred: bool | None = None
+    """
+    Optional. True, if the gift can be transferred to another owner; for
+    gifts received on behalf of business accounts only
+    """
+
+
+class OwnedGifts(Model):
+    """
+    Contains the list of gifts received and owned by a user or a chat.
+    """
+
+    total_count: int
+    """
+    The total number of gifts owned by the user or the chat
+    """
+    gifts: "list[OwnedGift]"
+    """
+    The list of gifts
+    """
+    next_offset: str | None = None
+    """
+    Optional. Offset for the next request. If empty, then there are no
+    more results
+    """
+
+
+class AcceptedGiftTypes(Model):
+    """
+    This object describes the types of gifts that can be gifted to a user
+    or a chat.
+    """
+
+    unlimited_gifts: bool
+    """
+    True, if unlimited regular gifts are accepted
+    """
+    limited_gifts: bool
+    """
+    True, if limited regular gifts are accepted
+    """
+    unique_gifts: bool
+    """
+    True, if unique gifts or gifts that can be upgraded to unique for free
+    are accepted
+    """
+    premium_subscription: bool
+    """
+    True, if a Telegram Premium subscription is accepted
+    """
+
+
+class StarAmount(Model):
+    """
+    Describes an amount of Telegram Stars.
+    """
+
+    amount: int
+    """
+    Integer amount of Telegram Stars, rounded to 0; can be negative
+    """
+    nanostar_amount: int | None = None
+    """
+    Optional. The number of 1/1000000000 shares of Telegram Stars; from
+    -999999999 to 999999999; can be negative if and only if amount is non-
+    positive
     """
 
 
@@ -4202,6 +4794,81 @@ class UserChatBoosts(Model):
     """
 
 
+class BusinessBotRights(Model):
+    """
+    Represents the rights of a business bot.
+    """
+
+    can_reply: bool | None = None
+    """
+    Optional. True, if the bot can send and edit messages in the private
+    chats that had incoming messages in the last 24 hours
+    """
+    can_read_messages: bool | None = None
+    """
+    Optional. True, if the bot can mark incoming private messages as read
+    """
+    can_delete_outgoing_messages: bool | None = None
+    """
+    Optional. True, if the bot can delete messages sent by the bot
+    """
+    can_delete_all_messages: bool | None = None
+    """
+    Optional. True, if the bot can delete all private messages in managed
+    chats
+    """
+    can_edit_name: bool | None = None
+    """
+    Optional. True, if the bot can edit the first and last name of the
+    business account
+    """
+    can_edit_bio: bool | None = None
+    """
+    Optional. True, if the bot can edit the bio of the business account
+    """
+    can_edit_profile_photo: bool | None = None
+    """
+    Optional. True, if the bot can edit the profile photo of the business
+    account
+    """
+    can_edit_username: bool | None = None
+    """
+    Optional. True, if the bot can edit the username of the business
+    account
+    """
+    can_change_gift_settings: bool | None = None
+    """
+    Optional. True, if the bot can change the privacy settings pertaining
+    to gifts for the business account
+    """
+    can_view_gifts_and_stars: bool | None = None
+    """
+    Optional. True, if the bot can view gifts and the amount of Telegram
+    Stars owned by the business account
+    """
+    can_convert_gifts_to_stars: bool | None = None
+    """
+    Optional. True, if the bot can convert regular gifts owned by the
+    business account to Telegram Stars
+    """
+    can_transfer_and_upgrade_gifts: bool | None = None
+    """
+    Optional. True, if the bot can transfer and upgrade gifts owned by the
+    business account
+    """
+    can_transfer_stars: bool | None = None
+    """
+    Optional. True, if the bot can transfer Telegram Stars received by the
+    business account to its own account, or use them to upgrade and
+    transfer gifts
+    """
+    can_manage_stories: bool | None = None
+    """
+    Optional. True, if the bot can post, edit and delete stories on behalf
+    of the business account
+    """
+
+
 class BusinessConnection(Model):
     """
     Describes the connection of the bot with a business account.
@@ -4228,14 +4895,13 @@ class BusinessConnection(Model):
     """
     Date the connection was established in Unix time
     """
-    can_reply: bool
-    """
-    True, if the bot can act on behalf of the business account in chats
-    that were active in the last 24 hours
-    """
     is_enabled: bool
     """
     True, if the connection is active
+    """
+    rights: "BusinessBotRights | None" = None
+    """
+    Optional. Rights of the business bot
     """
 
 
@@ -4652,6 +5318,87 @@ class InputPaidMediaVideo(Model, tag_field="type", tag="video"):
     """
 
 
+class InputProfilePhotoStatic(Model, tag_field="type", tag="static"):
+    """
+    A static profile photo in the .JPG format.
+    """
+
+    photo: str
+    """
+    The static profile photo. Profile photos can't be reused and can only
+    be uploaded as a new file, so you can pass
+    "attach://file_attach_name>" if the photo was uploaded using
+    multipart/form-data under file_attach_name>. More information on
+    Sending Files: https://core.telegram.org/bots/api/#sending-files
+    """
+
+
+class InputProfilePhotoAnimated(Model, tag_field="type", tag="animated"):
+    """
+    An animated profile photo in the MPEG4 format.
+    """
+
+    animation: str
+    """
+    The animated profile photo. Profile photos can't be reused and can
+    only be uploaded as a new file, so you can pass
+    "attach://file_attach_name>" if the photo was uploaded using
+    multipart/form-data under file_attach_name>. More information on
+    Sending Files: https://core.telegram.org/bots/api/#sending-files
+    """
+    main_frame_timestamp: float | None = None
+    """
+    Optional. Timestamp in seconds of the frame that will be used as the
+    static profile photo. Defaults to 0.0.
+    """
+
+
+class InputStoryContentPhoto(Model, tag_field="type", tag="photo"):
+    """
+    Describes a photo to post as a story.
+    """
+
+    photo: str
+    """
+    The photo to post as a story. The photo must be of the size 1080x1920
+    and must not exceed 10 MB. The photo can't be reused and can only be
+    uploaded as a new file, so you can pass "attach://file_attach_name>"
+    if the photo was uploaded using multipart/form-data under
+    file_attach_name>. More information on Sending Files:
+    https://core.telegram.org/bots/api/#sending-files
+    """
+
+
+class InputStoryContentVideo(Model, tag_field="type", tag="video"):
+    """
+    Describes a video to post as a story.
+    """
+
+    video: str
+    """
+    The video to post as a story. The video must be of the size 720x1280,
+    streamable, encoded with H.265 codec, with key frames added each
+    second in the MPEG4 format, and must not exceed 30 MB. The video can't
+    be reused and can only be uploaded as a new file, so you can pass
+    "attach://file_attach_name>" if the video was uploaded using
+    multipart/form-data under file_attach_name>. More information on
+    Sending Files: https://core.telegram.org/bots/api/#sending-files
+    """
+    duration: float | None = None
+    """
+    Optional. Precise duration of the video in seconds; 0-60
+    """
+    cover_frame_timestamp: float | None = None
+    """
+    Optional. Timestamp in seconds of the frame that will be used as the
+    static cover for the story. Defaults to 0.0.
+    """
+    is_animation: bool | None = None
+    """
+    Optional. Pass True if the video has no sound
+    """
+
+
 class Sticker(Model):
     """
     This object represents a sticker.
@@ -4792,16 +5539,15 @@ class InputSticker(Model):
     This object describes a sticker to be added to a sticker set.
     """
 
-    sticker: "InputFile | str"
+    sticker: str
     """
     The added sticker. Pass a file_id as a String to send a file that
     already exists on the Telegram servers, pass an HTTP URL as a String
-    for Telegram to get a file from the Internet, upload a new one using
-    multipart/form-data, or pass "attach://file_attach_name>" to upload a
-    new one using multipart/form-data under file_attach_name> name.
-    Animated and video stickers can't be uploaded via HTTP URL. More
-    information on Sending Files:
-    https://core.telegram.org/bots/api/#sending-files
+    for Telegram to get a file from the Internet, or pass
+    "attach://file_attach_name>" to upload a new file using
+    multipart/form-data under file_attach_name> name. Animated and video
+    stickers can't be uploaded via HTTP URL. More information on Sending
+    Files: https://core.telegram.org/bots/api/#sending-files
     """
     format: InputStickerFormat
     """
@@ -4822,51 +5568,6 @@ class InputSticker(Model):
     Optional. List of 0-20 search keywords for the sticker with total
     length of up to 64 characters. For "regular" and "custom_emoji"
     stickers only.
-    """
-
-
-class Gift(Model):
-    """
-    This object represents a gift that can be sent by the bot.
-    """
-
-    id: str
-    """
-    Unique identifier of the gift
-    """
-    sticker: "Sticker"
-    """
-    The sticker that represents the gift
-    """
-    star_count: int
-    """
-    The number of Telegram Stars that must be paid to send the sticker
-    """
-    upgrade_star_count: int | None = None
-    """
-    Optional. The number of Telegram Stars that must be paid to upgrade
-    the gift to a unique one
-    """
-    total_count: int | None = None
-    """
-    Optional. The total number of the gifts of this type that can be sent;
-    for limited gifts only
-    """
-    remaining_count: int | None = None
-    """
-    Optional. The number of remaining gifts of this type that can be sent;
-    for limited gifts only
-    """
-
-
-class Gifts(Model):
-    """
-    This object represent a list of gifts.
-    """
-
-    gifts: "list[Gift]"
-    """
-    The list of gifts
     """
 
 
@@ -6677,6 +7378,15 @@ class TransactionPartnerUser(Model, tag_field="type", tag="user"):
     Describes a transaction with a user.
     """
 
+    transaction_type: TransactionPartnerUserTransactionType
+    """
+    Type of the transaction, currently one of "invoice_payment" for
+    payments via invoices, "paid_media_payment" for payments for paid
+    media, "gift_purchase" for gifts sent by the bot, "premium_purchase"
+    for Telegram Premium subscriptions gifted by the bot,
+    "business_account_transfer" for direct transfers from managed business
+    accounts
+    """
     user: "User"
     """
     Information about the user
@@ -6684,27 +7394,38 @@ class TransactionPartnerUser(Model, tag_field="type", tag="user"):
     affiliate: "AffiliateInfo | None" = None
     """
     Optional. Information about the affiliate that received a commission
-    via this transaction
+    via this transaction. Can be available only for "invoice_payment" and
+    "paid_media_payment" transactions.
     """
     invoice_payload: str | None = None
     """
-    Optional. Bot-specified invoice payload
+    Optional. Bot-specified invoice payload. Can be available only for
+    "invoice_payment" transactions.
     """
     subscription_period: int | None = None
     """
-    Optional. The duration of the paid subscription
+    Optional. The duration of the paid subscription. Can be available only
+    for "invoice_payment" transactions.
     """
     paid_media: "list[PaidMedia] | None" = None
     """
-    Optional. Information about the paid media bought by the user
+    Optional. Information about the paid media bought by the user; for
+    "paid_media_payment" transactions only
     """
     paid_media_payload: str | None = None
     """
-    Optional. Bot-specified paid media payload
+    Optional. Bot-specified paid media payload. Can be available only for
+    "paid_media_payment" transactions.
     """
     gift: "Gift | None" = None
     """
-    Optional. The gift sent to the user by the bot
+    Optional. The gift sent to the user by the bot; for "gift_purchase"
+    transactions only
+    """
+    premium_subscription_duration: int | None = None
+    """
+    Optional. Number of months the gifted Telegram Premium subscription
+    will be active for; for "premium_purchase" transactions only
     """
 
 
@@ -7308,10 +8029,31 @@ ChatMemberRestricted, ChatMemberLeft, ChatMemberBanned.
 """
 
 
+StoryAreaType = (
+    StoryAreaTypeLocation
+    | StoryAreaTypeSuggestedReaction
+    | StoryAreaTypeLink
+    | StoryAreaTypeWeather
+    | StoryAreaTypeUniqueGift
+)
+"""
+Describes the type of a clickable area on a story. Currently, it can
+be one of StoryAreaTypeLocation, StoryAreaTypeSuggestedReaction,
+StoryAreaTypeLink, StoryAreaTypeWeather, StoryAreaTypeUniqueGift.
+"""
+
+
 ReactionType = ReactionTypeEmoji | ReactionTypeCustomEmoji | ReactionTypePaid
 """
 This object describes the type of a reaction. Currently, it can be one
 of ReactionTypeEmoji, ReactionTypeCustomEmoji, ReactionTypePaid.
+"""
+
+
+OwnedGift = OwnedGiftRegular | OwnedGiftUnique
+"""
+This object describes a gift received and owned by a user or a chat.
+Currently, it can be one of OwnedGiftRegular, OwnedGiftUnique.
 """
 
 
@@ -7370,6 +8112,20 @@ InputPaidMedia = InputPaidMediaPhoto | InputPaidMediaVideo
 """
 This object describes the paid media to be sent. Currently, it can be
 one of InputPaidMediaPhoto, InputPaidMediaVideo.
+"""
+
+
+InputProfilePhoto = InputProfilePhotoStatic | InputProfilePhotoAnimated
+"""
+This object describes a profile photo to set. Currently, it can be one
+of InputProfilePhotoStatic, InputProfilePhotoAnimated.
+"""
+
+
+InputStoryContent = InputStoryContentPhoto | InputStoryContentVideo
+"""
+This object describes the content of a story to post. Currently, it
+can be one of InputStoryContentPhoto, InputStoryContentVideo.
 """
 
 

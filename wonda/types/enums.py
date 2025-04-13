@@ -162,6 +162,15 @@ class ReactionTypeEmojiEmoji(StrEnum):
     ENRAGED_FACE = "😡"
 
 
+class UniqueGiftInfoOrigin(StrEnum):
+    """
+    Origin of the gift. Currently, either "upgrade" or "transfer"
+    """
+
+    UPGRADE = "upgrade"
+    TRANSFER = "transfer"
+
+
 class StickerType(StrEnum):
     """
     Type of the sticker, currently one of "regular", "mask",
@@ -263,6 +272,23 @@ class InlineQueryResultDocumentMimeType(StrEnum):
 
     APPLICATION_PDF = "application/pdf"
     APPLICATION_ZIP = "application/zip"
+
+
+class TransactionPartnerUserTransactionType(StrEnum):
+    """
+    Type of the transaction, currently one of "invoice_payment" for
+    payments via invoices, "paid_media_payment" for payments for paid
+    media, "gift_purchase" for gifts sent by the bot, "premium_purchase"
+    for Telegram Premium subscriptions gifted by the bot,
+    "business_account_transfer" for direct transfers from managed business
+    accounts
+    """
+
+    INVOICE_PAYMENT = "invoice_payment"
+    PAID_MEDIA_PAYMENT = "paid_media_payment"
+    GIFT_PURCHASE = "gift_purchase"
+    PREMIUM_PURCHASE = "premium_purchase"
+    BUSINESS_ACCOUNT_TRANSFER = "business_account_transfer"
 
 
 class EncryptedPassportElementType(StrEnum):
