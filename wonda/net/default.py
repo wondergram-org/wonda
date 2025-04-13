@@ -3,50 +3,43 @@ import ssl
 import certifi
 from aiohttp import ClientSession, ClientTimeout, FormData, TCPConnector
 
-from wonda.modules import JSONModule
-from wonda.modules import json as default_json_module
 from wonda.net.abc import ABCNetworkClient
+from wonda.net.utils import json
 
 
 class DefaultNetworkClient(ABCNetworkClient):
     def __init__(
-        self,
-        session: ClientSession | None = None,
-        json_processing_module: JSONModule | None = None,
-        timeout: ClientTimeout | None = None,
+        self, session: ClientSession | None = None, timeout: ClientTimeout | None = None
     ) -> None:
-        self.json_processing_module = json_processing_module or default_json_module
         self.timeout = timeout or ClientTimeout(0)
         self.session = session
 
     async def request_bytes(
-        self, url: str, method: str = "get", data: dict | None = None, **kw
+        self, url: str, method: str = "get", data: dict | None = None, **kwargs
     ) -> bytes:
         if not self.session:
             connector = TCPConnector(
                 ssl=ssl.create_default_context(cafile=certifi.where())
             )
             self.session = ClientSession(
-                json_serialize=self.json_processing_module.dumps,
-                timeout=self.timeout,
-                connector=connector,
+                json_serialize=json.dumps, timeout=self.timeout, connector=connector
             )
 
         async with self.session.request(
-            url=url, method=method, data=data, **kw
+            url=url, method=method, data=data, **kwargs
         ) as response:
             return await response.content.read()
 
     async def request_json(
-        self, url: str, method: str = "get", data: dict | None = None, **kw
+        self, url: str, method: str = "get", data: dict | None = None, **kwargs
     ) -> dict:
-        response = await self.request_bytes(url, method, data, **kw)
-        return self.json_processing_module.loads(response)
+        response = await self.request_bytes(url, method, data, **kwargs)
+        return json.loads(response)
 
     async def request_text(
-        self, url: str, method: str = "get", data: dict | None = None, **kw
+        self, url: str, method: str = "get", data: dict | None = None, **kwargs
     ) -> str:
-        response = await self.request_bytes(url, method, data, **kw)
+        response = await self.request_bytes(url, method, data, **kwargs)
         return response.decode()
 
     async def close(self) -> None:

@@ -1,6 +1,6 @@
 import importlib.util
 
-from wonda.modules import JSONModule, json
+from wonda.net.utils import json
 from wonda.tools.storage.abc import ABCExpiringStorage
 from wonda.tools.storage.types import Ex, K, V
 
@@ -23,7 +23,6 @@ else:
             db: int | None = None,
             password: str | None = None,
             ssl: bool | None = None,
-            json_processing_module: JSONModule | None = None,
         ) -> None:
             self.client = Redis(
                 host=host or "localhost",
@@ -32,12 +31,11 @@ else:
                 ssl=ssl or False,
                 password=password,
             )
-            self.json_processing_module = json_processing_module or json
 
         async def get(self, key: K, default: V | None = None) -> V | None:
             if await self.contains(key):
                 v = await self.client.get(key)
-                return self.json_processing_module.loads(v)
+                return json.loads(v)
 
             if default is None:
                 raise KeyError("There is no such key")
@@ -45,9 +43,7 @@ else:
             return default
 
         async def set(self, key: K, value: V, ex: Ex = Ex("inf")) -> None:
-            await self.client.set(
-                key, ex=ex, value=self.json_processing_module.dumps(value)
-            )
+            await self.client.set(key, ex=ex, value=json.dumps(value))
             return None
 
         async def contains(self, key: K) -> bool:
