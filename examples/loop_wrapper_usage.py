@@ -5,7 +5,7 @@ bot = Bot(Token.from_env())
 
 
 # Loop wrapper is a class that helps you interact with the event loop.
-# It helps you run startup and shutdown tasks, and set up timers and intervals.
+# It helps you run startup and shutdown tasks and set up timers and intervals.
 # A loop wrapper is created automatically when you initialize a bot and is accessible
 # through `bot.loop_wrapper`. For the purpose of demostration it will be created
 # manually here.
@@ -13,7 +13,7 @@ loop_wrapper = LoopWrapper()
 
 
 # To set up a timer, use the `@lw.timer()` decorator. It receives
-# a time interval in seconds, minutes, hours and days.
+# a time interval in seconds, minutes, hours or days.
 @loop_wrapper.timer(5)
 async def timer_handler() -> None:
     # Timer handlers are coroutines, which means you must perform
@@ -46,7 +46,7 @@ async def setup_db() -> None:
 
 
 async def close_connection() -> None:
-    # Pretend that this is a real database connection
+    # Pretend that there is a real database connection
     # and we are closing it here.
     print("Closing connection...")
 

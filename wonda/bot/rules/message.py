@@ -96,7 +96,8 @@ class Fuzzy(ABCRule[MessageUpdate]):
 
     @staticmethod
     def get_string_similarity_ratio(a: str, b: str) -> float:
-        return SequenceMatcher(isjunk=None, a=a, b=b).ratio()
+        sequence_matcher = SequenceMatcher(isjunk=None, a=a, b=b)
+        return sequence_matcher.ratio()
 
 
 class HasMediaSpoiler(ABCRule[MessageUpdate]):

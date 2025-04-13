@@ -61,7 +61,6 @@ class BaseKeyboardBuilder(ABCKeyboardBuilder, Generic[B]):
 
     def build(self) -> _:
         raise NotImplementedError(
-            "Implementation of `.build()` is absent. Use keyboard builders "
-            "that have this method implemented, like `ReplyKeyboardBuilder` "
-            "or `InlineKeyboardBuilder`"
+            "Use keyboard builders that have the `.build()` method implemented, "
+            "like `ReplyKeyboardBuilder` or `InlineKeyboardBuilder`"
         )
